@@ -31,7 +31,8 @@ concept bounded_enum = requires(T e)
 };
 // clang-format on
   }  // namespace simple_enum::inline v0_1
-//this namespace is for reducing time crunching source location
+
+// this namespace is for reducing time crunching source location
 namespace se
   {
 struct mn
@@ -127,7 +128,7 @@ constexpr auto enum_name(enum_type value) noexcept -> std::string_view
   auto const requested_index{std::to_underlying(value)};
   if(requested_index >= first_index && requested_index <= last_index)
     {
-    meta_name const & res{meta[requested_index-first_index]};
+    meta_name const & res{meta[requested_index - first_index]};
     return std::string_view{res.data, res.size};
     }
   return {};
