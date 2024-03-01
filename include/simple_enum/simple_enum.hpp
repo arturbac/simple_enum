@@ -7,6 +7,14 @@
 #include <source_location>
 #include <array>
 
+#pragma push_macro("static_constexpr")
+
+#if __cplusplus > 202002L
+#define static_constexpr static
+#else
+#define static_constexpr
+#endif
+
 namespace simple_enum::inline v0_1
   {
 template<typename Enum>
@@ -44,7 +52,7 @@ struct mn
 template<auto enumeration>
 constexpr auto se(mn & res, size_t enum_beg) noexcept -> size_t
   {
-#if (defined(__clang__) || defined(__GNUC__))
+#if(defined(__clang__) || defined(__GNUC__))
   char const * const func{__PRETTY_FUNCTION__};
 #else
   char const * const func{std::source_location::current().function_name()};
@@ -111,8 +119,8 @@ constexpr void fold_array(name_array & meta)
 template<bounded_enum enum_type>
 constexpr auto enum_meta_array() noexcept
   {
-  static constexpr auto first_index{std::to_underlying(enum_type::first)};
-  static constexpr auto last_index{std::to_underlying(enum_type::last)};
+  static_constexpr constexpr auto first_index{to_underlying(enum_type::first)};
+  static_constexpr constexpr auto last_index{to_underlying(enum_type::last)};
   std::array<meta_name, last_index - first_index + 1> meta;
   // dig_enum_members<enum_type, first_index, last_index, last_index>::dig(meta);
   fold_array<enum_type, first_index, last_index, last_index - first_index + 1>(meta);
@@ -122,10 +130,10 @@ constexpr auto enum_meta_array() noexcept
 template<bounded_enum enum_type>
 constexpr auto enum_name(enum_type value) noexcept -> std::string_view
   {
-  static constexpr auto first_index{std::to_underlying(enum_type::first)};
-  static constexpr auto last_index{std::to_underlying(enum_type::last)};
-  static constexpr auto meta{enum_meta_array<enum_type>()};
-  auto const requested_index{std::to_underlying(value)};
+  static_constexpr constexpr auto first_index{to_underlying(enum_type::first)};
+  static_constexpr constexpr auto last_index{to_underlying(enum_type::last)};
+  static_constexpr constexpr auto meta{enum_meta_array<enum_type>()};
+  auto const requested_index{to_underlying(value)};
   if(requested_index >= first_index && requested_index <= last_index)
     {
     meta_name const & res{meta[requested_index - first_index]};
@@ -133,5 +141,6 @@ constexpr auto enum_name(enum_type value) noexcept -> std::string_view
     }
   return {};
   }
-
   }  // namespace simple_enum
+
+#pragma pop_macro("static_constexpr")

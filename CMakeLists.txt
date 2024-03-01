@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.21) # Use the latest CMake version you have con
 project(simple_enum VERSION 0.0.1 LANGUAGES CXX)
 
 # Specify the C++ standard
-set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(cmake/CPM.cmake)
