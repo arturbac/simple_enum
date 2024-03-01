@@ -1,0 +1,83 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "configurePresets": [
+      {
+      "name": "cfg-clang",
+      "generator": "Ninja",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "clang++"
+      }
+    },
+    {
+      "name": "clnag-debug",
+      "description": "Configure for debug build",
+      "inherits": [ "cfg-clang" ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "release-time-trace",
+      "description": "Configure for release build",
+      "inherits": [ "cfg-clang" ],
+      "binaryDir": "${sourceDir}/build/release-time-trace",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_FLAGS": "-ftime-trace -fno-omit-frame-pointer"
+      }
+    },
+    {
+      "name": "ReleaseWithDeb",
+      "description": "Configure for release build with Debian package generation",
+      "inherits": [ "cfg-clang" ],
+      "binaryDir": "${sourceDir}/build/release-with-deb",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CPACK_GENERATOR": "DEB"
+      }
+    },
+    {
+      "name": "ReleaseTestAsan",
+      "description": "Configure for release build with address sanitizer",
+      "inherits": [ "cfg-clang" ],
+      "binaryDir": "${sourceDir}/build/release-test-asan",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_CXX_FLAGS": "-fsanitize=address"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "clnag-debug",
+      "configurePreset": "clnag-debug"
+    },
+    {
+      "name": "release-time-trace",
+      "configurePreset": "release-time-trace"
+    },
+    {
+      "name": "ReleaseWithDeb",
+      "configurePreset": "ReleaseWithDeb"
+    },
+    {
+      "name": "ReleaseTestAsan",
+      "configurePreset": "ReleaseTestAsan"
+    }
+  ],
+  "testPresets": [
+    {
+      "name": "Test",
+      "configurePreset": "ReleaseTestAsan",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}
