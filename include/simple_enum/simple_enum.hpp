@@ -41,9 +41,13 @@ struct mn
   };
 
 template<auto enumeration>
-constexpr auto se(mn & res, size_t enum_beg ) noexcept -> size_t
+constexpr auto se(mn & res, size_t enum_beg) noexcept -> size_t
   {
+#if (defined(__clang__) || defined(__GNUC__))
+  char const * const func{__PRETTY_FUNCTION__};
+#else
   char const * const func{std::source_location::current().function_name()};
+#endif
   char const * beg{func + enum_beg};
   char const * last_colon{};
   for(; *beg; ++beg)
