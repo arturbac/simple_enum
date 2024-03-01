@@ -136,7 +136,7 @@ constexpr auto enum_name(enum_type value) noexcept -> std::string_view
   auto const requested_index{to_underlying(value)};
   if(requested_index >= first_index && requested_index <= last_index)
     {
-    meta_name const & res{meta[requested_index - first_index]};
+    meta_name const & res{meta[size_t(requested_index - first_index)]};
     return std::string_view{res.data, res.size};
     }
   return {};

@@ -127,7 +127,7 @@ constexpr auto se_view() noexcept -> std::string_view
   return std::string_view{value.data, value.size};
   }
 
-ut::suite<"simple_enum"> _ = []
+static ut::suite<"simple_enum"> _ = []
 {
   using namespace ut;
 
@@ -210,4 +210,8 @@ ut::suite<"simple_enum"> _ = []
 };
   }  // namespace simple_enum
 
-int main() {}
+int main()
+  {
+  auto p = __builtin_FUNCTION();
+  auto e = __PRETTY_FUNCTION__;
+  }
