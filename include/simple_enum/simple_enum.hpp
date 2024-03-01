@@ -48,8 +48,8 @@ constexpr auto se(mn & res, size_t enum_beg ) noexcept -> size_t
   if(last_colon != nullptr)
     {
     res.data = last_colon + 1;
-    res.size = beg - 1 - res.data;
-    return size_t(last_colon - func) + 1;
+    res.size = size_t(beg - res.data - 1);
+    return size_t(last_colon - func);
     }
   else
     {
