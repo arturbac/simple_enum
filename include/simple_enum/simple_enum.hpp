@@ -9,6 +9,11 @@
 
 namespace simple_enum::inline v0_1
   {
+template<typename Enum>
+constexpr auto to_underlying(Enum e) noexcept -> std::underlying_type_t<Enum>
+  {
+  return static_cast<std::underlying_type_t<Enum>>(e);
+  }
 
 // clang-format off
 template<typename type>
@@ -22,7 +27,7 @@ concept bounded_enum = requires(T e)
   { T::first } -> std::convertible_to<T>;
   { T::last } -> std::convertible_to<T>;
   // Additional check to ensure 'last' is greater than or equal to 'first'
-  requires (std::to_underlying(T::last) >= std::to_underlying(T::first));
+  requires (to_underlying(T::last) >= to_underlying(T::first));
 };
 // clang-format on
   }  // namespace simple_enum::inline v0_1
