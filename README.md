@@ -43,6 +43,7 @@ clang 17 -ftime-trace on AMD Ryzen 9 5900X Linux desktop 6.6.11-gentoo-dist
     <th>enumerations</th>
     <th>instantiation time</th>
     <th>*code gen</th>
+    <th>total time</th>
   </tr>
   <tr>
     <td rowspan="3">lorem_ipsum_long</td>
@@ -50,16 +51,19 @@ clang 17 -ftime-trace on AMD Ryzen 9 5900X Linux desktop 6.6.11-gentoo-dist
     <td rowspan="3">104</td>
     <td>20,973 ms</td>
     <td></td>
+    <td>20,973 ms</td>
   </tr>
   <tr>
     <td>magic_enum</td>
     <td>199,867 ms</td>
     <td></td>
+    <td>199,867 ms</td>
   </tr>
   <tr>
     <td>reflect</td>
     <td>19,282 ms</td>
     <td>36,470 ms</td>
+    <td>55,752 ms</td>
   </tr>
   <tr>
     <td rowspan="3">E</td>
@@ -67,16 +71,19 @@ clang 17 -ftime-trace on AMD Ryzen 9 5900X Linux desktop 6.6.11-gentoo-dist
     <td rowspan="3">15</td>
     <td>3,993 ms</td>
     <td></td>
+    <td>3,993 ms</td>
   </tr>
   <tr>
     <td>magic_enum</td>
     <td>86,089 ms</td>
     <td></td>
+    <td>86,089 ms</td>
   </tr>
   <tr>
     <td>reflect</td>
     <td>19,091 ms</td>
     <td>27,475 ms</td>
+    <td>46,566 ms</td>
   </tr>
   <tr>
     <td rowspan="3">lorem_ipsum_short</td>
@@ -84,16 +91,19 @@ clang 17 -ftime-trace on AMD Ryzen 9 5900X Linux desktop 6.6.11-gentoo-dist
     <td rowspan="3">40</td>
     <td>8,694 ms</td>
     <td></td>
+    <td>8,694 ms</td>
   </tr>
   <tr>
     <td>magic_enum</td>
     <td>178,864 ms</td>
     <td></td>
+    <td>178,864 ms</td>
   </tr>
   <tr>
     <td>reflect</td>
     <td>20,253 ms</td>
     <td>41,024 ms</td>
+    <td>61,277 ms</td>
   </tr>
   <tr>
     <td rowspan="3">strong_untyped</td>
@@ -101,18 +111,22 @@ clang 17 -ftime-trace on AMD Ryzen 9 5900X Linux desktop 6.6.11-gentoo-dist
     <td rowspan="3">3</td>
     <td>1,120 ms</td>
     <td></td>
+    <td>1,120 ms</td>
   </tr>
   <tr>
     <td>magic_enum</td>
     <td>151,590 ms</td>
     <td></td>
+    <td>151,590 ms</td>
   </tr>
   <tr>
     <td>reflect</td>
     <td>22,732 ms</td>
     <td>46,484 ms</td>
+    <td>69,216 ms</td>
   </tr>
 </table>
+
 
 
 
