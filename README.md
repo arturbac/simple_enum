@@ -49,9 +49,9 @@ clang 17 -ftime-trace on AMD Ryzen 9 5900X Linux desktop 6.6.11-gentoo-dist
     <td rowspan="3">lorem_ipsum_long</td>
     <td>simple_enum</td>
     <td rowspan="3">104</td>
-    <td>20,973 ms</td>
+    <td>16,957 ms</td>
     <td></td>
-    <td>20,973 ms</td>
+    <td>16,957 ms</td>
   </tr>
   <tr>
     <td>magic_enum</td>
@@ -69,9 +69,9 @@ clang 17 -ftime-trace on AMD Ryzen 9 5900X Linux desktop 6.6.11-gentoo-dist
     <td rowspan="3">E</td>
     <td>simple_enum</td>
     <td rowspan="3">15</td>
-    <td>3,993 ms</td>
+    <td>3,397 ms</td>
     <td></td>
-    <td>3,993 ms</td>
+    <td>3,397 ms</td>
   </tr>
   <tr>
     <td>magic_enum</td>
@@ -89,9 +89,9 @@ clang 17 -ftime-trace on AMD Ryzen 9 5900X Linux desktop 6.6.11-gentoo-dist
     <td rowspan="3">lorem_ipsum_short</td>
     <td>simple_enum</td>
     <td rowspan="3">40</td>
-    <td>8,694 ms</td>
+    <td>7,165 ms</td>
     <td></td>
-    <td>8,694 ms</td>
+    <td>7,165 ms</td>
   </tr>
   <tr>
     <td>magic_enum</td>
@@ -109,9 +109,9 @@ clang 17 -ftime-trace on AMD Ryzen 9 5900X Linux desktop 6.6.11-gentoo-dist
     <td rowspan="3">strong_untyped</td>
     <td>simple_enum</td>
     <td rowspan="3">3</td>
-    <td>1,120 ms</td>
+    <td>1,048 ms</td>
     <td></td>
-    <td>1,120 ms</td>
+    <td>1,048 ms</td>
   </tr>
   <tr>
     <td>magic_enum</td>
