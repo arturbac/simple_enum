@@ -17,7 +17,7 @@ concept bounded_enum = requires(T e)
   { T::first } -> std::convertible_to<T>;
   { T::last } -> std::convertible_to<T>;
   // 'last' must be greater than or equal to 'first'
-  requires (std::to_underlying(T::last) >= std::to_underlying(T::first));
+  requires (to_underlying(T::last) >= to_underlying(T::first));
 };
 
 template<typename Enum>
