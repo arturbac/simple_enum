@@ -59,7 +59,7 @@
       }
     },
     {
-      "name": "ReleaseTestAsan",
+      "name": "clang-release-test-asan",
       "description": "Configure for release build with address sanitizer",
       "inherits": [ "cfg-clang" ],
       "binaryDir": "${sourceDir}/build/release-test-asan",
@@ -84,14 +84,14 @@
       "configurePreset": "ReleaseWithDeb"
     },
     {
-      "name": "ReleaseTestAsan",
-      "configurePreset": "ReleaseTestAsan"
+      "name": "clang-release-test-asan",
+      "configurePreset": "clang-release-test-asan"
     }
   ],
   "testPresets": [
     {
-      "name": "Test",
-      "configurePreset": "ReleaseTestAsan",
+      "name": "clang-release-test-asan",
+      "configurePreset": "clang-release-test-asan",
       "output": {
         "outputOnFailure": true
       }

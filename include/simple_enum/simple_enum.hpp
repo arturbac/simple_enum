@@ -1,4 +1,5 @@
 #pragma once
+
 #include <concepts>
 #include <type_traits>
 #include <utility>
@@ -6,6 +7,8 @@
 #include <string_view>
 #include <source_location>
 #include <array>
+
+#define SIMPLE_ENUM_NAME_VERSION "0.2.1"
 
 #pragma push_macro("static_constexpr")
 
@@ -50,6 +53,7 @@ concept bounded_enum = requires(T e)
 // clang-format on
 
 #ifndef SIMPLE_ENUM_CUSTOM_UNBOUNDED_RANGE
+#define SIMPLE_ENUM_CUSTOM_UNBOUNDED_RANGE
 inline constexpr auto default_unbounded_uuper_range = 10;
 #endif
 // enum struct enum_meta_bounded { no, yes };
@@ -151,7 +155,7 @@ constexpr auto b(n & res) noexcept
   char const * end_of_name{func + initial_offset};
   char const * last_colon{end_of_name};
   for(; *end_of_name; ++end_of_name)
-    if(*end_of_name == ':') [[unlikely]]
+    if(*end_of_name == ':' || *end_of_name == ')') [[unlikely]]
       last_colon = end_of_name;
 
   // if(last_colon != nullptr)

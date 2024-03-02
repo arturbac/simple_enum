@@ -36,7 +36,11 @@ static_assert(
 enum struct enum_unbounded
   {
   v1,
-  v2
+  v2,
+  v3,
+  vx,
+  v5,
+  v6a
   };
 
 enum struct enum_unbounded_sparse
@@ -230,16 +234,29 @@ constexpr auto se_view() noexcept -> std::string_view
 
 static ut::suite<"simple_enum"> _ = []
 {
+  // ut::expect(enum_name(enum_unbounded_sparse::v1) == "v1");
   {
+  constexpr auto v{static_cast<enum_unbounded_sparse>(0)};
   meta_name value{};
-  se::diag_b<strong_typed::v1>(value);
-  se::diag_e<strong_typed::v1>(value, 0u);
+  se::diag_b<v>(value);
+  se::diag_e<v>(value, 0u);
   }
 using namespace ut;
+"test enum_unbounded_sparse offseting"_test = []
+{
+  constexpr auto v{static_cast<enum_unbounded_sparse>(0)};
+  meta_name value{};
+  auto offset{se::b<v>(value)};
+  se::e<v>(value, offset);
+  se::e<enum_unbounded_sparse::v1>(value, offset);
+  se::e<enum_unbounded_sparse::v2>(value, offset);
+};
+
 "test unbounded"_test = []
 {
   ut::expect(enum_name(enum_unbounded::v1) == "v1");
   ut::expect(enum_name(enum_unbounded::v2) == "v2");
+  ut::expect(enum_name(enum_unbounded::v6a) == "v6a");
 
   ut::expect(enum_name(enum_unbounded_sparse::v1) == "v1");
   ut::expect(enum_name(enum_unbounded_sparse::v2) == "v2");
