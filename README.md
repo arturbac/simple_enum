@@ -19,7 +19,7 @@ constexpr auto enum_name(enum_type value) noexcept -> std::string_view;
 
 The inception of this project was driven by the noticeable absence of an efficient `enum_name` meta-programming capability in existing solutions. This initiative showcases a proof of concept that `enum_name` can achieve efficiency when the enumeration is bounded. This allows for swift instantiation processes and ensures that the computational cost is directly proportional to the number of enumerations within an enum.
 
-# Current Development Status
+## Current Development Status
 
 `simple_enum` is under active development on **Clang 17** and **GCC 13** with support down to Clang 14 and GCC 10. Support for **MSVC** is anticipated to be introduced shortly.
 
