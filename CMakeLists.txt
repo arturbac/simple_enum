@@ -50,7 +50,6 @@ add_library(simple_enum::simple_enum ALIAS simple_enum )
 target_include_directories(simple_enum INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 if(PROJECT_IS_TOP_LEVEL)
-  include(cmake/default_clang_warnings.cmake)
   include(cmake/unit_test_integration.cmake)
   # Enable testing and add the tests directory
   enable_testing()
@@ -58,7 +57,6 @@ if(PROJECT_IS_TOP_LEVEL)
   add_subdirectory(examples)
 
   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
-    
     add_subdirectory(time_trace)
   endif()
   execute_process(
