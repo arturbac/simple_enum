@@ -51,36 +51,37 @@ struct n
 
 using s = size_t;
 using v = void;
+// 0x55581cb6c620 "s se::b(n &) [enumeration = v1]"
+// 0x5571fe282666 "s se::b(n &) [enumeration = simple_enum::strong_typed::v1]"
+// 0x5571fe2826e2 "s se::b(n &) [enumeration = simple_enum::strong_typed::v2]"
+// 0x55c1ac304640 "v se::e(n &, s) [enumeration = v1]"
+inline constexpr auto initial_offset{std::char_traits<char>::length("s se::b(n &) [enumeration =")};
 
 template<auto enumeration>
-constexpr s b(n & res, s enum_beg) noexcept
+constexpr s b(n & res) noexcept
   {
 #if defined(__clang__) || defined(__GNUC__)
   char const * const func{__PRETTY_FUNCTION__};
 #else
   char const * const func{std::source_location::current().function_name()};
 #endif
-  char const * end_of_name{func + enum_beg};
-  char const * last_colon{};
+  char const * end_of_name{func + initial_offset};
+  char const * last_colon{end_of_name};
   for(; *end_of_name; ++end_of_name)
-    {
     if(*end_of_name == ':') [[unlikely]]
       last_colon = end_of_name;
-    if(*end_of_name == '=') [[unlikely]]
-      last_colon = ++end_of_name;
-    }
 
-  if(last_colon != nullptr)
-    {
-    res.data = last_colon + 1;
-    res.size = size_t(end_of_name - res.data - 1);
-    return size_t(last_colon - func) + 1;
-    }
-  else
-    {
-    res = {};
-    return 0u;
-    }
+  // if(last_colon != nullptr)
+  //   {
+  res.data = last_colon + 1;
+  res.size = size_t(end_of_name - res.data - 1);
+  return size_t(last_colon - func) + 1 + 3;  // offset by 3 arg s
+  //   }
+  // else
+  //   {
+  //   res = {};
+  //   return 0u;
+  //   }
   }
 
 template<auto enumeration>
@@ -129,15 +130,16 @@ template<typename enum_type, std::integral auto first, std::size_t size, typenam
 constexpr void apply_meta_enum(name_array & meta, size_t enum_beg, std::index_sequence<indices...>)
   {
   // Unpack and call enum_name_meta_constexpr for each index, using fold expression
-  (..., (se::e<static_cast<enum_type>(first + indices)>(meta[indices], enum_beg)));
+  (..., (se::e<static_cast<enum_type>(first + indices)>(meta[indices + 1], enum_beg)));
   }
 
 template<typename enum_type, std::integral auto first, std::integral auto last, std::size_t size, typename name_array>
 constexpr void fold_array(name_array & meta)
   {
   static_assert(size == static_cast<std::size_t>(last - first + 1), "size must match the number of enum values");
-  size_t enum_beg{se::b<static_cast<enum_type>(first)>(meta[0], 0u)};
-  apply_meta_enum<enum_type, first, size>(meta, enum_beg, std::make_index_sequence<size>{});
+  size_t enum_beg{se::b<static_cast<enum_type>(first)>(meta[0])};
+  if constexpr(size > 1)
+    apply_meta_enum<enum_type, first + 1, size - 1>(meta, enum_beg, std::make_index_sequence<size - 1>{});
   }
 
 template<bounded_enum enum_type>

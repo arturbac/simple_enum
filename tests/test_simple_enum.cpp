@@ -131,7 +131,7 @@ template<auto enumeration>
 constexpr auto se_view() noexcept -> std::string_view
   {
   meta_name value{};
-  size_t beg{se::b<enumeration>(value, 0u)};
+  size_t beg{se::b<enumeration>(value)};
   se::e<enumeration>(value, beg);
   return std::string_view{value.data, value.size};
   }
