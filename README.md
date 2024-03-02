@@ -21,7 +21,7 @@ The inception of this project was driven by the noticeable absence of an efficie
 
 ## Current Development Status
 
-`simple_enum` is under active development on **Clang 17** and **GCC 13** with support down to Clang 14 and GCC 10. Support for **MSVC** is anticipated to be introduced shortly.
+`simple_enum` is under active development on **Clang 17** and **GCC 13** with support down to **Clang 14** and **GCC 10**. Support for **MSVC** is anticipated to be introduced shortly.
 
 ## Features
 
