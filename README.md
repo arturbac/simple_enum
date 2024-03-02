@@ -2,27 +2,15 @@
 
 # features
 
+This project offers efficien enum_name
 ```cpp
-template<bounded_enum enum_type>
-constexpr auto enum_name(enum_type value) noexcept -> std::string_view;
 
 template<typename type>
 concept enum_concept = std::is_enum_v<type>;
 
-template<typename T>
-concept bounded_enum = requires(T e) 
-{
-  requires enum_concept<T>;
-  // require 'first' and 'last' in enum
-  { T::first } -> std::convertible_to<T>;
-  { T::last } -> std::convertible_to<T>;
-  // 'last' must be greater than or equal to 'first'
-  requires (to_underlying(T::last) >= to_underlying(T::first));
-};
+template<enum_concept enum_type>
+constexpr auto enum_name(enum_type value) noexcept -> std::string_view;
 
-template<typename Enum>
-constexpr auto to_underlying(Enum e) noexcept -> std::underlying_type_t<Enum>
- { return static_cast<std::underlying_type_t<Enum>>(e); }
 ```
 
 Motivation to start this project was lack of efficient meta enum_name available.
