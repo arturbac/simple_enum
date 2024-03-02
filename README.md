@@ -1,3 +1,5 @@
+![MIT](https://img.shields.io/badge/license-MIT-blue.svg)
+![language](https://img.shields.io/badge/language-C%2B%2B20-blue.svg) ![language](https://img.shields.io/badge/language-C%2B%2B23-red.svg) ![Version](https://badge.fury.io/gh/arturbac%2Fsimple_enum.svg)
 # simple_enum
 
 # features
