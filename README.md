@@ -25,7 +25,7 @@ The inception of this project was driven by the noticeable absence of an efficie
 
 ## Features
 
-- **Zero Runtime Cost**: Retrieving `enum_name` for a runtime variable incurs no runtime overhead, akin to the capabilities provided by `magic_enum`.
+- **Zero Runtime Cost**: Retrieving `enum_name` for a runtime variable incurs no runtime overhead, just constant literal string_view.
 - **Compile-time Efficiency**: Compile-time computation is confined to the number of elements within a range. This efficiency is made possible through the `bounded_enum` concept when declared for an enum type.
 - **Support for Unbounded Enums**: While the library is optimized for bounded enums, it also accommodates unbounded enums. By default, it utilizes `simple_enum::default_unbounded_upper_range`, which users can override according to their requirements.
 - **Optimized Enum Name Deduction**: The library employs a strategic optimization for enum name deduction, ensuring that only one loop is executed for the first enumeration. Subsequent enumerations are parsed with a minimized string literal range, further enhancing the efficiency of the process.
