@@ -1,5 +1,54 @@
 #include "simple_enum/simple_enum.hpp"
 #include <boost/ut.hpp>
+enum struct enum_bounded
+  {
+  v1 = 1,
+  v2,
+  v3,
+  first = v1,
+  last = v3
+  };
+static_assert(simple_enum::detail::bounds<enum_bounded>::first == enum_bounded::v1);
+static_assert(simple_enum::detail::bounds<enum_bounded>::last == enum_bounded::last);
+
+enum struct enum_upper_bounded
+  {
+  v1 = 1,
+  v2,
+  v3,
+  last = v3
+  };
+static_assert(simple_enum::detail::bounds<enum_upper_bounded>::first == static_cast<enum_upper_bounded>(0));
+static_assert(simple_enum::detail::bounds<enum_upper_bounded>::last == enum_upper_bounded::last);
+
+enum struct enum_lower_bounded
+  {
+  v1 = 9,
+  v2,
+  first = v1
+  };
+static_assert(simple_enum::detail::bounds<enum_lower_bounded>::first == enum_lower_bounded::v1);
+static_assert(
+  simple_enum::detail::bounds<enum_lower_bounded>::last
+  == static_cast<enum_lower_bounded>(simple_enum::default_unbounded_uuper_range)
+);
+
+enum struct enum_unbounded
+  {
+  v1,
+  v2
+  };
+
+enum struct enum_unbounded_sparse
+  {
+  v1 = 9,
+  v2
+  };
+static_assert(simple_enum::detail::bounds<enum_unbounded_sparse>::first == static_cast<enum_unbounded_sparse>(0));
+static_assert(
+  simple_enum::detail::bounds<enum_unbounded_sparse>::last
+  == static_cast<enum_unbounded_sparse>(simple_enum::default_unbounded_uuper_range)
+);
 
 enum weak_global_untyped_e
   {
@@ -38,6 +87,7 @@ constexpr void diag_e(n & res, s enum_beg) noexcept
 
 namespace simple_enum
   {
+
 namespace ut = boost::ut;
 enum struct strong_typed : uint8_t
   {
@@ -168,13 +218,6 @@ enum struct sparse_offseted_untyped
   last = v3
   };
 
-// invalid
-// auto fast_enum_name_raw() [enumeration = (example_enum_e)5]
-// auto fast_enum_name() [enumeration = example_enum_e::v1]
-// auto fast_enum_name() [enumeration = test::example_enum_e::v1]
-// auto fast_enum_name() [enumeration = test::subnamespace::example_enum_e::v1]
-// auto fast_enum_name() [enumeration = test::subnamespace::detail::example_enum_e::v1]
-// auto fast_enum_name() [enumeration = test::subnamespace::v2::(anonymous namespace)::example_enum_e::v1]
 template<auto enumeration>
 constexpr auto se_view() noexcept -> std::string_view
   {
@@ -193,16 +236,23 @@ static ut::suite<"simple_enum"> _ = []
   se::diag_e<strong_typed::v1>(value, 0u);
   }
 using namespace ut;
-// "test variations"_test = []
-// {
-//   ut::expect(enum_name(one_elem_untyped::v1) == "v1");
-//   ut::expect(enum_name(static_cast<one_elem_untyped>(2)) == "");
-//   ut::expect(se_view<static_cast<sparse_untyped>(2)>() == "2");
-//   ut::expect(enum_name(static_cast<sparse_untyped>(2)) == "2");
-// ut::expect(enum_name(sparse_offseted_untyped::unknown) == "unknown");
-// ut::expect(enum_name(static_cast<sparse_offseted_untyped>(0)) == "0");
-//
-// };
+"test unbounded"_test = []
+{
+  ut::expect(enum_name(enum_unbounded::v1) == "v1");
+  ut::expect(enum_name(enum_unbounded::v2) == "v2");
+
+  ut::expect(enum_name(enum_unbounded_sparse::v1) == "v1");
+  ut::expect(enum_name(enum_unbounded_sparse::v2) == "v2");
+};
+"test variations"_test = []
+{
+  ut::expect(enum_name(one_elem_untyped::v1) == "v1");
+  ut::expect(enum_name(static_cast<one_elem_untyped>(2)) == "");
+  ut::expect(se_view<static_cast<sparse_untyped>(2)>() == "2");
+  ut::expect(enum_name(static_cast<sparse_untyped>(2)) == "2");
+  ut::expect(enum_name(sparse_offseted_untyped::unknown) == "unknown");
+  ut::expect(enum_name(static_cast<sparse_offseted_untyped>(0)) == "0");
+};
 
 "test se meta name cut"_test = []
 {

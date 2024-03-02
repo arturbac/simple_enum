@@ -28,16 +28,81 @@ template<typename type>
 concept enum_concept = std::is_enum_v<type>;
 
 template<typename T>
+concept lower_bounded_enum = requires(T e) 
+{
+  requires enum_concept<T>;
+  { T::first } -> std::convertible_to<T>;
+};
+template<typename T>
+concept upper_bounded_enum = requires(T e) 
+{
+  requires enum_concept<T>;
+  { T::last } -> std::convertible_to<T>;
+};
+template<typename T>
 concept bounded_enum = requires(T e) 
 {
   requires enum_concept<T>;
-  // Attempt to access 'first' and 'last' assuming they are convertible to T
-  { T::first } -> std::convertible_to<T>;
-  { T::last } -> std::convertible_to<T>;
-  // Additional check to ensure 'last' is greater than or equal to 'first'
+  requires lower_bounded_enum<T>;
+  requires upper_bounded_enum<T>;
   requires (to_underlying(T::last) >= to_underlying(T::first));
 };
 // clang-format on
+
+#ifndef SIMPLE_ENUM_CUSTOM_UNBOUNDED_RANGE
+inline constexpr auto default_unbounded_uuper_range = 10;
+#endif
+// enum struct enum_meta_bounded { no, yes };
+
+struct bounds_info
+  {
+  bool lower_bound;
+  bool upper_bound;
+  };
+
+template<typename enumeration, bounds_info>
+struct info
+  {
+  static constexpr enumeration first = static_cast<enumeration>(0);
+  static constexpr enumeration last = static_cast<enumeration>(default_unbounded_uuper_range);
+  };
+
+template<typename enumeration>
+struct info<enumeration, bounds_info{.lower_bound = true, .upper_bound = true}>
+  {
+  static constexpr enumeration first = enumeration::first;
+  static constexpr enumeration last = enumeration::last;
+  };
+
+// default assume range 0 - 10
+template<typename enumeration>
+struct info<enumeration, bounds_info{.lower_bound = true, .upper_bound = false}>
+  {
+  static constexpr enumeration first = enumeration::first;
+  static constexpr enumeration last = static_cast<enumeration>(default_unbounded_uuper_range);
+  };
+
+template<typename enumeration>
+struct info<enumeration, bounds_info{.lower_bound = false, .upper_bound = true}>
+  {
+  static constexpr enumeration first = static_cast<enumeration>(0);
+  static constexpr enumeration last = enumeration::last;
+  };
+
+namespace detail
+  {
+  template<typename enumeration>
+  struct bounds
+    {
+    static constexpr bounds_info
+      bi_{.lower_bound = lower_bounded_enum<enumeration>, .upper_bound = upper_bounded_enum<enumeration>};
+    using info_t = info<enumeration, bi_>;
+    static constexpr enumeration first = info_t::first;
+    static constexpr enumeration last = info_t::last;
+    static constexpr auto first_index = to_underlying(info_t::first);
+    static constexpr auto last_index = to_underlying(info_t::last);
+    };
+  }  // namespace detail
   }  // namespace simple_enum::inline v0_1
 
 // this namespace is for reducing time crunching source location
@@ -51,14 +116,12 @@ struct n
 
 using s = size_t;
 using v = void;
-// 0x55581cb6c620 "void se::b(n &) [enumeration = v1]"
-// 0x5571fe282666 "void se::b(n &) [enumeration = simple_enum::strong_typed::v1]"
-// 0x5571fe2826e2 "void se::b(n &) [enumeration = simple_enum::strong_typed::v2]"
-// 0x55c1ac304640 "auto se::e(n &, auto) [enumeration = v1]"
-// gcc
-// 0x55cdfbcaa398 "constexpr auto se::b(n&) [with auto enumeration = v1]"
-// 0x55f0d76350d8 "constexpr void se::e(n&, s) [with auto enumeration = v1; s = long unsigned int]"
+// clang
+//  0x55581cb6c620 "void se::b(n &) [enumeration = v1]"
+//  0x5571fe282666 "void se::b(n &) [enumeration = simple_enum::strong_typed::v1]"
+//  0x55c1ac304640 "auto se::e(n &, auto) [enumeration = v1]"
 
+// gcc
 // constexpr auto se::b(n&) [with auto enumeration = simple_enum::strong_typed::v1]
 // constexpr void se::e(n&, s) [with auto enumeration = simple_enum::strong_typed::v1; s = long unsigned int]
 
@@ -73,6 +136,7 @@ inline constexpr char end_of_enumeration_name = ';';
 inline constexpr auto functions_args_offset = 3u;
 #elif defined(_MSC_VER)
 #error "msvc support is under development"
+#else
 #error "supply information to author about Your compiler"
 #endif
 
@@ -161,22 +225,29 @@ constexpr void fold_array(name_array & meta)
     apply_meta_enum<enum_type, first + 1, size - 1>(meta, enum_beg, std::make_index_sequence<size - 1>{});
   }
 
-template<bounded_enum enum_type>
+template<enum_concept enum_type>
 constexpr auto enum_meta_array() noexcept
   {
-  static_constexpr constexpr auto first_index{to_underlying(enum_type::first)};
-  static_constexpr constexpr auto last_index{to_underlying(enum_type::last)};
+  using bounds_type = detail::bounds<enum_type>;
+  static_constexpr constexpr auto first_index{bounds_type::first_index};
+  static_constexpr constexpr auto last_index{bounds_type::last_index};
+  // static_constexpr constexpr auto first_index{to_underlying(enum_type::first)};
+  // static_constexpr constexpr auto last_index{to_underlying(enum_type::last)};
+
   std::array<meta_name, last_index - first_index + 1> meta;
   // dig_enum_members<enum_type, first_index, last_index, last_index>::dig(meta);
   fold_array<enum_type, first_index, last_index, last_index - first_index + 1>(meta);
   return meta;
   }
 
-template<bounded_enum enum_type>
+template<enum_concept enum_type>
 constexpr auto enum_name(enum_type value) noexcept -> std::string_view
   {
-  static_constexpr constexpr auto first_index{to_underlying(enum_type::first)};
-  static_constexpr constexpr auto last_index{to_underlying(enum_type::last)};
+  using bounds_type = detail::bounds<enum_type>;
+  static_constexpr constexpr auto first_index{bounds_type::first_index};
+  static_constexpr constexpr auto last_index{bounds_type::last_index};
+  // static_constexpr constexpr auto first_index{to_underlying(enum_type::first)};
+  // static_constexpr constexpr auto last_index{to_underlying(enum_type::last)};
   static_constexpr constexpr auto meta{enum_meta_array<enum_type>()};
   auto const requested_index{to_underlying(value)};
   if(requested_index >= first_index && requested_index <= last_index)
