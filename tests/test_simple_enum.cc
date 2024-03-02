@@ -374,4 +374,4 @@ using namespace ut;
 };
   }  // namespace simple_enum
 
-int main() {}
+int main() { se::verify_offset(); }

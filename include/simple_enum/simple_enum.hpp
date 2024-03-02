@@ -122,65 +122,79 @@ struct n
 
 using s = size_t;
 using v = void;
-// clang
-//  0x55581cb6c620 "void se::b(n &) [enumeration = v1]"
-//  0x5571fe282666 "void se::b(n &) [enumeration = simple_enum::strong_typed::v1]"
-//  0x55c1ac304640 "auto se::e(n &, auto) [enumeration = v1]"
 
-// gcc
-// constexpr auto se::b(n&) [with auto enumeration = simple_enum::strong_typed::v1]
-// constexpr void se::e(n&, s) [with auto enumeration = simple_enum::strong_typed::v1; s = long unsigned int]
+template<auto enumeration>
+constexpr auto f() noexcept
+  {
+#if defined(__clang__) || defined(__GNUC__)
+  char const * const func{__PRETTY_FUNCTION__};
+#else
+  char const * const func{std::source_location::current().function_name()};
+#endif
+  return func;
+  }
 
 #if defined(__clang__)
-inline constexpr auto initial_offset{std::char_traits<char>::length("auto se::b(n &) [enumeration =")};
+#if __clang_major__ < 13
+#error "Clang minimal supported version is 13"
+#endif
+// This is just for speeding up user use cases to skip computation of strlen at compile time
+
+// index of the = character in the given line "auto se::f() [enumeration =" is 26
+inline constexpr auto initial_offset{26 + 1};
 inline constexpr auto end_of_enumeration_name = ']';
-inline constexpr auto functions_args_offset = 3u;
+
 #elif defined(__GNUC__)
-inline constexpr auto initial_offset{std::char_traits<char>::length("constexpr auto se::b(n&) [with auto enumeration =")
-};
-inline constexpr char end_of_enumeration_name = ';';
-inline constexpr auto functions_args_offset = 3u;
+// index of the = character in the given line "constexpr auto se::f() [with auto enumeration =" is 46.
+inline constexpr auto initial_offset{46 + 1};
+inline constexpr char end_of_enumeration_name = ']';
+
 #elif defined(_MSC_VER)
 #error "msvc support is under development"
 #else
 #error "supply information to author about Your compiler"
 #endif
 
+#ifdef SIMPLE_ENUM_OPT_IN_STATIC_ASSERTS
+// OPT IN TESTING CODE
+enum struct verify_ennum_
+  {
+  v1
+  };
+
+constexpr size_t find_enumeration_offset()
+  {
+  auto const func{std::string_view{f<verify_ennum_::v1>()}};
+  size_t pos = func.find("enumeration =");
+  if(pos == std::string_view::npos)
+    throw;
+  return pos + 12 + 1;
+  }
+
+auto constexpr verify_offset() -> bool { return find_enumeration_offset() == initial_offset; }
+
+static_assert(verify_offset());
+#endif
+
 template<auto enumeration>
 constexpr auto b(n & res) noexcept
   {
-#if defined(__clang__) || defined(__GNUC__)
-  char const * const func{__PRETTY_FUNCTION__};
-#else
-  char const * const func{std::source_location::current().function_name()};
-#endif
+  char const * const func{f<enumeration>()};
   char const * end_of_name{func + initial_offset};
   char const * last_colon{end_of_name};
   for(; *end_of_name; ++end_of_name)
     if(*end_of_name == ':' || *end_of_name == ')') [[unlikely]]
       last_colon = end_of_name;
 
-  // if(last_colon != nullptr)
-  //   {
   res.data = last_colon + 1;
   res.size = size_t(end_of_name - res.data - 1);
-  return size_t(last_colon - func) + 1 + functions_args_offset;  // offset by 3 arg s
-  //   }
-  // else
-  //   {
-  //   res = {};
-  //   return 0u;
-  //   }
+  return size_t(last_colon - func) + 1;
   }
 
 template<auto enumeration>
 constexpr void e(n & res, s enum_beg) noexcept
   {
-#if defined(__clang__) || defined(__GNUC__)
-  char const * const func{__PRETTY_FUNCTION__};
-#else
-  char const * const func{std::source_location::current().function_name()};
-#endif
+  char const * const func{f<enumeration>()};
   char const * end_of_name{func + enum_beg};
   char const * enumeration_name{end_of_name};
   while(*end_of_name != end_of_enumeration_name)
@@ -194,27 +208,7 @@ constexpr void e(n & res, s enum_beg) noexcept
 namespace simple_enum
   {
 using meta_name = se::n;
-#if 0
-// DEBUG recursion
-template<bounded_enum enum_type, std::integral auto first, std::integral auto last, std::integral auto index>
-struct dig_enum_members
-  {
-  consteval static auto dig(std::array<mn_, last - first + 1> & meta) noexcept
-    {
-    enum_name_meta_constexpr<static_cast<enum_type>(index)>(meta[index - first] );
-    dig_enum_members<enum_type, first, last, static_cast<decltype(first)>(index - 1)>::dig(meta);
-    }
-  };
 
-template<bounded_enum enum_type, std::integral auto first, std::integral auto last>
-struct dig_enum_members<enum_type, first, last, first>
-  {
-  consteval static auto dig(std::array<mn_, last - first + 1> & meta) noexcept
-    {
-    enum_name_meta_constexpr<static_cast<enum_type>(first)>(meta[first - first] );
-    }
-  };
-#endif
 template<typename enum_type, std::integral auto first, std::size_t size, typename name_array, std::size_t... indices>
 constexpr void apply_meta_enum(name_array & meta, size_t enum_beg, std::index_sequence<indices...>)
   {

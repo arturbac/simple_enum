@@ -1,0 +1,131 @@
+C++ Standard: 202002
+Compiler: Clang 17.0.1
+Standard Library: libstdc++ 20230727
+auto se::f() [enumeration = (strong_typed)0]
+auto se::f() [enumeration = strong_typed::v1]
+auto se::f() [enumeration = (strong_untyped)0]
+auto se::f() [enumeration = strong_untyped::v1]
+auto se::f() [enumeration = (weak_untyped_e)0]
+auto se::f() [enumeration = v1]
+
+C++ Standard: 202002
+Compiler: Clang 16.0.0
+Standard Library: libstdc++ 20220819
+auto se::f() [enumeration = (strong_typed)0]
+auto se::f() [enumeration = strong_typed::v1]
+auto se::f() [enumeration = (strong_untyped)0]
+auto se::f() [enumeration = strong_untyped::v1]
+auto se::f() [enumeration = (weak_untyped_e)0]
+auto se::f() [enumeration = v1]
+
+C++ Standard: 202002
+Compiler: Clang 15.0.0
+Standard Library: libstdc++ 20220819
+auto se::f() [enumeration = (strong_typed)0]
+auto se::f() [enumeration = strong_typed::v1]
+auto se::f() [enumeration = (strong_untyped)0]
+auto se::f() [enumeration = strong_untyped::v1]
+auto se::f() [enumeration = (weak_untyped_e)0]
+auto se::f() [enumeration = v1]
+
+C++ Standard: 202002
+Compiler: Clang 14.0.0
+Standard Library: libstdc++ 20210728
+auto se::f() [enumeration = (strong_typed)0]
+auto se::f() [enumeration = strong_typed::v1]
+auto se::f() [enumeration = (strong_untyped)0]
+auto se::f() [enumeration = strong_untyped::v1]
+auto se::f() [enumeration = (weak_untyped_e)0]
+auto se::f() [enumeration = v1]
+
+C++ Standard: 202002
+Compiler: Clang 13.0.0
+Standard Library: libstdc++ 20210728
+auto se::f() [enumeration = (strong_typed)0]
+auto se::f() [enumeration = strong_typed::v1]
+auto se::f() [enumeration = (strong_untyped)0]
+auto se::f() [enumeration = strong_untyped::v1]
+auto se::f() [enumeration = (weak_untyped_e)0]
+auto se::f() [enumeration = v1]
+
+++ Standard: 202002
+Compiler: Clang 12.0.0
+Standard Library: libstdc++ 20210408
+auto se::f() [enumeration = 0]
+auto se::f() [enumeration = strong_typed::v1]
+auto se::f() [enumeration = 0]
+auto se::f() [enumeration = strong_untyped::v1]
+auto se::f() [enumeration = 0]
+auto se::f() [enumeration = v1]
+
+C++ Standard: 202002
+Compiler: Clang 11.0.0
+Standard Library: libstdc++ 20200723
+auto se::f() [enumeration = 0]
+auto se::f() [enumeration = strong_typed::v1]
+auto se::f() [enumeration = 0]
+auto se::f() [enumeration = strong_untyped::v1]
+auto se::f() [enumeration = 0]
+auto se::f() [enumeration = v1]
+
+C++ Standard: 202002
+Compiler: GCC 13.1.0
+Standard Library: libstdc++ 20230426
+constexpr auto se::f() [with auto enumeration = (strong_typed)0]
+constexpr auto se::f() [with auto enumeration = strong_typed::v1]
+constexpr auto se::f() [with auto enumeration = (strong_untyped)0]
+constexpr auto se::f() [with auto enumeration = strong_untyped::v1]
+constexpr auto se::f() [with auto enumeration = (weak_untyped_e)0]
+constexpr auto se::f() [with auto enumeration = v1]
+
+C++ Standard: 202002
+Compiler: GCC 12.1.0
+Standard Library: libstdc++ 20220506
+constexpr auto se::f() [with auto enumeration = (strong_typed)0]
+constexpr auto se::f() [with auto enumeration = strong_typed::v1]
+constexpr auto se::f() [with auto enumeration = (strong_untyped)0]
+constexpr auto se::f() [with auto enumeration = strong_untyped::v1]
+constexpr auto se::f() [with auto enumeration = (weak_untyped_e)0]
+constexpr auto se::f() [with auto enumeration = v1]
+
+C++ Standard: 202002
+Compiler: GCC 11.1.0
+Standard Library: libstdc++ 20210427
+constexpr auto se::f() [with auto enumeration = (strong_typed)0]
+constexpr auto se::f() [with auto enumeration = strong_typed::v1]
+constexpr auto se::f() [with auto enumeration = (strong_untyped)0]
+constexpr auto se::f() [with auto enumeration = strong_untyped::v1]
+constexpr auto se::f() [with auto enumeration = (weak_untyped_e)0]
+constexpr auto se::f() [with auto enumeration = v1]
+
+C++ Standard: 201709
+Compiler: GCC 10.1.0
+Standard Library: libstdc++ 20200507
+constexpr auto se::f() [with auto enumeration = (strong_typed)0]
+constexpr auto se::f() [with auto enumeration = strong_typed::v1]
+constexpr auto se::f() [with auto enumeration = (strong_untyped)0]
+constexpr auto se::f() [with auto enumeration = strong_untyped::v1]
+constexpr auto se::f() [with auto enumeration = (weak_untyped_e)0]
+constexpr auto se::f() [with auto enumeration = v1]
+
+#if 0
+// DEBUG recursion
+template<bounded_enum enum_type, std::integral auto first, std::integral auto last, std::integral auto index>
+struct dig_enum_members
+  {
+  consteval static auto dig(std::array<mn_, last - first + 1> & meta) noexcept
+    {
+    enum_name_meta_constexpr<static_cast<enum_type>(index)>(meta[index - first] );
+    dig_enum_members<enum_type, first, last, static_cast<decltype(first)>(index - 1)>::dig(meta);
+    }
+  };
+
+template<bounded_enum enum_type, std::integral auto first, std::integral auto last>
+struct dig_enum_members<enum_type, first, last, first>
+  {
+  consteval static auto dig(std::array<mn_, last - first + 1> & meta) noexcept
+    {
+    enum_name_meta_constexpr<static_cast<enum_type>(first)>(meta[first - first] );
+    }
+  };
+#endif
