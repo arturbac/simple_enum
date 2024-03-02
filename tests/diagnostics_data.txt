@@ -1,3 +1,13 @@
+C++ Standard: 199711
+Compiler: MSVC 193632537
+Standard Library: MSVC STL 143
+auto __cdecl se::f<(enum strong_typed)0x0>(void) noexcept
+auto __cdecl se::f<strong_typed::v1>(void) noexcept
+auto __cdecl se::f<(enum strong_untyped)0x0>(void) noexcept
+auto __cdecl se::f<strong_untyped::v1>(void) noexcept
+auto __cdecl se::f<(enum weak_untyped_e)0x0>(void) noexcept
+auto __cdecl se::f<v1>(void) noexcept
+
 C++ Standard: 202002
 Compiler: Clang 17.0.1
 Standard Library: libstdc++ 20230727

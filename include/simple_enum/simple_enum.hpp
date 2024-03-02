@@ -150,7 +150,9 @@ inline constexpr auto initial_offset{46 + 1};
 inline constexpr char end_of_enumeration_name = ']';
 
 #elif defined(_MSC_VER)
-#error "msvc support is under development"
+// index of the < character in the given line "auto __cdecl se::f<" is 18
+inline constexpr auto initial_offset{18 + 1};
+inline constexpr char end_of_enumeration_name = '>';
 #else
 #error "supply information to author about Your compiler"
 #endif
@@ -165,10 +167,17 @@ enum struct verify_ennum_
 constexpr size_t find_enumeration_offset()
   {
   auto const func{std::string_view{f<verify_ennum_::v1>()}};
+#if defined(_MSC_VER)
+  size_t pos = func.find('<');
+  if(pos == std::string_view::npos)
+    throw;
+  return pos + 1;
+#else
   size_t pos = func.find("enumeration =");
   if(pos == std::string_view::npos)
     throw;
   return pos + 12 + 1;
+#endif
   }
 
 auto constexpr verify_offset() -> bool { return find_enumeration_offset() == initial_offset; }
