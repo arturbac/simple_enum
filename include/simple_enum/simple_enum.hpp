@@ -64,6 +64,8 @@ struct bounds_info
   bool upper_bound;
   };
 
+///\brief info class is intended to custom specialize by users if they are unable to modify enum and wish to add bound
+///info
 template<typename enumeration, bounds_info>
 struct info
   {
