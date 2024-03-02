@@ -1,6 +1,15 @@
 #include "simple_enum/simple_enum.hpp"
 #include <boost/ut.hpp>
 
+enum weak_global_untyped_e
+  {
+  v1 = 1,
+  v2,
+  v3,
+  first = v1,
+  last = v3
+  };
+
 namespace simple_enum
   {
 namespace ut = boost::ut;
@@ -122,8 +131,8 @@ template<auto enumeration>
 constexpr auto se_view() noexcept -> std::string_view
   {
   meta_name value{};
-  size_t beg{se::se<enumeration>(value, 0u)};
-  se::se<enumeration>(value, beg);
+  size_t beg{se::b<enumeration>(value, 0u)};
+  se::e<enumeration>(value, beg);
   return std::string_view{value.data, value.size};
   }
 
@@ -133,6 +142,8 @@ static ut::suite<"simple_enum"> _ = []
 
   "test se meta name cut"_test = []
   {
+    ut::expect(se_view<weak_global_untyped_e::v1>() == "v1");
+
     ut::expect(se_view<strong_typed::v1>() == "v1");
     ut::expect(se_view<strong_typed::v2>() == "v2");
     ut::expect(se_view<strong_typed::v3>() == "v3");

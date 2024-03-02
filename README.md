@@ -32,7 +32,7 @@ There is no runtime cost at all with getting enum_name for runtime variable, the
 But computation at compile time is limitted to number of elements in a range thanks to bounded_enum concept which requires from users to declare first,last in enum.
 There are otpmisitations related to  enum name substraction so one loop is avoided, and after first enumeration parsed rest of enumerations are  parsed with reduced string literal range.
 
-How v0.0.1 compares with Instantiation time:
+How v0.1.1 compares with Instantiation time:
 simple enum for bounded enums to magic_enum::enum_name and reflect::enum_name
 clang 17 -ftime-trace on AMD Ryzen 9 5900X Linux desktop 6.6.11-gentoo-dist
 
@@ -49,9 +49,9 @@ clang 17 -ftime-trace on AMD Ryzen 9 5900X Linux desktop 6.6.11-gentoo-dist
     <td rowspan="3">lorem_ipsum_long</td>
     <td>simple_enum</td>
     <td rowspan="3">104</td>
-    <td>16,957 ms</td>
+    <td>12,270 ms</td>
     <td></td>
-    <td>16,957 ms</td>
+    <td>12,270 ms</td>
   </tr>
   <tr>
     <td>magic_enum</td>
@@ -69,9 +69,9 @@ clang 17 -ftime-trace on AMD Ryzen 9 5900X Linux desktop 6.6.11-gentoo-dist
     <td rowspan="3">E</td>
     <td>simple_enum</td>
     <td rowspan="3">15</td>
-    <td>3,397 ms</td>
+    <td>2,786 ms</td>
     <td></td>
-    <td>3,397 ms</td>
+    <td>2,786 ms</td>
   </tr>
   <tr>
     <td>magic_enum</td>
@@ -89,9 +89,9 @@ clang 17 -ftime-trace on AMD Ryzen 9 5900X Linux desktop 6.6.11-gentoo-dist
     <td rowspan="3">lorem_ipsum_short</td>
     <td>simple_enum</td>
     <td rowspan="3">40</td>
-    <td>7,165 ms</td>
+    <td>5,421 ms</td>
     <td></td>
-    <td>7,165 ms</td>
+    <td>5,421 ms</td>
   </tr>
   <tr>
     <td>magic_enum</td>
@@ -109,9 +109,9 @@ clang 17 -ftime-trace on AMD Ryzen 9 5900X Linux desktop 6.6.11-gentoo-dist
     <td rowspan="3">strong_untyped</td>
     <td>simple_enum</td>
     <td rowspan="3">3</td>
-    <td>1,048 ms</td>
+    <td>1,001 ms</td>
     <td></td>
-    <td>1,048 ms</td>
+    <td>1,001 ms</td>
   </tr>
   <tr>
     <td>magic_enum</td>

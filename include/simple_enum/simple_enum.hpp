@@ -43,31 +43,38 @@ concept bounded_enum = requires(T e)
 // this namespace is for reducing time crunching source location
 namespace se
   {
-struct mn
+struct n
   {
   char const * data;
   size_t size;
   };
 
+using s = size_t;
+using v = void;
+
 template<auto enumeration>
-constexpr auto se(mn & res, size_t enum_beg) noexcept -> size_t
+constexpr s b(n & res, s enum_beg) noexcept
   {
 #if defined(__clang__) || defined(__GNUC__)
   char const * const func{__PRETTY_FUNCTION__};
 #else
   char const * const func{std::source_location::current().function_name()};
 #endif
-  char const * beg{func + enum_beg};
+  char const * end_of_name{func + enum_beg};
   char const * last_colon{};
-  for(; *beg; ++beg)
-    if(*beg == ':') [[unlikely]]
-      last_colon = beg;
+  for(; *end_of_name; ++end_of_name)
+    {
+    if(*end_of_name == ':') [[unlikely]]
+      last_colon = end_of_name;
+    if(*end_of_name == '=') [[unlikely]]
+      last_colon = ++end_of_name;
+    }
 
   if(last_colon != nullptr)
     {
     res.data = last_colon + 1;
-    res.size = size_t(beg - res.data - 1);
-    return size_t(last_colon - func);
+    res.size = size_t(end_of_name - res.data - 1);
+    return size_t(last_colon - func) + 1;
     }
   else
     {
@@ -75,11 +82,28 @@ constexpr auto se(mn & res, size_t enum_beg) noexcept -> size_t
     return 0u;
     }
   }
+
+template<auto enumeration>
+constexpr v e(n & res, s enum_beg) noexcept
+  {
+#if defined(__clang__) || defined(__GNUC__)
+  char const * const func{__PRETTY_FUNCTION__};
+#else
+  char const * const func{std::source_location::current().function_name()};
+#endif
+  char const * end_of_name{func + enum_beg};
+  char const * enumeration_name{end_of_name};
+  while(*end_of_name)
+    ++end_of_name;  // for other enumerations we only need to find end of string
+
+  res.data = enumeration_name;
+  res.size = size_t(end_of_name - res.data - 1);
+  }
   }  // namespace se
 
 namespace simple_enum
   {
-using meta_name = se::mn;
+using meta_name = se::n;
 #if 0
 // DEBUG recursion
 template<bounded_enum enum_type, std::integral auto first, std::integral auto last, std::integral auto index>
@@ -105,14 +129,14 @@ template<typename enum_type, std::integral auto first, std::size_t size, typenam
 constexpr void apply_meta_enum(name_array & meta, size_t enum_beg, std::index_sequence<indices...>)
   {
   // Unpack and call enum_name_meta_constexpr for each index, using fold expression
-  (..., (se::se<static_cast<enum_type>(first + indices)>(meta[indices], enum_beg)));
+  (..., (se::e<static_cast<enum_type>(first + indices)>(meta[indices], enum_beg)));
   }
 
 template<typename enum_type, std::integral auto first, std::integral auto last, std::size_t size, typename name_array>
 constexpr void fold_array(name_array & meta)
   {
   static_assert(size == static_cast<std::size_t>(last - first + 1), "size must match the number of enum values");
-  size_t enum_beg{se::se<static_cast<enum_type>(first)>(meta[0], 0u)};
+  size_t enum_beg{se::b<static_cast<enum_type>(first)>(meta[0], 0u)};
   apply_meta_enum<enum_type, first, size>(meta, enum_beg, std::make_index_sequence<size>{});
   }
 
