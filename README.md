@@ -1,5 +1,7 @@
 ![MIT](https://img.shields.io/badge/license-MIT-blue.svg) [![CI](https://github.com/arturbac/simple_enum/actions/workflows/ci.yml/badge.svg)](https://github.com/arturbac/simple_enum/actions/workflows/ci.yml)
-![C++](https://img.shields.io/badge/C%2B%2B-20%20%7C%2023-blue.svg)
+![C++](https://img.shields.io/badge/C%2B%2B-20%20%7C%2023-blue.svg) ![gcc version](https://img.shields.io/badge/gcc-%3E%3D10-green.svg) ![clang version](https://img.shields.io/badge/clang-%3E%3D14-blue.svg)
+
+
 
 
 # simple_enum
