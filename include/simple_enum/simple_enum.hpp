@@ -10,7 +10,7 @@
 #endif
 #include <array>
 
-#define SIMPLE_ENUM_NAME_VERSION "0.2.2"
+#define SIMPLE_ENUM_NAME_VERSION "0.3.0"
 
 #pragma push_macro("static_constexpr")
 
@@ -20,7 +20,7 @@
 #define static_constexpr
 #endif
 
-namespace simple_enum::inline v0_2
+namespace simple_enum::inline v0_3
   {
 template<typename Enum>
 constexpr auto to_underlying(Enum e) noexcept -> std::underlying_type_t<Enum>
@@ -111,7 +111,7 @@ namespace detail
     static constexpr auto last_index = to_underlying(info_t::last);
     };
   }  // namespace detail
-  }  // namespace simple_enum::inline v0_2
+  }  // namespace simple_enum::inline v0_3
 
 // this namespace is for reducing time crunching source location
 namespace se
@@ -177,7 +177,7 @@ static_assert(verify_offset());
 #endif
   }  // namespace se
 
-namespace simple_enum::inline v0_2
+namespace simple_enum::inline v0_3
   {
 struct meta_name
   {
@@ -256,6 +256,6 @@ constexpr auto enum_name(enum_type value) noexcept -> std::string_view
   else
     return {""};  // return empty but null terminated
   }
-  }  // namespace simple_enum::inline v0_2
+  }  // namespace simple_enum::inline v0_3
 
 #pragma pop_macro("static_constexpr")
