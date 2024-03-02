@@ -1,12 +1,9 @@
 ![MIT](https://img.shields.io/badge/license-MIT-blue.svg) [![CI](https://github.com/arturbac/simple_enum/actions/workflows/ci.yml/badge.svg)](https://github.com/arturbac/simple_enum/actions/workflows/ci.yml)
 ![C++](https://img.shields.io/badge/C%2B%2B-20%20%7C%2023-blue.svg) ![gcc version](https://img.shields.io/badge/gcc-%3E%3D10-green.svg) ![clang version](https://img.shields.io/badge/clang-%3E%3D14-blue.svg)
 
-
-
-
 # simple_enum
 
-# features
+## Features
 
 This project offers efficien enum_name
 ```cpp
@@ -18,16 +15,23 @@ template<enum_concept enum_type>
 constexpr auto enum_name(enum_type value) noexcept -> std::string_view;
 
 ```
+## Motivation
 
-Motivation to start this project was lack of efficient meta enum_name available.
-This is a prof of concept that enum_name can be efficient when enum is bounded so short instantiation can be achieved and cost can be proportional to number of enumerations in enum.
+The inception of this project was driven by the noticeable absence of an efficient `enum_name` meta-programming capability in existing solutions. This initiative showcases a proof of concept that `enum_name` can achieve efficiency when the enumeration is bounded. This allows for swift instantiation processes and ensures that the computational cost is directly proportional to the number of enumerations within an enum.
 
-simple_enum is under active development version checked only on clang 17 and gcc 13, msvc support is coming soon.
+# Current Development Status
 
-There is no runtime cost at all with getting enum_name for runtime variable, the same as in magic_enum.
-But computation at compile time is limitted to number of elements in a range thanks to bounded_enum concept if declared for enum type. Unbounded enums are supported too with assumption of simple_enum::default_unbounded_uuper_range which can be ovveriden by user.
-There are optimizations related to enum name subtraction, only one loop is performed, and after first enumeration parsed rest of enumerations are parsed with reduced string literal range.
-# example
+`simple_enum` is under active development on **Clang 17** and **GCC 13** with support down to Clang 14 and GCC 10. Support for **MSVC** is anticipated to be introduced shortly.
+
+## Features
+
+- **Zero Runtime Cost**: Retrieving `enum_name` for a runtime variable incurs no runtime overhead, akin to the capabilities provided by `magic_enum`.
+- **Compile-time Efficiency**: Compile-time computation is confined to the number of elements within a range. This efficiency is made possible through the `bounded_enum` concept when declared for an enum type.
+- **Support for Unbounded Enums**: While the library is optimized for bounded enums, it also accommodates unbounded enums. By default, it utilizes `simple_enum::default_unbounded_upper_range`, which users can override according to their requirements.
+- **Optimized Enum Name Deduction**: The library employs a strategic optimization for enum name deduction, ensuring that only one loop is executed for the first enumeration. Subsequent enumerations are parsed with a minimized string literal range, further enhancing the efficiency of the process.
+
+
+## Examples
 ```cpp
 enum struct enum_bounded
   {
@@ -80,7 +84,7 @@ struct simple_enum::info<std::memory_order>
   #include <simple_enum/simple_enum.hpp>
   
 ```
-# performance 
+## Performance 
 How v0.2.0 compares with Instantiation time:
 simple enum for bounded enums to magic_enum::enum_name v0.9.5 and reflect::enum_name main/02.02.2024
 clang 17 -ftime-trace on AMD Ryzen 9 5900X Linux desktop 6.6.11-gentoo-dist
