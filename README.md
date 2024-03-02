@@ -1,5 +1,5 @@
 ![MIT](https://img.shields.io/badge/license-MIT-blue.svg) [![CI](https://github.com/arturbac/simple_enum/actions/workflows/ci.yml/badge.svg)](https://github.com/arturbac/simple_enum/actions/workflows/ci.yml)
-![C++](https://img.shields.io/badge/C%2B%2B-20%20%7C%2023-blue.svg) ![Version](https://badge.fury.io/gh/arturbac%2Fsimple_enum.svg)
+![C++](https://img.shields.io/badge/C%2B%2B-20%20%7C%2023-blue.svg)
 
 
 # simple_enum
