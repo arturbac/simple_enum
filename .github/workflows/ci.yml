@@ -8,10 +8,20 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y cmake ninja-build gcc g++ libboost-all-dev
-    - name: Configure CMake
-      run: cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=Release -G "Ninja"
-    - name: Build
-      run: cmake --build ${{github.workspace}}/build
-    - name: Test
-      run: ctest --preset Test
+      run: sudo apt-get update && sudo apt-get install -y cmake ninja-build gcc g++ clang
+
+    - name: Configure CMake with gcc
+      run: cmake -B ${{github.workspace}}/build/gcc -DCMAKE_BUILD_TYPE=Release -G "Ninja" -DCMAKE_CXX_COMPILER=g++
+    - name: Build with gcc
+      run: cmake --build ${{github.workspace}}/build/gcc
+    - name: Test with gcc
+      working-directory: ${{github.workspace}}/build/gcc
+      run: ctest
+
+    - name: Configure CMake with clang
+      run: cmake -B ${{github.workspace}}/build/clang -DCMAKE_BUILD_TYPE=Release -G "Ninja" -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang
+    - name: Build with clang
+      run: cmake --build ${{github.workspace}}/build/clang
+    - name: Test with clang
+      working-directory: ${{github.workspace}}/build/clang
+      run: ctest
