@@ -57,7 +57,9 @@ if(PROJECT_IS_TOP_LEVEL)
   add_subdirectory(examples)
 
   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
-    add_subdirectory(time_trace)
+    if(SIMPLE_ENUM_TIME_TRACE)
+      add_subdirectory(time_trace)
+    endif()
   endif()
   execute_process(
     COMMAND ${CMAKE_COMMAND} --list-presets 

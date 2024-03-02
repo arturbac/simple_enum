@@ -10,7 +10,7 @@
 #endif
 #include <array>
 
-#define SIMPLE_ENUM_NAME_VERSION "0.3.0"
+#define SIMPLE_ENUM_NAME_VERSION "0.3.1"
 
 #pragma push_macro("static_constexpr")
 
