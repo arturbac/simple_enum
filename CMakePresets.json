@@ -14,10 +14,26 @@
         "CMAKE_CXX_COMPILER": "clang++"
       }
     },
+      {
+      "name": "cfg-gcc",
+      "generator": "Ninja",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "g++"
+      }
+    },
     {
       "name": "clnag-debug",
-      "description": "Configure for debug build",
+      "description": "Configure for clang debug build",
       "inherits": [ "cfg-clang" ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "gcc-debug",
+      "description": "Configure for gcc debug build",
+      "inherits": [ "cfg-gcc" ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
@@ -48,8 +64,9 @@
       "inherits": [ "cfg-clang" ],
       "binaryDir": "${sourceDir}/build/release-test-asan",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
-        "CMAKE_CXX_FLAGS": "-fsanitize=address"
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_FLAGS" : "-ggdb -fvisibility=default -fno-omit-frame-pointer -fsanitize=address -fsanitize-address-use-after-scope -fsanitize=undefined",
+        "CMAKE_EXE_LINKER_FLAGS" : "-fsanitize=address -fsanitize=undefined"
       }
     }
   ],

@@ -51,14 +51,33 @@ struct n
 
 using s = size_t;
 using v = void;
-// 0x55581cb6c620 "s se::b(n &) [enumeration = v1]"
-// 0x5571fe282666 "s se::b(n &) [enumeration = simple_enum::strong_typed::v1]"
-// 0x5571fe2826e2 "s se::b(n &) [enumeration = simple_enum::strong_typed::v2]"
-// 0x55c1ac304640 "v se::e(n &, s) [enumeration = v1]"
-inline constexpr auto initial_offset{std::char_traits<char>::length("s se::b(n &) [enumeration =")};
+// 0x55581cb6c620 "void se::b(n &) [enumeration = v1]"
+// 0x5571fe282666 "void se::b(n &) [enumeration = simple_enum::strong_typed::v1]"
+// 0x5571fe2826e2 "void se::b(n &) [enumeration = simple_enum::strong_typed::v2]"
+// 0x55c1ac304640 "auto se::e(n &, auto) [enumeration = v1]"
+// gcc
+// 0x55cdfbcaa398 "constexpr auto se::b(n&) [with auto enumeration = v1]"
+// 0x55f0d76350d8 "constexpr void se::e(n&, s) [with auto enumeration = v1; s = long unsigned int]"
+
+// constexpr auto se::b(n&) [with auto enumeration = simple_enum::strong_typed::v1]
+// constexpr void se::e(n&, s) [with auto enumeration = simple_enum::strong_typed::v1; s = long unsigned int]
+
+#if defined(__clang__)
+inline constexpr auto initial_offset{std::char_traits<char>::length("auto se::b(n &) [enumeration =")};
+inline constexpr auto end_of_enumeration_name = ']';
+inline constexpr auto functions_args_offset = 3u;
+#elif defined(__GNUC__)
+inline constexpr auto initial_offset{std::char_traits<char>::length("constexpr auto se::b(n&) [with auto enumeration =")
+};
+inline constexpr char end_of_enumeration_name = ';';
+inline constexpr auto functions_args_offset = 3u;
+#elif defined(_MSC_VER)
+#error "msvc support is under development"
+#error "supply information to author about Your compiler"
+#endif
 
 template<auto enumeration>
-constexpr s b(n & res) noexcept
+constexpr auto b(n & res) noexcept
   {
 #if defined(__clang__) || defined(__GNUC__)
   char const * const func{__PRETTY_FUNCTION__};
@@ -75,7 +94,7 @@ constexpr s b(n & res) noexcept
   //   {
   res.data = last_colon + 1;
   res.size = size_t(end_of_name - res.data - 1);
-  return size_t(last_colon - func) + 1 + 3;  // offset by 3 arg s
+  return size_t(last_colon - func) + 1 + functions_args_offset;  // offset by 3 arg s
   //   }
   // else
   //   {
@@ -85,7 +104,7 @@ constexpr s b(n & res) noexcept
   }
 
 template<auto enumeration>
-constexpr v e(n & res, s enum_beg) noexcept
+constexpr void e(n & res, s enum_beg) noexcept
   {
 #if defined(__clang__) || defined(__GNUC__)
   char const * const func{__PRETTY_FUNCTION__};
@@ -94,11 +113,11 @@ constexpr v e(n & res, s enum_beg) noexcept
 #endif
   char const * end_of_name{func + enum_beg};
   char const * enumeration_name{end_of_name};
-  while(*end_of_name)
+  while(*end_of_name != end_of_enumeration_name)
     ++end_of_name;  // for other enumerations we only need to find end of string
 
   res.data = enumeration_name;
-  res.size = size_t(end_of_name - res.data - 1);
+  res.size = size_t(end_of_name - res.data);
   }
   }  // namespace se
 

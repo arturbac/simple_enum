@@ -10,6 +10,32 @@ enum weak_global_untyped_e
   last = v3
   };
 
+namespace se
+  {
+template<auto enumeration>
+constexpr auto diag_b(n & res) noexcept
+  {
+#if defined(__clang__) || defined(__GNUC__)
+  char const * const func{__PRETTY_FUNCTION__};
+#else
+  char const * const func{std::source_location::current().function_name()};
+#endif
+  printf("%s\n", func);
+  return std::string_view{func}.size();
+  }
+
+template<auto enumeration>
+constexpr void diag_e(n & res, s enum_beg) noexcept
+  {
+#if defined(__clang__) || defined(__GNUC__)
+  char const * const func{__PRETTY_FUNCTION__};
+#else
+  char const * const func{std::source_location::current().function_name()};
+#endif
+  printf("%s\n", func);
+  }
+  }  // namespace se
+
 namespace simple_enum
   {
 namespace ut = boost::ut;
@@ -133,6 +159,14 @@ enum struct sparse_untyped
   first = v1,
   last = v3
   };
+enum struct sparse_offseted_untyped
+  {
+  unknown = -1,
+  v1 = 1,
+  v3 = 3,
+  first = unknown,  // simulate counting below the range
+  last = v3
+  };
 
 // invalid
 // auto fast_enum_name_raw() [enumeration = (example_enum_e)5]
@@ -153,102 +187,106 @@ constexpr auto se_view() noexcept -> std::string_view
 
 static ut::suite<"simple_enum"> _ = []
 {
-  ut::expect(se_view<static_cast<sparse_untyped>(2)>() == "2");
-  ut::expect(enum_name(static_cast<sparse_untyped>(2)) == "2");
-  using namespace ut;
-  "test variations"_test = []
   {
-    ut::expect(enum_name(one_elem_untyped::v1) == "v1");
-    ut::expect(enum_name(static_cast<one_elem_untyped>(2)) == "");
-  };
+  meta_name value{};
+  se::diag_b<strong_typed::v1>(value);
+  se::diag_e<strong_typed::v1>(value, 0u);
+  }
+using namespace ut;
+// "test variations"_test = []
+// {
+//   ut::expect(enum_name(one_elem_untyped::v1) == "v1");
+//   ut::expect(enum_name(static_cast<one_elem_untyped>(2)) == "");
+//   ut::expect(se_view<static_cast<sparse_untyped>(2)>() == "2");
+//   ut::expect(enum_name(static_cast<sparse_untyped>(2)) == "2");
+// ut::expect(enum_name(sparse_offseted_untyped::unknown) == "unknown");
+// ut::expect(enum_name(static_cast<sparse_offseted_untyped>(0)) == "0");
+//
+// };
 
-  "test se meta name cut"_test = []
-  {
-    ut::expect(se_view<weak_global_untyped_e::v1>() == "v1");
-    ut::expect(
-      se_view<static_cast<one_elem_untyped>(2)>() == "2"
-    );  // it is out of range or on sparse enum just value when used directly
-    ut::expect(se_view<strong_typed::v1>() == "v1");
-    ut::expect(se_view<strong_typed::v2>() == "v2");
-    ut::expect(se_view<strong_typed::v3>() == "v3");
-    ut::expect(se_view<strong_typed::last>() == "v3");
+"test se meta name cut"_test = []
+{
+  ut::expect(se_view<weak_global_untyped_e::v1>() == "v1");
+  // it is out of range or on sparse enum just value when used directly
+  ut::expect(se_view<static_cast<one_elem_untyped>(2)>() == "2");
 
-    ut::expect(se_view<strong_untyped::v1>() == "v1");
-    ut::expect(se_view<strong_untyped::v2>() == "v2");
-    ut::expect(se_view<strong_untyped::v3>() == "v3");
+  ut::expect(se_view<strong_typed::v1>() == "v1");
+  ut::expect(se_view<strong_typed::v2>() == "v2");
+  ut::expect(se_view<strong_typed::v3>() == "v3");
+  ut::expect(se_view<strong_typed::last>() == "v3");
 
-    ut::expect(se_view<weak_typed_e::v1>() == "v1");
-    ut::expect(se_view<weak_typed_e::v2>() == "v2");
-    ut::expect(se_view<weak_typed_e::v3>() == "v3");
+  ut::expect(se_view<strong_untyped::v1>() == "v1");
+  ut::expect(se_view<strong_untyped::v2>() == "v2");
+  ut::expect(se_view<strong_untyped::v3>() == "v3");
 
-    ut::expect(se_view<v1>() == "v1");
-    ut::expect(se_view<v2>() == "v2");
-    ut::expect(se_view<v3>() == "v3");
+  ut::expect(se_view<weak_typed_e::v1>() == "v1");
+  ut::expect(se_view<weak_typed_e::v2>() == "v2");
+  ut::expect(se_view<weak_typed_e::v3>() == "v3");
 
-    ut::expect(se_view<test::strong_typed_2_e::v1>() == "v1");
-    ut::expect(se_view<test::strong_typed_2_e::v2>() == "v2");
-    ut::expect(se_view<test::strong_typed_2_e::v3>() == "v3");
+  ut::expect(se_view<v1>() == "v1");
+  ut::expect(se_view<v2>() == "v2");
+  ut::expect(se_view<v3>() == "v3");
 
-    ut::expect(se_view<test::subnamespace::example_3_e::v1>() == "v1");
-    ut::expect(se_view<test::subnamespace::example_3_e::v2>() == "v2");
-    ut::expect(se_view<test::subnamespace::example_3_e::v3>() == "v3");
+  ut::expect(se_view<test::strong_typed_2_e::v1>() == "v1");
+  ut::expect(se_view<test::strong_typed_2_e::v2>() == "v2");
+  ut::expect(se_view<test::strong_typed_2_e::v3>() == "v3");
 
-    ut::expect(se_view<test::subnamespace::detail::example_4_e::v1>() == "v1");
-    ut::expect(se_view<test::subnamespace::detail::example_4_e::v2>() == "v2");
-    ut::expect(se_view<test::subnamespace::detail::example_4_e::v3>() == "v3");
+  ut::expect(se_view<test::subnamespace::example_3_e::v1>() == "v1");
+  ut::expect(se_view<test::subnamespace::example_3_e::v2>() == "v2");
+  ut::expect(se_view<test::subnamespace::example_3_e::v3>() == "v3");
 
-    ut::expect(se_view<test::subnamespace::example_5_e::v1>() == "v1");
-    ut::expect(se_view<test::subnamespace::example_5_e::v2>() == "v2");
-    ut::expect(se_view<test::subnamespace::example_5_e::v3>() == "v3");
+  ut::expect(se_view<test::subnamespace::detail::example_4_e::v1>() == "v1");
+  ut::expect(se_view<test::subnamespace::detail::example_4_e::v2>() == "v2");
+  ut::expect(se_view<test::subnamespace::detail::example_4_e::v3>() == "v3");
 
-    ut::expect(se_view<test::subnamespace::weak_typed_5_e::v1>() == "v1");
-    ut::expect(se_view<test::subnamespace::weak_typed_5_e::v2>() == "v2");
-    ut::expect(se_view<test::subnamespace::weak_typed_5_e::v3>() == "v3");
-  };
-  "test enum name"_test = []
-  {
-    ut::expect(enum_name(weak_global_untyped_e::v1) == "v1");
+  ut::expect(se_view<test::subnamespace::example_5_e::v1>() == "v1");
+  ut::expect(se_view<test::subnamespace::example_5_e::v2>() == "v2");
+  ut::expect(se_view<test::subnamespace::example_5_e::v3>() == "v3");
 
-    ut::expect(enum_name(strong_typed::v1) == "v1");
-    ut::expect(enum_name(strong_typed::v2) == "v2");
-    ut::expect(enum_name(strong_typed::v3) == "v3");
+  ut::expect(se_view<test::subnamespace::weak_typed_5_e::v1>() == "v1");
+  ut::expect(se_view<test::subnamespace::weak_typed_5_e::v2>() == "v2");
+  ut::expect(se_view<test::subnamespace::weak_typed_5_e::v3>() == "v3");
+};
+"test enum name"_test = []
+{
+  ut::expect(enum_name(weak_global_untyped_e::v1) == "v1");
 
-    ut::expect(enum_name(strong_untyped::v1) == "v1");
-    ut::expect(enum_name(strong_untyped::v2) == "v2");
-    ut::expect(enum_name(strong_untyped::v3) == "v3");
+  ut::expect(enum_name(strong_typed::v1) == "v1");
+  ut::expect(enum_name(strong_typed::v2) == "v2");
+  ut::expect(enum_name(strong_typed::v3) == "v3");
 
-    ut::expect(enum_name(weak_typed_e::v1) == "v1");
-    ut::expect(enum_name(weak_typed_e::v2) == "v2");
-    ut::expect(enum_name(weak_typed_e::v3) == "v3");
+  ut::expect(enum_name(strong_untyped::v1) == "v1");
+  ut::expect(enum_name(strong_untyped::v2) == "v2");
+  ut::expect(enum_name(strong_untyped::v3) == "v3");
 
-    ut::expect(enum_name(v1) == "v1");
-    ut::expect(enum_name(v2) == "v2");
-    ut::expect(enum_name(v3) == "v3");
+  ut::expect(enum_name(weak_typed_e::v1) == "v1");
+  ut::expect(enum_name(weak_typed_e::v2) == "v2");
+  ut::expect(enum_name(weak_typed_e::v3) == "v3");
 
-    ut::expect(enum_name(test::strong_typed_2_e::v1) == "v1");
-    ut::expect(enum_name(test::strong_typed_2_e::v2) == "v2");
-    ut::expect(enum_name(test::strong_typed_2_e::v3) == "v3");
+  ut::expect(enum_name(v1) == "v1");
+  ut::expect(enum_name(v2) == "v2");
+  ut::expect(enum_name(v3) == "v3");
 
-    ut::expect(enum_name(test::subnamespace::example_3_e::v1) == "v1");
-    ut::expect(enum_name(test::subnamespace::example_3_e::v2) == "v2");
-    ut::expect(enum_name(test::subnamespace::example_3_e::v3) == "v3");
+  ut::expect(enum_name(test::strong_typed_2_e::v1) == "v1");
+  ut::expect(enum_name(test::strong_typed_2_e::v2) == "v2");
+  ut::expect(enum_name(test::strong_typed_2_e::v3) == "v3");
 
-    ut::expect(enum_name(test::subnamespace::detail::example_4_e::v1) == "v1");
-    ut::expect(enum_name(test::subnamespace::detail::example_4_e::v2) == "v2");
-    ut::expect(enum_name(test::subnamespace::detail::example_4_e::v3) == "v3");
+  ut::expect(enum_name(test::subnamespace::example_3_e::v1) == "v1");
+  ut::expect(enum_name(test::subnamespace::example_3_e::v2) == "v2");
+  ut::expect(enum_name(test::subnamespace::example_3_e::v3) == "v3");
 
-    ut::expect(enum_name(test::subnamespace::example_5_e::v1) == "v1");
-    ut::expect(enum_name(test::subnamespace::example_5_e::v2) == "v2");
-    ut::expect(enum_name(test::subnamespace::example_5_e::v3) == "v3");
-    ut::expect(enum_name(test::subnamespace::v1) == "v1");
-    ut::expect(enum_name(test::subnamespace::v2) == "v2");
-    ut::expect(enum_name(test::subnamespace::v3) == "v3");
-  };
+  ut::expect(enum_name(test::subnamespace::detail::example_4_e::v1) == "v1");
+  ut::expect(enum_name(test::subnamespace::detail::example_4_e::v2) == "v2");
+  ut::expect(enum_name(test::subnamespace::detail::example_4_e::v3) == "v3");
+
+  ut::expect(enum_name(test::subnamespace::example_5_e::v1) == "v1");
+  ut::expect(enum_name(test::subnamespace::example_5_e::v2) == "v2");
+  ut::expect(enum_name(test::subnamespace::example_5_e::v3) == "v3");
+  ut::expect(enum_name(test::subnamespace::v1) == "v1");
+  ut::expect(enum_name(test::subnamespace::v2) == "v2");
+  ut::expect(enum_name(test::subnamespace::v3) == "v3");
+};
 };
   }  // namespace simple_enum
 
-int main()
-  {
-  auto p = __builtin_FUNCTION();
-  auto e = __PRETTY_FUNCTION__;
-  }
+int main() {}

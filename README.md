@@ -28,6 +28,8 @@ constexpr auto to_underlying(Enum e) noexcept -> std::underlying_type_t<Enum>
 Prof of concept for simple enum_name that bounded enums can be used with enum_name with short instantiation and cost can be proportional
 to number of enumerations in enum
 
+simple_enum is under active development version checked only on clang and gcc, msvc support is coming soon.
+
 There is no runtime cost at all with getting enum_name for runtime variable, the same as in magic_enum.
 But computation at compile time is limitted to number of elements in a range thanks to bounded_enum concept which requires from users to declare first,last in enum.
 There are otpmisitations related to  enum name substraction so one loop is avoided, and after first enumeration parsed rest of enumerations are  parsed with reduced string literal range.
@@ -132,8 +134,6 @@ clang 17 -ftime-trace on AMD Ryzen 9 5900X Linux desktop 6.6.11-gentoo-dist
 
 
 *reflect is not fully comparable as part of calculations are moved to runtime and have to be paid at each enum_name call, so in table included is code generation time which is not present for simple and magic.
-
-this is development version checked only on clang, gcc and msvc support is coming.
 
 screen for simple_enum is from ver 0.0.1 , very early so timing is now much better as in table.
 ![obraz](https://github.com/arturbac/simple_enum/assets/14975842/b2675b3a-491f-49e5-a507-5693d729e06b)

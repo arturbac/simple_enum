@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.21) # Use the latest CMake version you have confirmed supports all features you need, 3.21 as a placeholder
-project(simple_enum VERSION 0.1.2 LANGUAGES CXX)
+project(simple_enum VERSION 0.2.0 LANGUAGES CXX)
 
 # Specify the C++ standard
 set(CMAKE_CXX_STANDARD 20)
