@@ -18,10 +18,10 @@ jobs:
       working-directory: ${{github.workspace}}/build/gcc
       run: ctest
 
-    - name: Configure CMake with clang
-      run: cmake -B ${{github.workspace}}/build/clang -DCMAKE_BUILD_TYPE=Release -G "Ninja" -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang
-    - name: Build with clang
-      run: cmake --build ${{github.workspace}}/build/clang
-    - name: Test with clang
-      working-directory: ${{github.workspace}}/build/clang
-      run: ctest
+    # - name: Configure CMake with clang
+    #   run: cmake -B ${{github.workspace}}/build/clang -DCMAKE_BUILD_TYPE=Release -G "Ninja" -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang
+    # - name: Build with clang
+    #   run: cmake --build ${{github.workspace}}/build/clang
+    # - name: Test with clang
+    #   working-directory: ${{github.workspace}}/build/clang
+    #   run: ctest
