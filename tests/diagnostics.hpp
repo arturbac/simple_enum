@@ -11,7 +11,7 @@
 
 namespace se
   {
-struct n
+struct meta_name
   {
   char const * data;
   size_t size;
@@ -67,7 +67,7 @@ constexpr auto f() noexcept
   }
 
 template<auto enumeration>
-constexpr auto b(n & res) noexcept
+constexpr auto first_pass(meta_name & res) noexcept
   {
   printf("%s\n", f<enumeration>());
   }
@@ -105,14 +105,14 @@ int main()
   print_compiler_info();
     {
     constexpr auto v{static_cast<strong_typed>(0)};
-    se::n value{};
-    se::b<static_cast<strong_typed>(0)>(value);
-    se::b<strong_typed::v1>(value);
+    se::meta_name value{};
+    se::first_pass<static_cast<strong_typed>(0)>(value);
+    se::first_pass<strong_typed::v1>(value);
 
-    se::b<static_cast<strong_untyped>(0)>(value);
-    se::b<strong_untyped::v1>(value);
+    se::first_pass<static_cast<strong_untyped>(0)>(value);
+    se::first_pass<strong_untyped::v1>(value);
 
-    se::b<static_cast<weak_untyped_e>(0)>(value);
-    se::b<v1>(value);
+    se::first_pass<static_cast<weak_untyped_e>(0)>(value);
+    se::first_pass<v1>(value);
     }
   }
