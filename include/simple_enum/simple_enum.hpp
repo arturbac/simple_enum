@@ -8,7 +8,7 @@
 #include <source_location>
 #include <array>
 
-#define SIMPLE_ENUM_NAME_VERSION "0.2.1"
+#define SIMPLE_ENUM_NAME_VERSION "0.2.2"
 
 #pragma push_macro("static_constexpr")
 
