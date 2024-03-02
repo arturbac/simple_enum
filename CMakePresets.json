@@ -6,7 +6,7 @@
     "patch": 0
   },
   "configurePresets": [
-      {
+    {
       "name": "cfg-clang",
       "generator": "Ninja",
       "hidden": true,
@@ -14,12 +14,19 @@
         "CMAKE_CXX_COMPILER": "clang++"
       }
     },
-      {
+    {
       "name": "cfg-gcc",
       "generator": "Ninja",
       "hidden": true,
       "cacheVariables": {
         "CMAKE_CXX_COMPILER": "g++"
+      }
+    },
+    {
+      "name": "msvc-debug",
+      "description": "Configure for clang debug build",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
       }
     },
     {
@@ -46,7 +53,7 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_CXX_FLAGS": "-ftime-trace -fno-omit-frame-pointer",
-        "SIMPLE_ENUM_TIME_TRACE" : "ON"
+        "SIMPLE_ENUM_TIME_TRACE": "ON"
       }
     },
     {
@@ -66,8 +73,8 @@
       "binaryDir": "${sourceDir}/build/release-test-asan",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_CXX_FLAGS" : "-ggdb -fvisibility=default -fno-omit-frame-pointer -fsanitize=address -fsanitize-address-use-after-scope -fsanitize=undefined",
-        "CMAKE_EXE_LINKER_FLAGS" : "-fsanitize=address -fsanitize=undefined"
+        "CMAKE_CXX_FLAGS": "-ggdb -fvisibility=default -fno-omit-frame-pointer -fsanitize=address -fsanitize-address-use-after-scope -fsanitize=undefined",
+        "CMAKE_EXE_LINKER_FLAGS": "-fsanitize=address -fsanitize=undefined"
       }
     }
   ],

@@ -250,17 +250,20 @@ static ut::suite<"simple_enum"> _ = []
   {
     ut::expect(enum_name(one_elem_untyped::v1) == "v1");
     ut::expect(enum_name(static_cast<one_elem_untyped>(2)) == "");
-    ut::expect(se_view<static_cast<sparse_untyped>(2)>() == "2");
-    ut::expect(enum_name(static_cast<sparse_untyped>(2)) == "2");
+    // TESTING UB dosabled
+    //ut::expect(se_view<static_cast<sparse_untyped>(2)>() == "2");
+    //ut::expect(enum_name(static_cast<sparse_untyped>(2)) == "2");
     ut::expect(enum_name(sparse_offseted_untyped::unknown) == "unknown");
-    ut::expect(enum_name(static_cast<sparse_offseted_untyped>(0)) == "0");
+    // TESTING UB dosabled
+    //ut::expect(enum_name(static_cast<sparse_offseted_untyped>(0)) == "0");
   };
 
   "test se meta name cut"_test = []
   {
     ut::expect(se_view<weak_global_untyped_e::v1>() == "v1");
-    // it is out of range or on sparse enum just value when used directly
-    ut::expect(se_view<static_cast<one_elem_untyped>(2)>() == "2");
+    // it is out of range or on sparse enum just value when used directly with clang gcc
+    // TESTING UB dosabled, testing when first pass for UB is not a case of lower unbounded
+    //ut::expect(se_view<static_cast<one_elem_untyped>(2)>() == "2");
 
     ut::expect(se_view<strong_typed::v1>() == "v1");
     ut::expect(se_view<strong_typed::v2>() == "v2");

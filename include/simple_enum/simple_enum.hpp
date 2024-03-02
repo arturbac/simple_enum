@@ -122,7 +122,7 @@ constexpr auto f() noexcept
 #if defined(__clang__) || defined(__GNUC__)
   char const * const func{__PRETTY_FUNCTION__};
 #elif defined(_MSC_VER)
-  char const * const func{__FUNC_SIG__};
+  char const * const func{__FUNCSIG__};
 #elif defined(__cpp_lib_source_location)
   char const * const func{std::source_location::current().function_name()};
 #else
@@ -151,7 +151,8 @@ inline constexpr char end_of_enumeration_name = ']';
 
 #elif defined(_MSC_VER)
 // index of the < character in the given line "auto __cdecl se::f<" is 18
-inline constexpr auto initial_offset{18 + 1};
+//                         0x00007ff76b5d33b0 "auto __cdecl se::f<v1>(void) noexcept"
+inline constexpr auto initial_offset{18};
 inline constexpr char end_of_enumeration_name = '>';
 #else
 #error "supply information to author about Your compiler"
@@ -171,7 +172,7 @@ constexpr size_t find_enumeration_offset()
   size_t pos = func.find('<');
   if(pos == std::string_view::npos)
     throw;
-  return pos + 1;
+  return pos;
 #else
   size_t pos = func.find("enumeration =");
   if(pos == std::string_view::npos)
@@ -200,13 +201,31 @@ constexpr auto first_pass(meta_name & res) noexcept
   char const * const func{se::f<enumeration>()};
   char const * end_of_name{func + se::initial_offset};
   char const * last_colon{end_of_name};
-  for(; *end_of_name; ++end_of_name)
-    if(*end_of_name == ':' || *end_of_name == ')') [[unlikely]]
+#ifdef _MSC_VER
+  size_t was_undefined{};
+#endif
+  for(; *end_of_name != se::end_of_enumeration_name; ++end_of_name)
+#ifdef _MSC_VER
+    if(*end_of_name == ':')
       last_colon = end_of_name;
+    else if(*end_of_name == ')')
+    {
+      last_colon = end_of_name;
+      was_undefined = 5;
+    }
+#else
+    if(*end_of_name == ':' || *end_of_name == ')')
+      last_colon = end_of_name;
+#endif
 
   res.data = last_colon + 1;
+ #ifdef _MSC_VER
+  res.size = size_t(end_of_name - res.data);
+  return size_t(last_colon - func) + 1 - was_undefined;
+#else
   res.size = size_t(end_of_name - res.data - 1);
   return size_t(last_colon - func) + 1;
+#endif
   }
 
 template<auto enumeration>
