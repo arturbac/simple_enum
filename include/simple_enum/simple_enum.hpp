@@ -165,7 +165,7 @@ constexpr auto enum_name(enum_type value) noexcept -> std::string_view
     meta_name const & res{meta[size_t(requested_index - first_index)]};
     return std::string_view{res.data, res.size};
     }
-  return {};
+  return {""};  // return empty but null terminated
   }
   }  // namespace simple_enum
 

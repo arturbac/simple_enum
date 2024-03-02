@@ -120,6 +120,20 @@ namespace test
     }      // namespace subnamespace
   }        // namespace test
 
+enum struct one_elem_untyped
+  {
+  v1 = 1,
+  first = v1,
+  last = v1
+  };
+enum struct sparse_untyped
+  {
+  v1 = 1,
+  v3 = 3,
+  first = v1,
+  last = v3
+  };
+
 // invalid
 // auto fast_enum_name_raw() [enumeration = (example_enum_e)5]
 // auto fast_enum_name() [enumeration = example_enum_e::v1]
@@ -130,20 +144,30 @@ namespace test
 template<auto enumeration>
 constexpr auto se_view() noexcept -> std::string_view
   {
+  using enum_type = std::remove_cvref_t<decltype(enumeration)>;
   meta_name value{};
-  size_t beg{se::b<enumeration>(value)};
+  size_t beg{se::b<enum_type::first>(value)};
   se::e<enumeration>(value, beg);
   return std::string_view{value.data, value.size};
   }
 
 static ut::suite<"simple_enum"> _ = []
 {
+  ut::expect(se_view<static_cast<sparse_untyped>(2)>() == "2");
+  ut::expect(enum_name(static_cast<sparse_untyped>(2)) == "2");
   using namespace ut;
+  "test variations"_test = []
+  {
+    ut::expect(enum_name(one_elem_untyped::v1) == "v1");
+    ut::expect(enum_name(static_cast<one_elem_untyped>(2)) == "");
+  };
 
   "test se meta name cut"_test = []
   {
     ut::expect(se_view<weak_global_untyped_e::v1>() == "v1");
-
+    ut::expect(
+      se_view<static_cast<one_elem_untyped>(2)>() == "2"
+    );  // it is out of range or on sparse enum just value when used directly
     ut::expect(se_view<strong_typed::v1>() == "v1");
     ut::expect(se_view<strong_typed::v2>() == "v2");
     ut::expect(se_view<strong_typed::v3>() == "v3");
@@ -183,6 +207,8 @@ static ut::suite<"simple_enum"> _ = []
   };
   "test enum name"_test = []
   {
+    ut::expect(enum_name(weak_global_untyped_e::v1) == "v1");
+
     ut::expect(enum_name(strong_typed::v1) == "v1");
     ut::expect(enum_name(strong_typed::v2) == "v2");
     ut::expect(enum_name(strong_typed::v3) == "v3");
