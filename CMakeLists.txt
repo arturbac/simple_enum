@@ -23,7 +23,7 @@ if(PROJECT_IS_TOP_LEVEL)
     GIT_TAG        v2.0.1
   )
   find_package(ut REQUIRED)
-  # target_precompile_headers( ut INTERFACE "${ut_SOURCE_DIR}/include/boost/ut.hpp" )
+  # external dependencies only for comparison benchmarking 
   CPMAddPackage(
       NAME magic_enum
       GITHUB_REPOSITORY Neargye/magic_enum
