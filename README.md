@@ -23,7 +23,60 @@ simple_enum is under active development version checked only on clang 17 and gcc
 There is no runtime cost at all with getting enum_name for runtime variable, the same as in magic_enum.
 But computation at compile time is limitted to number of elements in a range thanks to bounded_enum concept if declared for enum type. Unbounded enums are supported too with assumption of simple_enum::default_unbounded_uuper_range which can be ovveriden by user.
 There are optimizations related to enum name subtraction, only one loop is performed, and after first enumeration parsed rest of enumerations are parsed with reduced string literal range.
+# example
+```cpp
+enum struct enum_bounded
+  {
+  v1 = 1,
+  v2,
+  v3,
+  first = v1,
+  last = v3
+  };
+  
+  // can be evaluated at compile time
+  static_assert(simple_enum::enum_name(enum_bounded::v2) == "v2");
+  // or at runtime
+  auto x0{enum_bounded::v2};
+  // enum_bounded has definitions for first and last so compile time is limited to processing meta info for declared
+  // range only
+  ut::expect(simple_enum::enum_name(x0) == "v2");
+  // enum_upper_bounded has definitions for last so compile time is limited to processing meta info for range
+  // [0..last] range only for upper bounded enum may be sparse enum used with not present first elements including 0
+  auto x1{enum_upper_bounded::v2};
+  ut::expect(simple_enum::enum_name(x1) == "v2");
+  
+// lets see example for std::memory_order externally declaring boundary
 
+enum class std::memory_order : int
+  {
+  relaxed,
+  //[..]
+  seq_cst
+  };
+  
+template<>
+struct simple_enum::info<std::memory_order>
+  {
+  static constexpr auto first = std::memory_order::relaxed;
+  static constexpr auto last = std::memory_order::seq_cst;
+  };
+  
+  auto x1{std::memory_order::release};
+  ut::expect(simple_enum::enum_name(x1) == "release");
+  
+  // Or just use with unbounded enums as long upper bound doesn't exceeds default_unbounded_uuper_range
+  ut::expect(simple_enum::enum_name(any_unbounded_enum::value) == "value");
+  // default_unbounded_uuper_range can be declared by users before inclusion of simple_enum.hpp
+  namespace simple_enum
+  {
+  #define SIMPLE_ENUM_CUSTOM_UNBOUNDED_RANGE
+  inline constexpr auto default_unbounded_uuper_range = 10;
+  }
+  #include <simple_enum/simple_enum.hpp>
+  
+```
+# performance 
 How v0.2.0 compares with Instantiation time:
 simple enum for bounded enums to magic_enum::enum_name v0.9.5 and reflect::enum_name main/02.02.2024
 clang 17 -ftime-trace on AMD Ryzen 9 5900X Linux desktop 6.6.11-gentoo-dist

@@ -65,8 +65,8 @@ struct bounds_info
   };
 
 ///\brief info class is intended to custom specialize by users if they are unable to modify enum and wish to add bound
-///info
-template<typename enumeration, bounds_info>
+/// info
+template<typename enumeration, bounds_info = bounds_info{}>
 struct info
   {
   static constexpr enumeration first = static_cast<enumeration>(0);
@@ -261,7 +261,8 @@ constexpr auto enum_name(enum_type value) noexcept -> std::string_view
     meta_name const & res{meta[size_t(requested_index - first_index)]};
     return std::string_view{res.data, res.size};
     }
-  return {""};  // return empty but null terminated
+  else
+    return {""};  // return empty but null terminated
   }
   }  // namespace simple_enum
 

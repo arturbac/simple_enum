@@ -63,6 +63,24 @@ enum weak_global_untyped_e
   last = v3
   };
 
+// check for external declarations
+enum struct global_untyped_externaly_e
+  {
+  v1 = 1,
+  v2,
+  v3,
+  };
+
+template<>
+struct simple_enum::info<global_untyped_externaly_e>
+  {
+  static constexpr auto first = global_untyped_externaly_e::v1;
+  static constexpr auto last = global_untyped_externaly_e::v3;
+  };
+
+static_assert(simple_enum::detail::bounds<global_untyped_externaly_e>::first_index == 1);
+static_assert(simple_enum::detail::bounds<global_untyped_externaly_e>::last_index == 3);
+
 namespace se
   {
 template<auto enumeration>
