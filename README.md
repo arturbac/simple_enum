@@ -25,10 +25,9 @@ constexpr auto to_underlying(Enum e) noexcept -> std::underlying_type_t<Enum>
  { return static_cast<std::underlying_type_t<Enum>>(e); }
 ```
 
-Prof of concept for simple enum_name that bounded enums can be used with enum_name with short instantiation and cost can be proportional
-to number of enumerations in enum
+Prof of concept for simple enum_name that bounded enums can be used with enum_name with short instantiation and cost can be proportional to number of enumerations in enum.
 
-simple_enum is under active development version checked only on clang and gcc, msvc support is coming soon.
+simple_enum is under active development version checked only on clang 17 and gcc 13, msvc support is coming soon.
 
 There is no runtime cost at all with getting enum_name for runtime variable, the same as in magic_enum.
 But computation at compile time is limitted to number of elements in a range thanks to bounded_enum concept which requires from users to declare first,last in enum.
