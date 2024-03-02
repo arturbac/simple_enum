@@ -25,7 +25,8 @@ constexpr auto to_underlying(Enum e) noexcept -> std::underlying_type_t<Enum>
  { return static_cast<std::underlying_type_t<Enum>>(e); }
 ```
 
-Prof of concept for simple enum_name that bounded enums can be exploited when used with enum_name with short instantiation and cost can be proportional to number of enumerations in enum.
+Motivation to start this project was lack of efficient meta enum_name available.
+This is a prof of concept that enum_name can be efficient when enum is bounded so short instantiation can be achieved and cost can be proportional to number of enumerations in enum.
 
 simple_enum is under active development version checked only on clang 17 and gcc 13, msvc support is coming soon.
 
