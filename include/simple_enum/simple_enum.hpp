@@ -231,11 +231,7 @@ constexpr auto enum_meta_array() noexcept
   using bounds_type = detail::bounds<enum_type>;
   static_constexpr constexpr auto first_index{bounds_type::first_index};
   static_constexpr constexpr auto last_index{bounds_type::last_index};
-  // static_constexpr constexpr auto first_index{to_underlying(enum_type::first)};
-  // static_constexpr constexpr auto last_index{to_underlying(enum_type::last)};
-
   std::array<meta_name, last_index - first_index + 1> meta;
-  // dig_enum_members<enum_type, first_index, last_index, last_index>::dig(meta);
   fold_array<enum_type, first_index, last_index, last_index - first_index + 1>(meta);
   return meta;
   }
@@ -246,8 +242,6 @@ constexpr auto enum_name(enum_type value) noexcept -> std::string_view
   using bounds_type = detail::bounds<enum_type>;
   static_constexpr constexpr auto first_index{bounds_type::first_index};
   static_constexpr constexpr auto last_index{bounds_type::last_index};
-  // static_constexpr constexpr auto first_index{to_underlying(enum_type::first)};
-  // static_constexpr constexpr auto last_index{to_underlying(enum_type::last)};
   static_constexpr constexpr auto meta{enum_meta_array<enum_type>()};
   auto const requested_index{to_underlying(value)};
   if(requested_index >= first_index && requested_index <= last_index)
