@@ -10,7 +10,7 @@
 #endif
 #include <array>
 
-#define SIMPLE_ENUM_NAME_VERSION "0.4.0"
+#define SIMPLE_ENUM_NAME_VERSION "0.4.1"
 
 #pragma push_macro("static_constexpr")
 
@@ -56,7 +56,7 @@ concept bounded_enum = requires(T e)
 
 #ifndef SIMPLE_ENUM_CUSTOM_UNBOUNDED_RANGE
 #define SIMPLE_ENUM_CUSTOM_UNBOUNDED_RANGE
-inline constexpr auto default_unbounded_uuper_range = 10;
+inline constexpr auto default_unbounded_upper_range = 10;
 #endif
 // enum struct enum_meta_bounded { no, yes };
 
@@ -72,7 +72,7 @@ template<typename enumeration, bounds_info = bounds_info{}>
 struct info
   {
   static constexpr enumeration first = static_cast<enumeration>(0);
-  static constexpr enumeration last = static_cast<enumeration>(default_unbounded_uuper_range);
+  static constexpr enumeration last = static_cast<enumeration>(default_unbounded_upper_range);
   };
 
 template<typename enumeration>
@@ -87,7 +87,7 @@ template<typename enumeration>
 struct info<enumeration, bounds_info{.lower_bound = true, .upper_bound = false}>
   {
   static constexpr enumeration first = enumeration::first;
-  static constexpr enumeration last = static_cast<enumeration>(default_unbounded_uuper_range);
+  static constexpr enumeration last = static_cast<enumeration>(default_unbounded_upper_range);
   };
 
 template<typename enumeration>

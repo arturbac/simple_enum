@@ -30,7 +30,7 @@ enum struct enum_lower_bounded
 static_assert(simple_enum::detail::bounds<enum_lower_bounded>::first == enum_lower_bounded::v1);
 static_assert(
   simple_enum::detail::bounds<enum_lower_bounded>::last
-  == static_cast<enum_lower_bounded>(simple_enum::default_unbounded_uuper_range)
+  == static_cast<enum_lower_bounded>(simple_enum::default_unbounded_upper_range)
 );
 
 enum struct enum_unbounded
@@ -51,7 +51,7 @@ enum struct enum_unbounded_sparse
 static_assert(simple_enum::detail::bounds<enum_unbounded_sparse>::first == static_cast<enum_unbounded_sparse>(0));
 static_assert(
   simple_enum::detail::bounds<enum_unbounded_sparse>::last
-  == static_cast<enum_unbounded_sparse>(simple_enum::default_unbounded_uuper_range)
+  == static_cast<enum_unbounded_sparse>(simple_enum::default_unbounded_upper_range)
 );
 
 enum weak_global_untyped_e
@@ -251,11 +251,11 @@ static ut::suite<"simple_enum"> _ = []
     ut::expect(enum_name(one_elem_untyped::v1) == "v1");
     ut::expect(enum_name(static_cast<one_elem_untyped>(2)) == "");
     // TESTING UB dosabled
-    //ut::expect(se_view<static_cast<sparse_untyped>(2)>() == "2");
-    //ut::expect(enum_name(static_cast<sparse_untyped>(2)) == "2");
+    // ut::expect(se_view<static_cast<sparse_untyped>(2)>() == "2");
+    // ut::expect(enum_name(static_cast<sparse_untyped>(2)) == "2");
     ut::expect(enum_name(sparse_offseted_untyped::unknown) == "unknown");
     // TESTING UB dosabled
-    //ut::expect(enum_name(static_cast<sparse_offseted_untyped>(0)) == "0");
+    // ut::expect(enum_name(static_cast<sparse_offseted_untyped>(0)) == "0");
   };
 
   "test se meta name cut"_test = []
@@ -263,7 +263,7 @@ static ut::suite<"simple_enum"> _ = []
     ut::expect(se_view<weak_global_untyped_e::v1>() == "v1");
     // it is out of range or on sparse enum just value when used directly with clang gcc
     // TESTING UB dosabled, testing when first pass for UB is not a case of lower unbounded
-    //ut::expect(se_view<static_cast<one_elem_untyped>(2)>() == "2");
+    // ut::expect(se_view<static_cast<one_elem_untyped>(2)>() == "2");
 
     ut::expect(se_view<strong_typed::v1>() == "v1");
     ut::expect(se_view<strong_typed::v2>() == "v2");
