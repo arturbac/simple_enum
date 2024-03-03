@@ -38,14 +38,7 @@ The inception of this project was driven by the noticeable absence of an efficie
 
 ## Examples
 ```cpp
-enum struct enum_bounded
-  {
-  v1 = 1,
-  v2,
-  v3,
-  first = v1,
-  last = v3
-  };
+enum struct enum_bounded  {  v1 = 1,  v2,  v3,  first = v1,  last = v3  };
   
   // can be evaluated at compile time
   static_assert(simple_enum::enum_name(enum_bounded::v2) == "v2");
@@ -54,6 +47,9 @@ enum struct enum_bounded
   // enum_bounded has definitions for first and last so compile time is limited to processing meta info for declared
   // range only
   ut::expect(simple_enum::enum_name(x0) == "v2");
+
+enum struct enum_upper_bounded  {  v0,  v1,  v2,  v3,  last = v3  };
+
   // enum_upper_bounded has definitions for last so compile time is limited to processing meta info for range
   // [0..last] range only for upper bounded enum may be sparse enum used with not present first elements including 0
   auto x1{enum_upper_bounded::v2};
