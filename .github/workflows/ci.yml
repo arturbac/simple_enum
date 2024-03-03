@@ -9,7 +9,7 @@ on:
       - 'README.md'
 
 jobs:
-  build-and-test:
+  build-and-test-gcc:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -23,7 +23,19 @@ jobs:
     - name: Test with gcc
       working-directory: ${{github.workspace}}/build/gcc
       run: ctest
-
+      
+  build-and-test-msvc:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Configure CMake with MSVC
+      run: cmake -B ${{github.workspace}}/build/msvc -DCMAKE_BUILD_TYPE=Release -G "Ninja"
+    - name: Build with MSVC
+      run: cmake --build ${{github.workspace}}/build/msvc
+    - name: Test with MSVC
+      working-directory: ${{github.workspace}}/build/msvc
+      run: ctest
+      
     # - name: Configure CMake with clang
     #   run: cmake -B ${{github.workspace}}/build/clang -DCMAKE_BUILD_TYPE=Release -G "Ninja" -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang
     # - name: Build with clang
