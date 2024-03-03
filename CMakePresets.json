@@ -53,7 +53,7 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_CXX_FLAGS": "-ftime-trace -fno-omit-frame-pointer",
-        "SIMPLE_ENUM_TIME_TRACE": "ON"
+        "SIMPLE_ENUM_ENABLE_TIME_TRACE": "ON"
       }
     },
     {

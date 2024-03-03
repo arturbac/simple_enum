@@ -23,25 +23,27 @@ if(PROJECT_IS_TOP_LEVEL)
     GIT_TAG        v2.0.1
   )
   find_package(ut REQUIRED)
-  # external dependencies only for comparison benchmarking 
-  CPMAddPackage(
-      NAME magic_enum
-      GITHUB_REPOSITORY Neargye/magic_enum
-      GIT_TAG v0.9.5
-  )
-  find_package(magic_enum REQUIRED)
+  if( SIMPLE_ENUM_ENABLE_TIME_TRACE AND (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "AppleClang"))
+    # external dependencies only for comparison benchmarking 
+    CPMAddPackage(
+        NAME magic_enum
+        GITHUB_REPOSITORY Neargye/magic_enum
+        GIT_TAG v0.9.5
+    )
+    find_package(magic_enum REQUIRED)
 
-  CPMAddPackage(
-    Name reflect
-    GITHUB_REPOSITORY boost-ext/reflect
-    GIT_TAG main
-  )
+    CPMAddPackage(
+      Name reflect
+      GITHUB_REPOSITORY boost-ext/reflect
+      GIT_TAG main
+    )
 
-  add_library(reflect INTERFACE)
-  target_include_directories(reflect SYSTEM INTERFACE ${reflect_SOURCE_DIR})
-  target_compile_definitions(reflect INTERFACE REFLECT_DISABLE_STATIC_ASSERT_TESTS)
-  add_library(reflect::reflect ALIAS reflect)
-  find_package(reflect REQUIRED)
+    add_library(reflect INTERFACE)
+    target_include_directories(reflect SYSTEM INTERFACE ${reflect_SOURCE_DIR})
+    target_compile_definitions(reflect INTERFACE REFLECT_DISABLE_STATIC_ASSERT_TESTS)
+    add_library(reflect::reflect ALIAS reflect)
+    find_package(reflect REQUIRED)
+  endif()
 endif()
 
 # Header-only library target
@@ -56,7 +58,7 @@ if(PROJECT_IS_TOP_LEVEL)
   add_subdirectory(tests)
   add_subdirectory(examples)
 
-  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
+  if( SIMPLE_ENUM_ENABLE_TIME_TRACE AND (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "AppleClang"))
     if(SIMPLE_ENUM_TIME_TRACE)
       add_subdirectory(time_trace)
     endif()
