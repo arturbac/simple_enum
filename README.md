@@ -6,14 +6,25 @@
 
 ## Features
 
-This project offers efficient in compile time instantiation enum_name function
+This project offers efficient in compile time instantiation enum_name function object and std::ranges::views like enum_view  for bounded enumerations
+
 ```cpp
 
 template<typename type>
 concept enum_concept = std::is_enum_v<type>;
 
-template<enum_concept enum_type>
-constexpr auto enum_name(enum_type value) noexcept -> std::string_view;
+struct enum_name_t
+  {
+  template<enum_concept enum_type>
+  static constexpr auto operator()(enum_type value) noexcept;
+  };
+  
+inline constexpr enum_name_t enum_name;
+
+// enum_view can exploit enum_name
+constexpr auto view = 
+      enum_view<weak_typed_e>{} 
+      | views::transform(enum_name);
 
 ```
 ## Motivation
@@ -31,10 +42,11 @@ Minimum standard required by `simple_enum` is c++20, but it is tested and adopte
 - **Zero Runtime Cost**: Retrieving `enum_name` for a runtime variable incurs no runtime overhead, just constant literal string_view.
 - **Compile-time Efficiency**: Compile-time computation is confined to the number of elements within a range. This efficiency is made possible through the `bounded_enum` concept when declared for an enum type.
 - **Support for Unbounded Enums**: While the library is optimized for bounded enums, it also accommodates unbounded enums. By default, it utilizes `simple_enum::default_unbounded_upper_range`, which users can override according to their requirements.
-- **Optimized Enum Name Deduction**: The library employs a strategic optimization for enum name deduction, ensuring that only one loop is executed for the first enumeration. Subsequent enumerations are parsed with a minimized string literal range, further enhancing the efficiency of the process.
+- **Optimized Enum Name Deduction**: The library employs a strategic optimization for enum name deduction, ensuring that only one loop is executed for the first enumeration. Subsequent enumerations are parsed with a minimized string literal range, further enhancing the compile time efficiency of the process.
 
 ## Planned features
 
+- emum bitmasks support
 - parse enum, reverse operation string_view -> enumeration
 - for bounded enumerations declare generic templates ranges views in namesapce simple_enum for enumeration values and string_view names
 - feature request are possible too
@@ -87,6 +99,26 @@ struct simple_enum::info<std::memory_order>
   }
   #include <simple_enum/simple_enum.hpp>
   
+//  ranges views compatibile enum_view for bounded enumerations
+
+  enum weak_typed_e : uint8_t { v1, v2, v3 };
+  
+  template<>
+  struct simple_enum::info<weak_typed_e>
+    {
+    static constexpr auto first = weak_typed_e::v1;
+    static constexpr auto last = weak_typed_e::v3;
+    };
+    
+  constexpr auto view = enum_view{weak_typed_e::v1, weak_typed_e::v1} 
+                       | views::transform(enum_name);
+  static constexpr array expected{"v1"sv};
+  expect(ranges::equal(view, expected));
+    
+  constexpr auto view = enum_view<weak_typed_e>{}
+                      | views::transform(enum_name);
+  static constexpr array expected{"v1"sv, "v2"sv, "v3"sv};
+  expect(ranges::equal(view, expected));
 ```
 ## Performance 
 How v0.2.0 compares with Instantiation time:
