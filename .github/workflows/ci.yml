@@ -29,12 +29,12 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Configure CMake with MSVC
-      run: cmake -B ${{github.workspace}}/build/msvc -DCMAKE_BUILD_TYPE=Release
+      run: cmake -B ${{github.workspace}}/build/msvc -DCMAKE_BUILD_TYPE=Debug
     - name: Build with MSVC
       run: cmake --build ${{github.workspace}}/build/msvc
     - name: Test with MSVC
       working-directory: ${{github.workspace}}/build/msvc
-      run: ctest -C Release
+      run: ctest -C Debug
       
     # - name: Configure CMake with clang
     #   run: cmake -B ${{github.workspace}}/build/clang -DCMAKE_BUILD_TYPE=Release -G "Ninja" -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang
