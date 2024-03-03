@@ -23,6 +23,7 @@ The inception of this project was driven by the noticeable absence of an efficie
 ## Current Development Status
 
 `simple_enum` is under active development on  and **MSVC** **Clang 17** and **GCC 13**  with support down to **Clang 13** and**GCC 10**.
+Minimum standard required by `simple_enum` is c++20, but it is tested and adopted to exploit c++23 features where it is possible.
 
 ## Features
 
