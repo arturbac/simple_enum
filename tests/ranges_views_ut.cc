@@ -92,8 +92,8 @@ enum class my_enum
 template<>
 struct simple_enum::info<my_enum>
   {
-  static constexpr auto first = weak_typed_e::v1;
-  static constexpr auto last = weak_typed_e::v3;
+  static constexpr auto first = my_enum::a;
+  static constexpr auto last = my_enum::c;
   };
 
 // Check if the end() is compatible with ranges::end and its iterator satisfies sentinel_for with its own iterator type
