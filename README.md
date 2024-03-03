@@ -74,13 +74,13 @@ struct simple_enum::info<std::memory_order>
   auto x1{std::memory_order::release};
   ut::expect(simple_enum::enum_name(x1) == "release");
   
-  // Or just use with unbounded enums as long upper bound doesn't exceeds default_unbounded_uuper_range
+  // Or just use with unbounded enums as long upper bound doesn't exceeds default_unbounded_upper_range
   ut::expect(simple_enum::enum_name(any_unbounded_enum::value) == "value");
-  // default_unbounded_uuper_range can be declared by users before inclusion of simple_enum.hpp
+  // default_unbounded_upper_range can be declared by users before inclusion of simple_enum.hpp
   namespace simple_enum
   {
   #define SIMPLE_ENUM_CUSTOM_UNBOUNDED_RANGE
-  inline constexpr auto default_unbounded_uuper_range = 10;
+  inline constexpr auto default_unbounded_upper_range = 10;
   }
   #include <simple_enum/simple_enum.hpp>
   
