@@ -132,15 +132,20 @@ namespace detail
     };
 
   template<typename enumeration>
+  struct msvc_meta_info_wrapper
+  {
+    static constexpr meta_info_bounds_traits traits{.lower_bound = lower_bounded_enum<enumeration>, .upper_bound = upper_bounded_enum<enumeration>};
+    using type = meta_info<enumeration,traits>;
+  };
+  template<typename enumeration>
   struct bounds
     {
     // when user provided info is available is has priority over defaulted specializations of meta_info
     using info_type = std::conditional_t<
       has_info_specialization<enumeration>,
-      info<enumeration>,
-      meta_info<
-        enumeration,
-        meta_info_bounds_traits{.lower_bound = lower_bounded_enum<enumeration>, .upper_bound = upper_bounded_enum<enumeration>}>>;
+      info<enumeration>, typename msvc_meta_info_wrapper<enumeration>::type
+      
+    >;
 
     static constexpr enumeration first = info_type::first;
     static constexpr enumeration last = info_type::last;
