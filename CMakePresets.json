@@ -23,6 +23,14 @@
       }
     },
     {
+    "name": "cfg-libc++",
+    "hidden": true,
+    "generator": "Ninja",
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS" : "-stdlib=libc++"
+      }
+    },
+    {
       "name": "msvc-debug",
       "description": "Configure for clang debug build",
       "cacheVariables": {
@@ -33,6 +41,14 @@
       "name": "clnag-debug",
       "description": "Configure for clang debug build",
       "inherits": [ "cfg-clang" ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "clnag-debug-libstdc++",
+      "description": "Configure for clang debug build",
+      "inherits": [ "cfg-clang", "cfg-libc++" ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }

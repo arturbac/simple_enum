@@ -214,6 +214,10 @@ enum struct sparse_offseted_untyped
   last = v3
   };
 
+using detail::cont_pass;
+using detail::first_pass;
+using detail::meta_name;
+
 template<auto enumeration>
 constexpr auto se_view() noexcept -> std::string_view
   {
