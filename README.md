@@ -6,7 +6,7 @@
 
 ## Features
 
-This project offers efficient enum_name function
+This project offers efficient in compile time instantiation enum_name function
 ```cpp
 
 template<typename type>
