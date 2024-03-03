@@ -97,9 +97,9 @@ struct simple_enum::info<std::memory_order>
   #define SIMPLE_ENUM_CUSTOM_UNBOUNDED_RANGE
   inline constexpr auto default_unbounded_upper_range = 10;
   }
-  #include <simple_enum/simple_enum.hpp>
-  
+
 //  ranges views compatibile enum_view for bounded enumerations
+  #include <simple_enum/ranges_views.hpp>
 
   enum weak_typed_e : uint8_t { v1, v2, v3 };
   
