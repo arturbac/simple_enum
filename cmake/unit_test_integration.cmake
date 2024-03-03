@@ -6,7 +6,7 @@ function(add_ut_test source_file_name)
   add_executable(${test_executable_name} ${source_file_name})
   target_link_libraries(${test_executable_name} PRIVATE simple_enum::simple_enum Boost::ut )
   
-  target_compile_definitions(${test_executable_name} PRIVATE SIMPLE_ENUM_OPT_IN_STATIC_ASSERTS )
+  target_compile_definitions(${test_executable_name} PRIVATE SIMPLE_ENUM_OPT_IN_STATIC_ASSERTS BOOST_UT_DISABLE_MODULE)
   add_test(NAME "${test_executable_name}"
            COMMAND ${test_executable_name})
 
