@@ -243,14 +243,16 @@ constexpr void cont_pass(meta_name & res, std::size_t enum_beg) noexcept
 template<typename enum_type, std::integral auto first, std::size_t size, typename name_array, std::size_t... indices>
 constexpr void apply_meta_enum(name_array & meta, size_t enum_beg, std::index_sequence<indices...>)
   {
-  // Unpack and call enum_name_meta_constexpr for each index, using fold expression
+  // Unpack and call cont_pass for each index, using fold expression
   (..., (cont_pass<static_cast<enum_type>(first + indices)>(meta[indices + 1], enum_beg)));
   }
 
 template<typename enum_type, std::integral auto first, std::integral auto last, std::size_t size, typename name_array>
 constexpr void fold_array(name_array & meta)
   {
+#ifdef SIMPLE_ENUM_OPT_IN_STATIC_ASSERTS
   static_assert(size == static_cast<std::size_t>(last - first + 1), "size must match the number of enum values");
+#endif
   size_t enum_beg{first_pass<static_cast<enum_type>(first)>(meta[0])};
   if constexpr(size > 1)
     apply_meta_enum<enum_type, first + 1, size - 1>(meta, enum_beg, std::make_index_sequence<size - 1>{});
