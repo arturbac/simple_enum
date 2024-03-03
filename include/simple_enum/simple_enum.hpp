@@ -10,7 +10,7 @@
 #endif
 #include <array>
 
-#define SIMPLE_ENUM_NAME_VERSION "0.3.2"
+#define SIMPLE_ENUM_NAME_VERSION "0.4.0"
 
 #pragma push_macro("static_constexpr")
 
@@ -20,7 +20,7 @@
 #define static_constexpr
 #endif
 
-namespace simple_enum::inline v0_3
+namespace simple_enum::inline v0_4
   {
 template<typename Enum>
 constexpr auto to_underlying(Enum e) noexcept -> std::underlying_type_t<Enum>
@@ -111,7 +111,7 @@ namespace detail
     static constexpr auto last_index = to_underlying(info_t::last);
     };
   }  // namespace detail
-  }  // namespace simple_enum::inline v0_3
+  }  // namespace simple_enum::inline v0_4
 
 // this namespace is for reducing time crunching source location
 namespace se
@@ -187,7 +187,7 @@ static_assert(verify_offset());
 #endif
   }  // namespace se
 
-namespace simple_enum::inline v0_3
+namespace simple_enum::inline v0_4
   {
 struct meta_name
   {
@@ -209,21 +209,20 @@ constexpr auto first_pass(meta_name & res) noexcept
     if(*end_of_name == ':')
       last_colon = end_of_name;
     else if(*end_of_name == ')')
-    {
+      {
       last_colon = end_of_name;
       was_undefined = 5;
-    }
+      }
 #else
     if(*end_of_name == ':' || *end_of_name == ')')
       last_colon = end_of_name;
 #endif
 
   res.data = last_colon + 1;
- #ifdef _MSC_VER
   res.size = size_t(end_of_name - res.data);
+#ifdef _MSC_VER
   return size_t(last_colon - func) + 1 - was_undefined;
 #else
-  res.size = size_t(end_of_name - res.data - 1);
   return size_t(last_colon - func) + 1;
 #endif
   }
@@ -284,6 +283,6 @@ constexpr auto enum_name(enum_type value) noexcept -> std::string_view
   else
     return {""};  // return empty but null terminated
   }
-  }  // namespace simple_enum::inline v0_3
+  }  // namespace simple_enum::inline v0_4
 
 #pragma pop_macro("static_constexpr")

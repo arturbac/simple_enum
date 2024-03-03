@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Declare variables for the old and new version
-old_version="v0_2"
-new_version="v0_3"
+old_version="v0_3"
+new_version="v0_4"
 
 # File path
 file_path="include/simple_enum/simple_enum.hpp"
