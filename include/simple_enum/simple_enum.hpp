@@ -30,7 +30,7 @@
 #define static_call_operator_const const
 #endif
 
-namespace simple_enum::inline v0_4
+namespace simple_enum::inline v0_5
   {
 template<typename Enum>
 constexpr auto to_underlying(Enum e) noexcept -> std::underlying_type_t<Enum>
@@ -156,7 +156,7 @@ namespace detail
     static constexpr auto last_index = simple_enum::to_underlying(info_type::last);
     };
   }  // namespace detail
-  }  // namespace simple_enum::inline v0_4
+  }  // namespace simple_enum::inline v0_5
 
 // this namespace is for reducing time crunching source location and .text data
 namespace se
@@ -232,7 +232,7 @@ static_assert(verify_offset());
 #endif
   }  // namespace se
 
-namespace simple_enum::inline v0_4
+namespace simple_enum::inline v0_5
   {
 namespace detail
   {
@@ -343,7 +343,7 @@ struct enum_name_t
 
 inline constexpr enum_name_t enum_name;
 
-  }  // namespace simple_enum::inline v0_4
+  }  // namespace simple_enum::inline v0_5
 
 #pragma pop_macro("static_call_operator_const")
 #pragma pop_macro("static_call_operator")
