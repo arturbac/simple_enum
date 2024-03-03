@@ -34,7 +34,7 @@ jobs:
       run: cmake --build ${{github.workspace}}/build/msvc
     - name: Test with MSVC
       working-directory: ${{github.workspace}}/build/msvc
-      run: ctest
+      run: ctest -C Release
       
     # - name: Configure CMake with clang
     #   run: cmake -B ${{github.workspace}}/build/clang -DCMAKE_BUILD_TYPE=Release -G "Ninja" -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_C_COMPILER=clang
