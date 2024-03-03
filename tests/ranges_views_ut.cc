@@ -245,7 +245,7 @@ static void ranges_transform_test()
   "weak_typed_e enumeration transform"_test = []
   {
     {
-    constexpr auto view = enum_view<weak_typed_e>{weak_typed_e::v1, weak_typed_e::v1} | views::transform(enum_name);
+    constexpr auto view = enum_view{weak_typed_e::v1, weak_typed_e::v1} | views::transform(enum_name);
     static constexpr array expected{"v1"sv};
     expect(ranges::equal(view, expected));
     vector<string_view> results;

@@ -22,7 +22,7 @@
 #define static_constexpr
 #endif
 
-#if defined(__cpp_static_call_operator)
+#if __cplusplus >= 202301L && defined(__cpp_static_call_operator)
 #define static_call_operator static
 #define static_call_operator_const
 #else
