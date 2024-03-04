@@ -6,7 +6,7 @@
 
 ## Features
 
-This project offers efficient in compile time instantiation enum_name function object and std::ranges::views like enum_view  for bounded enumerations
+This project offers efficient in compile time instantiation enum_name function object and std::ranges::views like enum_view  for bounded enumerations and other utilities
 
 ```cpp
 
