@@ -11,7 +11,6 @@ template<typename T>
   requires simple_enum::enum_concept<T>
 struct formatter<T>
   {
-  // Parses format specifications of the form ['d' (default), 'x' (hex), 'o' (octal)]
   constexpr auto parse(format_parse_context & ctx) -> decltype(ctx.begin()) { return ctx.begin(); }
 
   template<typename format_context>
