@@ -54,15 +54,25 @@ namespace detail
     using enum_meta_info = detail::enum_meta_info_t<enum_type>;
     using sorted_indices_type = detail::enum_meta_info_sorted_indices_t<enum_type>;
 
-    auto comp = [&](std::size_t const idx, std::string_view const val) noexcept
-    { return enum_meta_info::meta_data[idx].as_view() < val; };
+    if constexpr(enum_meta_info::size() > 4)
+      {
+      auto comp = [&](std::size_t const idx, std::string_view const val) noexcept -> bool
+      { return enum_meta_info::meta_data[idx].as_view() < val; };
 
-    auto it = std::lower_bound(sorted_indices_type::indices.begin(), sorted_indices_type::indices.end(), target, comp);
+      auto it
+        = std::lower_bound(sorted_indices_type::indices.begin(), sorted_indices_type::indices.end(), target, comp);
 
-    if(it != sorted_indices_type::indices.end() && enum_meta_info::meta_data[*it].as_view() == target) [[likely]]
-      return it;
+      if(it != sorted_indices_type::indices.end() && enum_meta_info::meta_data[*it].as_view() == target) [[likely]]
+        return it;
+      else
+        return sorted_indices_type::indices.end();
+      }
     else
-      return sorted_indices_type::indices.end();
+      {
+      auto comp = [&target](std::size_t const idx) noexcept -> bool
+      { return enum_meta_info::meta_data[idx].as_view() == target; };
+      return std::find_if(sorted_indices_type::indices.begin(), sorted_indices_type::indices.end(), comp);
+      }
     }
   }  // namespace detail
 
