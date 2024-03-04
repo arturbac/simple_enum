@@ -126,7 +126,7 @@ struct enum_cast_t
     using sorted_indices_type = detail::enum_meta_info_sorted_indices_t<enum_type>;
     auto it{detail::lower_bound_search_indices<enum_type>(value)};
     if(it != sorted_indices_type::indices.end())
-      return static_cast<enum_type>(*it + enum_meta_info::first_index);
+      return static_cast<enum_type>(*it + enum_meta_info::first_index());
     return cxx23::unexpected{enum_cast_error::invalid_cast};
     }
   };

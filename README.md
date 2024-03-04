@@ -69,40 +69,59 @@ Minimum standard required by `simple_enum` is c++20, but it is tested and adopte
 - feature request are possible too
 
 ## Examples
+ 
 ```cpp
-enum struct enum_bounded  {  v1 = 1,  v2,  v3,  first = v1,  last = v3  };
+  // There are 3 methods to set enum boundaries
+  //inside enum declaration using first last
+  enum struct enum_bounded  {  v1 = 1,  v2,  v3,  first = v1,  last = v3  };
   
   // can be evaluated at compile time
   static_assert(simple_enum::enum_name(enum_bounded::v2) == "v2");
   // or at runtime
   auto x0{enum_bounded::v2};
   // enum_bounded has definitions for first and last so compile time is limited to processing meta info for declared
-  // range only
   ut::expect(simple_enum::enum_name(x0) == "v2");
 
-enum struct enum_upper_bounded  {  v0,  v1,  v2,  v3,  last = v3  };
+  enum struct enum_upper_bounded  { v0,  v1,  v2,  v3,  last = v3  };
 
   // enum_upper_bounded has definitions for last so compile time is limited to processing meta info for range
   // [0..last] range only for upper bounded enum may be sparse enum used with not present first elements including 0
   auto x1{enum_upper_bounded::v2};
   ut::expect(simple_enum::enum_name(x1) == "v2");
   
-// lets see example for std::memory_order externally declaring boundary
+  // externally declaring boundary using adl found function
+  namespace some_user
+    {
+  enum struct enum_externaly_bounded { v0 = -15345953, v1, v2, v3 };
 
-enum class std::memory_order : int
-  {
-  relaxed,
-  //[..]
-  seq_cst
-  };
-  
-template<>
-struct simple_enum::info<std::memory_order>
-  {
-  static constexpr auto first = std::memory_order::relaxed;
-  static constexpr auto last = std::memory_order::seq_cst;
-  };
-  
+  consteval auto adl_enum_bounds(enum_externaly_bounded)
+    {
+    return simple_enum::adl_info{enum_externaly_bounded::v1, enum_externaly_bounded::v3};
+    }
+
+  static void enum_externaly_bounded_using_adl()
+    {
+    auto x1{enum_externaly_bounded::v1};
+    std::cout << "enum_externaly_bounded " << simple_enum::enum_name(x1) << "\n";
+    }
+    }  // namespace some_user
+    
+    
+  // externally declaring boundary using struct specialization
+  enum class std::memory_order : int
+    {
+    relaxed,
+    //[..]
+    seq_cst
+    };
+    
+  template<>
+  struct simple_enum::info<std::memory_order>
+    {
+    static constexpr auto first = std::memory_order::relaxed;
+    static constexpr auto last = std::memory_order::seq_cst;
+    };
+    
   auto x1{std::memory_order::release};
   ut::expect(simple_enum::enum_name(x1) == "release");
   

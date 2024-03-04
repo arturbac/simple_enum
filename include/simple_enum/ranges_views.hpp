@@ -100,7 +100,7 @@ public:
 namespace simple_enum::inline v0_5
   {
 
-template<bounded_enum enumeration>
+template<enum_concept enumeration>
 class enum_view : public std::ranges::view_interface<enum_view<enumeration>>
   {
   static_assert(std::is_enum_v<enumeration>, "enumeration must be an enum type");
@@ -113,7 +113,10 @@ private:
   enumeration last_;
 
 public:
-  constexpr enum_view() noexcept : first_(detail::bounds<enumeration>::first), last_(detail::bounds<enumeration>::last)
+  constexpr enum_view() noexcept
+    requires bounded_enum<enumeration>
+      : first_(detail::enum_meta_info_t<enumeration>::first()), last_(detail::enum_meta_info_t<enumeration>::last())
+
     {
     }
 

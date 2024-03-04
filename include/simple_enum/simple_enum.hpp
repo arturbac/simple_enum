@@ -10,7 +10,7 @@
 #endif
 #include <array>
 
-#define SIMPLE_ENUM_NAME_VERSION "0.5.4"
+#define SIMPLE_ENUM_NAME_VERSION "0.5.5"
 
 #include "detail/static_call_operator_prolog.h"
 
@@ -33,12 +33,37 @@ concept enum_concept = std::is_enum_v<type>;
 inline constexpr auto default_unbounded_upper_range = 10;
 #endif
 
-///\brief info class is intended to custom specialize by users if they are unable to modify enum and wish to add bound
-/// info
+///\brief info class is intended to custom specialize by users if they wish to add external enum bounds info
 template<typename enumeration>
 struct info
   {
   };
+
+///\brief info function to use with ADL is intended to custom specialize by users if they wish to add external enum
+/// bounds info
+/// user overload should return std::initializer list with 2 elements first,last of any std::integral type
+/// consteval auto adl_enum_bounds( my_enum ) { return simple_enum::adl_info{my_enum::v1, my_enum::v3}; }
+
+template<typename enumeration>
+struct adl_info
+  {
+  enumeration first;
+  enumeration last;
+  };
+
+template<typename enumeration>
+adl_info(enumeration const &, enumeration const &) -> adl_info<enumeration>;
+
+template<typename enumeration>
+constexpr auto adl_enum_bounds() -> void;
+
+// Concept to check if adl_enum_bounds returns std::initializer_list<enumeration>
+template<typename enumeration>
+concept has_valid_adl_enum_bounds = requires(enumeration e) {
+  {
+  adl_enum_bounds(e)
+  } -> std::same_as<adl_info<enumeration>>;
+};
 
 namespace detail
   {
@@ -115,6 +140,7 @@ namespace detail
     static constexpr enumeration last = enumeration::last;
     };
 
+  // strange compile time error on msvc when meta_info_bounds_traits are used directly in template arguments
   template<typename enumeration>
   struct msvc_meta_info_wrapper
     {
@@ -124,21 +150,15 @@ namespace detail
     };
 
   template<typename enumeration>
-  struct bounds
+  consteval auto get_meta_info()
     {
-    // when user provided info is available is has priority over defaulted specializations of meta_info
-    using info_type = std::conditional_t<
-      has_info_specialization<enumeration>,
-      info<enumeration>,
-      typename msvc_meta_info_wrapper<enumeration>::type
-
-      >;
-
-    static constexpr enumeration first = info_type::first;
-    static constexpr enumeration last = info_type::last;
-    static constexpr auto first_index = simple_enum::to_underlying(info_type::first);
-    static constexpr auto last_index = simple_enum::to_underlying(info_type::last);
-    };
+    if constexpr(has_info_specialization<enumeration>)
+      return info<enumeration>{};
+    else if constexpr(has_valid_adl_enum_bounds<enumeration>)
+      return adl_enum_bounds(enumeration{});
+    else
+      return typename msvc_meta_info_wrapper<enumeration>::type{};
+    }
   }  // namespace detail
   }  // namespace simple_enum::inline v0_5
 
@@ -281,7 +301,8 @@ namespace detail
   constexpr void apply_meta_enum(name_array & meta, size_t enum_beg, std::index_sequence<indices...>)
     {
     // unpack and call cont_pass for each index, using fold expression
-    (..., (cont_pass<static_cast<enum_type>(first + indices)>(meta[indices + 1], enum_beg)));
+    using utype = std::underlying_type_t<enum_type>;
+    (..., (cont_pass<static_cast<enum_type>(first + utype(indices))>(meta[indices + 1], enum_beg)));
     }
 
   template<typename enum_type, std::integral auto first, std::integral auto last, std::size_t size, typename name_array>
@@ -306,12 +327,19 @@ namespace detail
   template<enum_concept enum_type>
   struct enum_meta_info_t
     {
-    using bounds_type = detail::bounds<enum_type>;
-    static constexpr auto first_index{bounds_type::first_index};
-    static constexpr auto last_index{bounds_type::last_index};
-    static constexpr auto meta_data{detail::prepare_meta_data<enum_type, first_index, last_index>()};
+    static constexpr auto emum_info_ = get_meta_info<enum_type>();
 
-    static constexpr auto size() noexcept -> std::size_t { return last_index - first_index + 1; }
+    static constexpr auto first() noexcept { return emum_info_.first; }
+
+    static constexpr auto last() noexcept { return emum_info_.last; }
+
+    static constexpr auto first_index() noexcept { return simple_enum::to_underlying(emum_info_.first); }
+
+    static constexpr auto last_index() noexcept { return simple_enum::to_underlying(emum_info_.last); }
+
+    static constexpr auto meta_data{detail::prepare_meta_data<enum_type, first_index(), last_index()>()};
+
+    static constexpr auto size() noexcept -> std::size_t { return last_index() - first_index() + 1; }
     };
 
   }  // namespace detail
@@ -327,9 +355,9 @@ struct enum_name_t
     {
     using enum_meta_info = detail::enum_meta_info_t<enum_type>;
     auto const requested_index{simple_enum::to_underlying(value)};
-    if(requested_index >= enum_meta_info::first_index && requested_index <= enum_meta_info::last_index)
+    if(requested_index >= enum_meta_info::first_index() && requested_index <= enum_meta_info::last_index())
       {
-      detail::meta_name const & res{enum_meta_info::meta_data[size_t(requested_index - enum_meta_info::first_index)]};
+      detail::meta_name const & res{enum_meta_info::meta_data[size_t(requested_index - enum_meta_info::first_index())]};
       return std::string_view{res.data, res.size};
       }
     else

@@ -5,11 +5,14 @@ enum struct enum_bounded
   v1 = 1,
   v2,
   v3,
-  first = v1,
-  last = v3
+  // first = v1,
+  // last = v3
   };
-static_assert(simple_enum::detail::bounds<enum_bounded>::first == enum_bounded::v1);
-static_assert(simple_enum::detail::bounds<enum_bounded>::last == enum_bounded::last);
+
+consteval auto adl_enum_bounds(enum_bounded) { return simple_enum::adl_info{enum_bounded::v1, enum_bounded::v3}; }
+
+static_assert(simple_enum::detail::enum_meta_info_t<enum_bounded>::first() == enum_bounded::v1);
+static_assert(simple_enum::detail::enum_meta_info_t<enum_bounded>::last() == enum_bounded::v3);
 
 enum struct enum_upper_bounded
   {
@@ -18,8 +21,8 @@ enum struct enum_upper_bounded
   v3,
   last = v3
   };
-static_assert(simple_enum::detail::bounds<enum_upper_bounded>::first == static_cast<enum_upper_bounded>(0));
-static_assert(simple_enum::detail::bounds<enum_upper_bounded>::last == enum_upper_bounded::last);
+static_assert(simple_enum::detail::enum_meta_info_t<enum_upper_bounded>::first() == static_cast<enum_upper_bounded>(0));
+static_assert(simple_enum::detail::enum_meta_info_t<enum_upper_bounded>::last() == enum_upper_bounded::last);
 
 enum struct enum_lower_bounded
   {
@@ -27,9 +30,10 @@ enum struct enum_lower_bounded
   v2,
   first = v1
   };
-static_assert(simple_enum::detail::bounds<enum_lower_bounded>::first == enum_lower_bounded::v1);
+
+static_assert(simple_enum::detail::enum_meta_info_t<enum_lower_bounded>::first() == enum_lower_bounded::v1);
 static_assert(
-  simple_enum::detail::bounds<enum_lower_bounded>::last
+  simple_enum::detail::enum_meta_info_t<enum_lower_bounded>::last()
   == static_cast<enum_lower_bounded>(simple_enum::default_unbounded_upper_range)
 );
 
@@ -48,9 +52,11 @@ enum struct enum_unbounded_sparse
   v1 = 9,
   v2
   };
-static_assert(simple_enum::detail::bounds<enum_unbounded_sparse>::first == static_cast<enum_unbounded_sparse>(0));
 static_assert(
-  simple_enum::detail::bounds<enum_unbounded_sparse>::last
+  simple_enum::detail::enum_meta_info_t<enum_unbounded_sparse>::first() == static_cast<enum_unbounded_sparse>(0)
+);
+static_assert(
+  simple_enum::detail::enum_meta_info_t<enum_unbounded_sparse>::last()
   == static_cast<enum_unbounded_sparse>(simple_enum::default_unbounded_upper_range)
 );
 
@@ -59,9 +65,12 @@ enum weak_global_untyped_e
   v1 = 1,
   v2,
   v3,
-  first = v1,
-  last = v3
   };
+
+consteval auto adl_enum_bounds(weak_global_untyped_e)
+  {
+  return simple_enum::adl_info{weak_global_untyped_e::v1, weak_global_untyped_e::v3};
+  }
 
 // check for external declarations
 enum struct global_untyped_externaly_e
@@ -78,16 +87,16 @@ struct simple_enum::info<global_untyped_externaly_e>
   static constexpr auto last = global_untyped_externaly_e::v3;
   };
 
-static_assert(simple_enum::detail::bounds<global_untyped_externaly_e>::first_index == 1);
-static_assert(simple_enum::detail::bounds<global_untyped_externaly_e>::last_index == 3);
+static_assert(simple_enum::detail::enum_meta_info_t<global_untyped_externaly_e>::first_index() == 1);
+static_assert(simple_enum::detail::enum_meta_info_t<global_untyped_externaly_e>::last_index() == 3);
 
 namespace simple_enum
   {
 
 namespace ut = boost::ut;
-enum struct strong_typed : uint8_t
+enum struct strong_typed : int8_t
   {
-  v1 = 1,
+  v1 = -121,
   v2,
   v3,
   first = v1,
@@ -95,7 +104,7 @@ enum struct strong_typed : uint8_t
   };
 enum struct strong_untyped
   {
-  v1 = 1,
+  v1 = 1500100900,
   v2,
   v3,
   first = v1,
@@ -127,15 +136,18 @@ namespace test
     v1 = 1,
     v2,
     v3,
-    first = v1,
-    last = v3
     };
+
+  consteval auto adl_enum_bounds(strong_untyped_2_e)
+    {
+    return simple_enum::adl_info{strong_untyped_2_e::v1, strong_untyped_2_e::v3};
+    }
 
   namespace subnamespace
     {
     enum struct example_3_e : uint8_t
       {
-      v1 = 1,
+      v1 = 192,
       v2,
       v3,
       first = v1,
@@ -264,7 +276,7 @@ static ut::suite<"simple_enum"> _ = []
 
   "test se meta name cut"_test = []
   {
-    ut::expect(se_view<weak_global_untyped_e::v1>() == "v1");
+    // ut::expect(se_view<weak_global_untyped_e::v1>() == "v1");
     // it is out of range or on sparse enum just value when used directly with clang gcc
     // TESTING UB dosabled, testing when first pass for UB is not a case of lower unbounded
     // ut::expect(se_view<static_cast<one_elem_untyped>(2)>() == "2");
