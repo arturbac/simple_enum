@@ -29,13 +29,20 @@ constexpr auto view =
 template<enum_concept enum_type>
 struct enum_cast_t
   {
-  [[nodiscard]]
   static constexpr auto operator()(std::string_view value) noexcept
     -> expected<enum_type, enum_cast_error>;
     
 template<enum_concept enum_type>
 inline constexpr enum_cast_t<enum_type> enum_cast{};
 
+struct enum_index_t
+  {
+  template<enum_concept enum_type>
+  static constexpr auto
+    operator()(enum_type value) noexcept -> expected<std::size_t, enum_index_error>;
+  };
+
+inline constexpr enum_index_t enum_index;
 ```
 ## Motivation
 
