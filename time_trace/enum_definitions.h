@@ -28,27 +28,27 @@ constexpr lorem_ipsum_short operator++(lorem_ipsum_short & value, int) noexcept
   ++value;
   return originalValue;
   }
-  
+
 constexpr lorem_ipsum_long & operator++(lorem_ipsum_long & value) noexcept
   {
   return value = static_cast<lorem_ipsum_long>(static_cast<std::underlying_type_t<lorem_ipsum_long>>(value) + 1);
   }
+
 constexpr lorem_ipsum_long operator++(lorem_ipsum_long & value, int) noexcept
   {
   lorem_ipsum_long originalValue = value;
   ++value;
   return originalValue;
   }
-auto fn = []
-  {
-  using type = lorem_ipsum_short;
-  constexpr size_t size = size_t(type::last)- size_t(type::first) + 1;
-  std::array<std::string_view, size> result{ };
-  for( auto it{ type::first} ; type::last >= it; ++it)
-    result[size_t(it)- size_t(type::first)] = enum_name(it);
-  return result;
-  };
-
+// auto fn = []
+//   {
+//   using type = lorem_ipsum_short;
+//   constexpr size_t size = size_t(type::last)- size_t(type::first) + 1;
+//   std::array<std::string_view, size> result{ };
+//   for( auto it{ type::first} ; type::last >= it; ++it)
+//     result[size_t(it)- size_t(type::first)] = enum_name(it);
+//   return result;
+//   };
 
 enum struct strong_typed : uint8_t
   {
