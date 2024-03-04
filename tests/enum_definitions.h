@@ -84,7 +84,7 @@ namespace weak
   {
 enum weak_typed_e : uint8_t
   {
-  v1 = 1,
+  v1 = 3,
   v2,
   v3
   };

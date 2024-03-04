@@ -33,18 +33,18 @@ enum struct enum_externaly_bounded
 static void simple_in_enum_bounds()
   {
   // can be evaluated at compile time
-  static_assert(simple_enum::enum_name(enum_bounded::v2) == "v2");
+  static_assert(simple_enum::enum_name(enum_bounded::v1) == "v1");
 
   // or at runtime
   auto x0{enum_bounded::v2};
   // enum_bounded has definitions for first and last so compile time is limited to processing meta info for declared
   // range only
-  std::cout << simple_enum::enum_name(x0);
+  std::cout << simple_enum::enum_name(x0) << "\n";
 
   // enum_upper_bounded has definitions for last so compile time is limited to processing meta info for range
   // [0..last] range only for upper bounded enum may be sparse enum used with not present first elements including 0
   auto x1{enum_upper_bounded::v2};
-  std::cout << simple_enum::enum_name(x1);
+  std::cout << simple_enum::enum_name(x1) << "\n";
   }
 
 // lets see example for std::memory_order externally declaring boundary
@@ -69,7 +69,7 @@ struct simple_enum::info<std::memory_order>
 static void memory_order_externaly_bounding()
   {
   auto x1{std::memory_order::release};
-  std::cout << simple_enum::enum_name(x1);
+  std::cout << simple_enum::enum_name(x1) << "\n";
   }
 
 int main()
@@ -78,3 +78,9 @@ int main()
   memory_order_externaly_bounding();
   return EXIT_SUCCESS;
   }
+
+/*
+v2
+v2
+release
+*/

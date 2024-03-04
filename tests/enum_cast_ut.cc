@@ -19,6 +19,11 @@ static void enum_cast_test()
       expect(t1.value() == asteroides);
       }
       {
+      auto t1{enum_cast<lorem_ipsum_long>("stellarum")};
+      expect(fatal(t1.has_value()));
+      expect(t1.value() == stellarum);
+      }
+      {
       auto t1{enum_cast<lorem_ipsum_long>("eu")};
       expect(fatal(t1.has_value()));
       expect(t1.value() == eu);
@@ -29,9 +34,9 @@ static void enum_cast_test()
       expect(t1.value() == strong_typed::v2);
       }
       {
-      auto t1{enum_cast<weak::weak_typed_e>("v1")};
+      auto t1{enum_cast<weak::weak_typed_e>("v3")};
       expect(fatal(t1.has_value()));
-      expect(t1.value() == weak::weak_typed_e::v1);
+      expect(t1.value() == weak::weak_typed_e::v3);
       }
       {
       auto t1{enum_cast<weak::weak_typed_e>("v1")};
