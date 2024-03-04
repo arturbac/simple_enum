@@ -6,7 +6,10 @@
 
 ## Features
 
-This project offers efficient in compile time instantiation enum_name function object and std::ranges::views like enum_view  for bounded enumerations and other utilities
+- **Compile-time Enum Name**: Instantiates `enum_name` function objects at compile time for efficient enum to string conversion.
+- **Bounded Enum Views**: Provides `enum_view` for iterating over bounded enumerations, leveraging `std::ranges::views`.
+- **Enum to String and Back**: Supports conversion from enum to `std::string_view` and vice versa with minimal compile-time overhead.
+- **Enumeration Indexing**: Offers `enum_index`, allowing for index retrieval of enum values based on compile-time metadata.
 
 ```cpp
 
@@ -53,15 +56,6 @@ The inception of this project was driven by the noticeable absence of an efficie
 `simple_enum` is under active development on **Clang 17**, **GCC 13** and tested on **MSVC** with support down to **Clang 13** and**GCC 10**.
 
 Minimum standard required by `simple_enum` is c++20, but it is tested and adopted to exploit c++23 features where it is possible.
-
-## Features
-
-- **Zero Runtime Cost**: Retrieving `enum_name` for a runtime variable incurs no runtime overhead, just constant literal string_view.
-- **Compile-time Efficiency**: Compile-time computation is confined to the number of elements within a range. This efficiency is made possible through the `bounded_enum` concept when declared for an enum type.
-- **Support for Unbounded Enums**: While the library is optimized for bounded enums, it also accommodates unbounded enums. By default, it utilizes `simple_enum::default_unbounded_upper_range`, which users can override according to their requirements.
-- **Optimized Enum Name Deduction**: The library employs a strategic optimization for enum name deduction, ensuring that only one loop is executed for the first enumeration. Subsequent enumerations are parsed with a minimized string literal range, further enhancing the compile time efficiency of the process.
-- **Conversion of std::string_view to Enumeration Type**: The operation complementary to enum_name is facilitated by the function object enum_cast, enabling the conversion from std::string_view back to the corresponding enumeration type.
-- **Enumeration Iteration with ranges::views Compatibility**: The enum_view provides functionality for iterating over enumeration values, designed to be compatible with the ranges::views framework.
 
 ## Planned features
 
