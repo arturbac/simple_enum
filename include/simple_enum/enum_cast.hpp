@@ -23,7 +23,7 @@ namespace detail
   {
   template<enum_concept enum_type>
   [[nodiscard]]
-  constexpr auto sorted_indices() noexcept
+  constexpr auto sorted_indices() noexcept -> std::array<std::size_t, detail::enum_meta_info_t<enum_type>::size()>
     {
     using enum_meta_info = detail::enum_meta_info_t<enum_type>;
     std::array<std::size_t, enum_meta_info::size()> indices;
@@ -31,7 +31,8 @@ namespace detail
     std::sort(
       indices.begin(),
       indices.end(),
-      [](std::size_t a, std::size_t b) noexcept { return enum_meta_info::meta_data[a] < enum_meta_info::meta_data[b]; }
+      [](std::size_t a, std::size_t b) noexcept -> bool
+      { return enum_meta_info::meta_data[a] < enum_meta_info::meta_data[b]; }
     );
     return indices;
     }
@@ -53,7 +54,7 @@ namespace detail
     using enum_meta_info = detail::enum_meta_info_t<enum_type>;
     using sorted_indices_type = detail::enum_meta_info_sorted_indices_t<enum_type>;
 
-    auto comp = [&](size_t const idx, std::string_view const val) noexcept
+    auto comp = [&](std::size_t const idx, std::string_view const val) noexcept
     { return enum_meta_info::meta_data[idx].as_view() < val; };
 
     auto it = std::lower_bound(sorted_indices_type::indices.begin(), sorted_indices_type::indices.end(), target, comp);
