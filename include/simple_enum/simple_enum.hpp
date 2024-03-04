@@ -152,10 +152,10 @@ namespace detail
   template<typename enumeration>
   consteval auto get_meta_info()
     {
-    if constexpr(has_info_specialization<enumeration>)
-      return info<enumeration>{};
-    else if constexpr(has_valid_adl_enum_bounds<enumeration>)
+    if constexpr(has_valid_adl_enum_bounds<enumeration>)
       return adl_enum_bounds(enumeration{});
+    else if constexpr(has_info_specialization<enumeration>)
+      return info<enumeration>{};
     else
       return typename msvc_meta_info_wrapper<enumeration>::type{};
     }
@@ -345,7 +345,8 @@ namespace detail
   }  // namespace detail
 
 template<typename enumeration>
-concept bounded_enum = detail::has_info_specialization<enumeration> || detail::internaly_bounded_enum<enumeration>;
+concept bounded_enum = has_valid_adl_enum_bounds<enumeration> || detail::has_info_specialization<enumeration>
+                       || detail::internaly_bounded_enum<enumeration>;
 
 struct enum_name_t
   {
