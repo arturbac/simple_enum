@@ -1,8 +1,13 @@
+#ifdef USE_SIMPLE_ENUM
 #include <simple_enum/enum_cast.hpp>
-#include "enum_definitions.h"
-
 using simple_enum::enum_cast;
 using simple_enum::enum_name;
+#else
+#include <magic_enum.hpp>
+using magic_enum::enum_cast;
+using magic_enum::enum_name;
+#endif
+#include "enum_definitions.h"
 
 int main()
   {

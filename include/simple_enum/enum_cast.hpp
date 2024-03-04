@@ -4,6 +4,7 @@
 
 #include <numeric>
 #include <algorithm>
+#include <iterator>
 
 #include "detail/static_call_operator_prolog.h"
 
@@ -46,9 +47,46 @@ namespace detail
     static constexpr indicies_array_type indices{sorted_indices<enum_type>()};
     };
 
+  // Idea from Andrei Alexandrescu on improved lower bound
+  template<std::random_access_iterator iterator, typename value_type, typename compare_type>
+  constexpr auto bound_leaning_lower_bound(
+    iterator first, iterator last, value_type const & v, compare_type less
+  ) noexcept(noexcept(less(*first, v))) -> iterator
+    {
+    if(first == last)
+      return last;
+
+    auto middle = first + std::distance(first, last) / 2;
+    if(less(*middle, v))
+      {
+      for(first = middle + 1; first < last; first = middle + 1)
+        {
+        middle = first + 3 * std::distance(first, last) / 4;
+        if(!less(*middle, v))
+          {
+          last = middle;
+          break;
+          }
+        }
+      }
+    else
+      {
+      for(last = middle; first < last; last = middle)
+        {
+        middle = first + std::distance(first, last) / 4;
+        if(less(*middle, v))
+          {
+          first = middle + 1;
+          break;
+          }
+        }
+      }
+    return std::lower_bound(first, last, v, std::move(less));
+    }
+
   template<enum_concept enum_type>
   [[nodiscard]]
-  constexpr auto lower_bound_search_indices(std::string_view const target) ->
+  constexpr auto lower_bound_search_indices(std::string_view const target) noexcept ->
     typename enum_meta_info_sorted_indices_t<enum_type>::iterator
     {
     using enum_meta_info = detail::enum_meta_info_t<enum_type>;
@@ -59,8 +97,10 @@ namespace detail
       auto comp = [&](std::size_t const idx, std::string_view const val) noexcept -> bool
       { return enum_meta_info::meta_data[idx].as_view() < val; };
 
-      auto it
-        = std::lower_bound(sorted_indices_type::indices.begin(), sorted_indices_type::indices.end(), target, comp);
+      auto it = bound_leaning_lower_bound(
+        sorted_indices_type::indices.begin(), sorted_indices_type::indices.end(), target, comp
+      );
+      // = std::lower_bound(sorted_indices_type::indices.begin(), sorted_indices_type::indices.end(), target, comp);
 
       if(it != sorted_indices_type::indices.end() && enum_meta_info::meta_data[*it].as_view() == target) [[likely]]
         return it;

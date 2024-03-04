@@ -1,10 +1,45 @@
 #include <simple_enum/enum_cast.hpp>
 #include "simple_enum_tests.hpp"
+#include <utility>
 
 namespace simple_enum
   {
 static void enum_cast_test()
   {
+  "bl_lower_bound"_test = []
+  {
+    using simple_enum::detail::bound_leaning_lower_bound;
+      {
+      static constexpr std::array data{10, 20, 30, 40, 50, 60, 70, 80, 90};
+      auto it = bound_leaning_lower_bound(data.begin(), data.end(), 0, std::less<int>{});
+      expect(it == std::lower_bound(data.begin(), data.end(), 0, std::less<int>{}));
+      }
+      {
+      static constexpr std::array data{10, 20, 30, 40, 50, 60, 70, 80, 90};
+      auto it = bound_leaning_lower_bound(data.begin(), data.end(), 10, std::less<int>{});
+      expect(it == std::lower_bound(data.begin(), data.end(), 10, std::less<int>{}));
+      }
+      {
+      static constexpr std::array data{10, 20, 30, 40, 50, 60, 70, 80, 90};
+      auto it = bound_leaning_lower_bound(data.begin(), data.end(), 190, std::less<int>{});
+      expect(it == std::lower_bound(data.begin(), data.end(), 190, std::less<int>{}));
+      }
+      {
+      static constexpr std::array data{10, 20, 30, 40, 50, 60, 70, 80, 90};
+      auto it = bound_leaning_lower_bound(data.begin(), data.end(), 90, std::less<int>{});
+      expect(it == std::lower_bound(data.begin(), data.end(), 90, std::less<int>{}));
+      }
+      {
+      static constexpr std::array data{10, 20, 30, 40, 50, 60, 70, 80, 90};
+      auto it = bound_leaning_lower_bound(data.begin(), data.end(), 30, std::less<int>{});
+      expect(it == std::lower_bound(data.begin(), data.end(), 30, std::less<int>{}));
+      }
+      {
+      static constexpr std::array data{10, 20, 30, 40, 50, 60, 70, 80, 90};
+      auto it = bound_leaning_lower_bound(data.begin(), data.end(), 70, std::less<int>{});
+      expect(it == std::lower_bound(data.begin(), data.end(), 70, std::less<int>{}));
+      }
+  };
   "enum_cast success"_test = []
   {
     using enum lorem_ipsum_long;
