@@ -47,73 +47,59 @@ namespace detail
     static constexpr indicies_array_type indices{sorted_indices<enum_type>()};
     };
 
-  // Idea from Andrei Alexandrescu on improved lower bound
-  template<std::random_access_iterator iterator, typename value_type, typename compare_type>
+  // optimised for small ranges like up to ~256 elements
+  template<std::random_access_iterator Iterator, typename ValueType, typename CompareType>
   constexpr auto bound_leaning_lower_bound(
-    iterator first, iterator last, value_type const & v, compare_type less
-  ) noexcept(noexcept(less(*first, v))) -> iterator
+    Iterator first, Iterator last, ValueType const & v, CompareType less
+  ) noexcept(noexcept(less(*first, v))) -> Iterator
     {
     if(first == last)
       return last;
 
-    auto middle = first + std::distance(first, last) / 2;
+    auto size = last - first;
+    auto middle = first + size / 2;
+
     if(less(*middle, v))
       {
-      for(first = middle + 1; first < last; first = middle + 1)
-        {
-        middle = first + 3 * std::distance(first, last) / 4;
-        if(!less(*middle, v))
-          {
-          last = middle;
-          break;
-          }
-        }
+      first = middle + 1;
+      while(first < last && less(*(first + (last - first) / 2), v))
+        first += (last - first) / 2 + 1;
       }
     else
       {
-      for(last = middle; first < last; last = middle)
-        {
-        middle = first + std::distance(first, last) / 4;
-        if(less(*middle, v))
-          {
-          first = middle + 1;
-          break;
-          }
-        }
+      last = middle;
+      while(first < last && !less(*(first + (last - first) / 2), v))
+        last = first + (last - first) / 2;
       }
-    return std::lower_bound(first, last, v, std::move(less));
+
+    // Since ranges are small using linear search.
+    for(; first < last; ++first)
+      if(!less(*first, v))
+        break;
+    return first;
     }
 
-  template<enum_concept enum_type>
+  template<enum_concept EnumType>
   [[nodiscard]]
-  constexpr auto lower_bound_search_indices(std::string_view const target) noexcept ->
-    typename enum_meta_info_sorted_indices_t<enum_type>::iterator
+  constexpr auto lower_bound_search_indices(std::string_view target) noexcept ->
+    typename detail::enum_meta_info_sorted_indices_t<EnumType>::iterator
     {
-    using enum_meta_info = detail::enum_meta_info_t<enum_type>;
-    using sorted_indices_type = detail::enum_meta_info_sorted_indices_t<enum_type>;
+    using enum_meta_info = detail::enum_meta_info_t<EnumType>;
+    using sorted_indices_type = detail::enum_meta_info_sorted_indices_t<EnumType>;
 
-    if constexpr(enum_meta_info::size() > 4)
-      {
-      auto comp = [&](std::size_t const idx, std::string_view const val) noexcept -> bool
-      { return enum_meta_info::meta_data[idx].as_view() < val; };
+    auto comp = [&](std::size_t idx, std::string_view val) noexcept -> bool
+    { return enum_meta_info::meta_data[idx].as_view() < val; };
 
-      auto it = bound_leaning_lower_bound(
-        sorted_indices_type::indices.begin(), sorted_indices_type::indices.end(), target, comp
-      );
-      // = std::lower_bound(sorted_indices_type::indices.begin(), sorted_indices_type::indices.end(), target, comp);
+    auto it = bound_leaning_lower_bound(
+      sorted_indices_type::indices.begin(), sorted_indices_type::indices.end(), target, comp
+    );
 
-      if(it != sorted_indices_type::indices.end() && enum_meta_info::meta_data[*it].as_view() == target) [[likely]]
-        return it;
-      else
-        return sorted_indices_type::indices.end();
-      }
+    if(it != sorted_indices_type::indices.end() && enum_meta_info::meta_data[*it].as_view() == target)
+      return it;
     else
-      {
-      auto comp = [&target](std::size_t const idx) noexcept -> bool
-      { return enum_meta_info::meta_data[idx].as_view() == target; };
-      return std::find_if(sorted_indices_type::indices.begin(), sorted_indices_type::indices.end(), comp);
-      }
+      return sorted_indices_type::indices.end();
     }
+
   }  // namespace detail
 
 enum struct enum_cast_error
