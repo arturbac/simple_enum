@@ -59,7 +59,6 @@ Minimum standard required by `simple_enum` is c++20, but it is tested and adopte
 ## Planned features
 
 - emum bitmasks support
-- for bounded enumerations declare generic templates ranges views in namesapce simple_enum for enumeration values and string_view names
 - feature request are possible too
 
 ## Examples
