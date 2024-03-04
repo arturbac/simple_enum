@@ -33,16 +33,33 @@ concept enum_concept = std::is_enum_v<type>;
 inline constexpr auto default_unbounded_upper_range = 10;
 #endif
 
-///\brief info class is intended to custom specialize by users if they wish to add external enum bounds info
+/**
+ * @brief Struct template designed for user specialization to provide enumeration bounds information.
+ *
+ * This struct serves as a template for users to define external bounds for enumeration types. By specializing
+ * this template, users can supply custom boundary information (first and last values) for specific enumerations,
+ * facilitating operations that require knowledge of enumeration range. It is required that the value of `first`
+ * is less than or equal to the value of `last`, representing the valid range of the enumeration.
+ *
+ * Specialization should define two static constexpr members, `first` and `last`, representing the minimum
+ * and maximum values of the enumeration, respectively. Both `first` and `last` should be of the enumeration type,
+ * and adhere to the condition that `first <= last`.
+ *
+ * Example of user-defined specialization for `std::memory_order`:
+ * @code
+ * namespace simple_enum {
+ *   template<>
+ *   struct info<std::memory_order> {
+ *     static constexpr auto first = std::memory_order::relaxed; // Minimum value
+ *     static constexpr auto last = std::memory_order::seq_cst;  // Maximum value, ensuring first <= last
+ *   };
+ * }
+ * @endcode
+ */
 template<typename enumeration>
 struct info
   {
   };
-
-///\brief info function to use with ADL is intended to custom specialize by users if they wish to add external enum
-/// bounds info
-/// user overload should return std::initializer list with 2 elements first,last of any std::integral type
-/// consteval auto adl_enum_bounds( my_enum ) { return simple_enum::adl_info{my_enum::v1, my_enum::v3}; }
 
 template<typename enumeration>
 struct adl_info
@@ -51,13 +68,41 @@ struct adl_info
   enumeration last;
   };
 
-template<typename enumeration>
+/**
+ * @brief Function intended for ADL (Argument-Dependent Lookup) to provide custom enumeration bounds.
+ *
+ * This function is designed to be specialized by users who wish to add external enumeration bounds
+ * information via ADL, specifically for enumeration types that satisfy the `enum_concept` constraint.
+ * A user-defined specialization should return an instance of `adl_info` constructed with two elements:
+ * the first and last bounds of the enumeration, where both elements are of any `std::integral` type.
+ *
+ * The `adl_info` struct is templated to work with enumeration types.
+ *
+ * Example specialization for `my_enum`, assuming `my_enum` satisfies `enum_concept` beiing enumeration:
+ * @code
+ * consteval auto adl_enum_bounds(my_enum) -> simple_enum::adl_info<my_enum> {
+ *     return {my_enum::v1, my_enum::v3};
+ * }
+ * @endcode
+ *
+ * Additionally, a template deduction guide is provided for `adl_info` to facilitate its construction
+ * with enumeration types that meet the `enum_concept` criteria:
+ * @code
+ * template<typename enumeration>
+ * adl_info(enumeration const &, enumeration const &) -> adl_info<enumeration>;
+ * @endcode
+ *
+ * @note Specializations of this function must ensure that first <= last.
+ *
+ * @return An instance of `adl_info` initialized with the specified first and last bounds of the
+ * compliant enumeration.
+ */
+template<enum_concept enumeration>
 adl_info(enumeration const &, enumeration const &) -> adl_info<enumeration>;
 
 template<typename enumeration>
 constexpr auto adl_enum_bounds() -> void;
 
-// Concept to check if adl_enum_bounds returns std::initializer_list<enumeration>
 template<typename enumeration>
 concept has_valid_adl_enum_bounds = requires(enumeration e) {
   {
@@ -361,6 +406,12 @@ struct enum_name_t
     }
   };
 
+/**
+ * @brief Converts enumeration values to string names using compile-time metadata.
+ *
+ * `enum_name_t` allows for compile-time conversion of enum values to their string representations
+ * by utilizing metadata defined during compile time evaluation
+ */
 inline constexpr enum_name_t enum_name;
 
   }  // namespace simple_enum::inline v0_5
