@@ -6,7 +6,6 @@
 
 ## Features
 
-- **Compile-time Enum Name**: Instantiates `enum_name` function objects at compile time for efficient enum to string conversion.
 - **Bounded Enum Views**: Provides `enum_view` for iterating over bounded enumerations, leveraging `std::ranges::views`.
 - **Enum to String and Back**: Supports conversion from enum to `std::string_view` and vice versa with minimal compile-time overhead.
 - **Enumeration Indexing**: Offers `enum_index`, allowing for index retrieval of enum values based on compile-time metadata.
