@@ -10,25 +10,9 @@
 #endif
 #include <array>
 
-#define SIMPLE_ENUM_NAME_VERSION "0.5.1"
+#define SIMPLE_ENUM_NAME_VERSION "0.5.2"
 
-#pragma push_macro("static_constexpr")
-#pragma push_macro("static_call_operator")
-#pragma push_macro("static_call_operator_const")
-
-#if __cplusplus > 202002L
-#define static_constexpr static
-#else
-#define static_constexpr
-#endif
-
-#if __cplusplus >= 202301L && defined(__cpp_static_call_operator)
-#define static_call_operator static
-#define static_call_operator_const
-#else
-#define static_call_operator
-#define static_call_operator_const const
-#endif
+#include "detail/static_call_operator_prolog.h"
 
 namespace simple_enum::inline v0_5
   {
@@ -240,6 +224,12 @@ namespace detail
     {
     char const * data;
     size_t size;
+
+    constexpr auto as_view() const noexcept -> std::string_view { return std::string_view{data, size}; }
+
+    constexpr auto operator==(meta_name r) const noexcept -> bool { return as_view() == r.as_view(); }
+
+    constexpr auto operator<=>(meta_name r) const noexcept { return as_view() <=> r.as_view(); }
     };
 
   template<auto enumeration>
@@ -305,16 +295,25 @@ namespace detail
       apply_meta_enum<enum_type, first + 1, size - 1>(meta, enum_beg, std::make_index_sequence<size - 1>{});
     }
 
-  template<enum_concept enum_type>
-  constexpr auto enum_meta_array() noexcept
+  template<enum_concept enum_type, std::integral auto first_index, std::integral auto last_index>
+  constexpr auto prepare_meta_data() noexcept -> std::array<detail::meta_name, last_index - first_index + 1>
     {
-    using bounds_type = detail::bounds<enum_type>;
-    static_constexpr constexpr auto first_index{bounds_type::first_index};
-    static_constexpr constexpr auto last_index{bounds_type::last_index};
     std::array<detail::meta_name, last_index - first_index + 1> meta;
     detail::fold_array<enum_type, first_index, last_index, last_index - first_index + 1>(meta);
     return meta;
     }
+
+  template<enum_concept enum_type>
+  struct enum_meta_info_t
+    {
+    using bounds_type = detail::bounds<enum_type>;
+    static constexpr auto first_index{bounds_type::first_index};
+    static constexpr auto last_index{bounds_type::last_index};
+    static constexpr auto meta_data{detail::prepare_meta_data<enum_type, first_index, last_index>()};
+
+    static constexpr auto size() noexcept -> std::size_t { return last_index - first_index + 1; }
+    };
+
   }  // namespace detail
 
 template<typename enumeration>
@@ -326,14 +325,11 @@ struct enum_name_t
   static_call_operator constexpr auto operator()(enum_type value) static_call_operator_const noexcept
     -> std::string_view
     {
-    using bounds_type = detail::bounds<enum_type>;
-    static_constexpr constexpr auto first_index{bounds_type::first_index};
-    static_constexpr constexpr auto last_index{bounds_type::last_index};
-    static_constexpr constexpr auto meta{detail::enum_meta_array<enum_type>()};
+    using enum_meta_info = detail::enum_meta_info_t<enum_type>;
     auto const requested_index{simple_enum::to_underlying(value)};
-    if(requested_index >= first_index && requested_index <= last_index)
+    if(requested_index >= enum_meta_info::first_index && requested_index <= enum_meta_info::last_index)
       {
-      detail::meta_name const & res{meta[size_t(requested_index - first_index)]};
+      detail::meta_name const & res{enum_meta_info::meta_data[size_t(requested_index - enum_meta_info::first_index)]};
       return std::string_view{res.data, res.size};
       }
     else
@@ -345,6 +341,5 @@ inline constexpr enum_name_t enum_name;
 
   }  // namespace simple_enum::inline v0_5
 
-#pragma pop_macro("static_call_operator_const")
-#pragma pop_macro("static_call_operator")
-#pragma pop_macro("static_constexpr")
+#include "detail/static_call_operator_epilog.h"
+

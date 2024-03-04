@@ -1,68 +1,9 @@
 #include <simple_enum/ranges_views.hpp>
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wctad-maybe-unsupported"
-#pragma clang diagnostic ignored "-Wreserved-identifier"
-#pragma clang diagnostic ignored "-Wundef"
-#include <boost/ut.hpp>
-#pragma clang diagnostic pop
+#include "simple_enum_tests.hpp"
 #include <ranges>
-#include <string_view>
-#include <array>
 
-namespace ut = boost::ut;
 namespace views = std::views;
 namespace ranges = std::ranges;
-using ut::eq;
-using ut::expect;
-using ut::literals::operator""_test;
-
-std::ostream & operator<<(std::ostream & os, simple_enum::enum_concept auto const & value)
-  {
-  os << simple_enum::enum_name(value);
-  return os;
-  }
-
-enum struct strong_typed : uint8_t
-  {
-  v1 = 1,
-  v2,
-  v3
-  };
-
-template<>
-struct simple_enum::info<strong_typed>
-  {
-  static constexpr auto first = strong_typed::v1;
-  static constexpr auto last = strong_typed::v3;
-  };
-
-enum struct strong_untyped
-  {
-  v1,
-  v2,
-  v3
-  };
-
-template<>
-struct simple_enum::info<strong_untyped>
-  {
-  static constexpr auto first = strong_untyped::v1;
-  static constexpr auto last = strong_untyped::v3;
-  };
-
-enum weak_typed_e : uint8_t
-  {
-  v1,
-  v2,
-  v3
-  };
-
-template<>
-struct simple_enum::info<weak_typed_e>
-  {
-  static constexpr auto first = weak_typed_e::v1;
-  static constexpr auto last = weak_typed_e::v3;
-  };
 
 namespace subnamespace
   {
@@ -125,12 +66,12 @@ static_assert(
 );
 static_assert(ranges::range<simple_enum::enum_view<my_enum>>, "enum_view must satisfy ranges::range");
 
-static_assert(ranges::range<simple_enum::enum_view<weak_typed_e>>);
+static_assert(ranges::range<simple_enum::enum_view<weak::weak_typed_e>>);
 
+namespace simple_enum
+  {
 static void view_test()
   {
-  using namespace simple_enum;
-
   "strong_typed enumeration"_test = []
   {
     constexpr auto view = enum_view<strong_typed>{strong_typed::v1, strong_typed::v3};
@@ -161,6 +102,7 @@ static void view_test()
 
   "weak_typed_e enumeration"_test = []
   {
+    using weak::weak_typed_e;
     constexpr auto view = enum_view<weak_typed_e>{weak_typed_e::v1, weak_typed_e::v3};
     auto it = view.begin();
 
@@ -192,8 +134,6 @@ static void view_test()
 
 static void ranges_transform_test()
   {
-  using simple_enum::enum_name;
-  using simple_enum::enum_view;
   using std::array;
   using std::back_inserter;
   using std::string_view;
@@ -244,23 +184,24 @@ static void ranges_transform_test()
 
   "weak_typed_e enumeration transform"_test = []
   {
-    {
-    constexpr auto view = enum_view{weak_typed_e::v1, weak_typed_e::v1} | views::transform(enum_name);
-    static constexpr array expected{"v1"sv};
-    expect(ranges::equal(view, expected));
-    vector<string_view> results;
-    ranges::copy(view, back_inserter(results));
-    expect(ranges::equal(results, expected));
-    }
+    using weak::weak_typed_e;
+      {
+      constexpr auto view = enum_view{weak_typed_e::v1, weak_typed_e::v1} | views::transform(enum_name);
+      static constexpr array expected{"v1"sv};
+      expect(ranges::equal(view, expected));
+      vector<string_view> results;
+      ranges::copy(view, back_inserter(results));
+      expect(ranges::equal(results, expected));
+      }
 
-    {
-    constexpr auto view = enum_view<weak_typed_e>{} | views::transform(enum_name);
-    static constexpr array expected{"v1"sv, "v2"sv, "v3"sv};
-    expect(ranges::equal(view, expected));
-    vector<string_view> results;
-    ranges::copy(view, back_inserter(results));
-    expect(ranges::equal(results, expected));
-    }
+      {
+      constexpr auto view = enum_view<weak_typed_e>{} | views::transform(enum_name);
+      static constexpr array expected{"v1"sv, "v2"sv, "v3"sv};
+      expect(ranges::equal(view, expected));
+      vector<string_view> results;
+      ranges::copy(view, back_inserter(results));
+      expect(ranges::equal(results, expected));
+      }
   };
 
   "subnamespace::weak_untyped_3_e enumeration transform"_test = []
@@ -286,9 +227,10 @@ static void ranges_transform_test()
       }
   };
   }
+  }  // namespace simple_enum
 
 int main()
   {
-  view_test();
-  ranges_transform_test();
+  simple_enum::view_test();
+  simple_enum::ranges_transform_test();
   }

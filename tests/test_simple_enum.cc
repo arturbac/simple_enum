@@ -1,5 +1,5 @@
-#include "simple_enum/simple_enum.hpp"
-#include <boost/ut.hpp>
+#include "simple_enum_tests.hpp"
+
 enum struct enum_bounded
   {
   v1 = 1,

@@ -26,6 +26,16 @@ constexpr auto view =
       enum_view<weak_typed_e>{} 
       | views::transform(enum_name);
 
+template<enum_concept enum_type>
+struct enum_cast_t
+  {
+  [[nodiscard]]
+  static constexpr auto operator()(std::string_view value) noexcept
+    -> expected<enum_type, enum_cast_error>;
+    
+template<enum_concept enum_type>
+inline constexpr enum_cast_t<enum_type> enum_cast{};
+
 ```
 ## Motivation
 
@@ -43,11 +53,12 @@ Minimum standard required by `simple_enum` is c++20, but it is tested and adopte
 - **Compile-time Efficiency**: Compile-time computation is confined to the number of elements within a range. This efficiency is made possible through the `bounded_enum` concept when declared for an enum type.
 - **Support for Unbounded Enums**: While the library is optimized for bounded enums, it also accommodates unbounded enums. By default, it utilizes `simple_enum::default_unbounded_upper_range`, which users can override according to their requirements.
 - **Optimized Enum Name Deduction**: The library employs a strategic optimization for enum name deduction, ensuring that only one loop is executed for the first enumeration. Subsequent enumerations are parsed with a minimized string literal range, further enhancing the compile time efficiency of the process.
+- **Conversion of std::string_view to Enumeration Type**: The operation complementary to enum_name is facilitated by the function object enum_cast, enabling the conversion from std::string_view back to the corresponding enumeration type.
+- **Enumeration Iteration with ranges::views Compatibility**: The enum_view provides functionality for iterating over enumeration values, designed to be compatible with the ranges::views framework.
 
 ## Planned features
 
 - emum bitmasks support
-- parse enum, reverse operation string_view -> enumeration
 - for bounded enumerations declare generic templates ranges views in namesapce simple_enum for enumeration values and string_view names
 - feature request are possible too
 
@@ -98,7 +109,7 @@ struct simple_enum::info<std::memory_order>
   inline constexpr auto default_unbounded_upper_range = 10;
   }
 
-//  ranges views compatibile enum_view for bounded enumerations
+  //  ranges views compatible enum_view for bounded enumerations
   #include <simple_enum/ranges_views.hpp>
 
   enum weak_typed_e : uint8_t { v1, v2, v3 };
@@ -119,6 +130,19 @@ struct simple_enum::info<std::memory_order>
                       | views::transform(enum_name);
   static constexpr array expected{"v1"sv, "v2"sv, "v3"sv};
   expect(ranges::equal(view, expected));
+  
+  // enum_cast function object for enabling the conversion from std::string_view back to the corresponding enumeration type
+  #include <simple_enum/enum_cast.hpp>
+  enum struct lorem_ipsum { eu, occaecat, dolore, excepteur, mollit, adipiscing, sunt, ut, aliqua, in_case_of_error };
+  std::array some_data{
+     "excepteur", "aliqua", "occaecat", "eu", "sunt", "__SNEAKY BUG__", "adipiscing", "ut", "mollit", "dolore"};
+  auto view_over_lorem_ipsum2 = some_data 
+                        | std::views::transform(simple_enum::enum_cast<lorem_ipsum>);
+  for ( auto data : view_over_lorem_ipsum2 )
+    if(data.has_value())
+      std::cout << "  " << enum_name(*data) << '\n';
+    else
+      std::cout << "error could happen" << enum_name(data.error()) << '\n';
 ```
 ## Performance 
 How v0.2.0 compares with Instantiation time:
