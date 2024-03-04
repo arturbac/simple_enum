@@ -82,6 +82,7 @@ namespace detail
       T::last
       } -> std::convertible_to<T>;
   };
+
   template<typename T>
   concept internaly_bounded_enum = requires(T e) {
     requires enum_concept<T>;
@@ -89,22 +90,16 @@ namespace detail
     requires upper_bounded_enum<T>;
     requires(simple_enum::to_underlying(T::last) >= simple_enum::to_underlying(T::first));
   };
+  // clang-format off
+  template<typename enumeration>
+  concept has_info_specialization = requires {
+    { info<enumeration>::first } -> std::convertible_to<decltype(info<enumeration>::last)>;
+    { info<enumeration>::last } -> std::convertible_to<decltype(info<enumeration>::first)>;
 
-  template<typename enumeration, typename = void>
-  struct has_info_specialization_t : std::false_type
-    {
+    requires info<enumeration>::first <= info<enumeration>::last;
     };
 
-  template<typename enumeration>
-  struct has_info_specialization_t<
-    enumeration,
-    std::void_t<decltype(info<enumeration>::first), decltype(info<enumeration>::last)>> : std::true_type
-    {
-    };
-
-  template<typename enumeration>
-  concept has_info_specialization = has_info_specialization_t<enumeration>::value;
-
+  // clang-format on
   struct meta_info_bounds_traits
     {
     bool lower_bound;
