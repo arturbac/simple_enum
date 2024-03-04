@@ -44,6 +44,33 @@ struct enum_index_t
     }
   };
 
+/**
+ * @brief Provides compile or runtime conversion of enum values to their indices.
+ *
+ * `enum_index_t` is designed to convert enum values to their corresponding indices within the defined range
+ *
+ * ## Usage
+ * The operator() converts an enumeration value to its index, returning a `expected<std::size_t, enum_index_error>`:
+ * - On success, it returns the index of the enumeration value.
+ * - On failure, it returns `unexpected{enum_index_error::out_of_range}`, indicating the value is outside the valid
+ * range.
+ *
+ * ## Example
+ *
+ * @code{.cpp}
+ * enum class my_enum { value1, value2, value3 };
+ *
+ * consteval auto adl_enum_bounds(my_enum)
+ *  { return simple_enum::adl_info{my_enum::value1, my_enum::value3}; }
+ *
+ * auto index = enum_index(my_enum::value2);
+ * if(index) {
+ *     // Use the index
+ * } else {
+ *     // Handle the error
+ * }
+ * @endcode
+ */
 inline constexpr enum_index_t enum_index;
 
 template<enum_concept auto value>

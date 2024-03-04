@@ -131,6 +131,39 @@ struct enum_cast_t
     }
   };
 
+/**
+ * @brief Provides compile or runtime conversion from `std::string_view` to enum values.
+ *
+ * `enum_cast_t` is designed for converting string representations of enumeration values back to their
+ * corresponding enum types.
+ *
+ * ## Error Handling
+ * If the string does not match any enumeration value, `enum_cast_t` returns
+ * `unexpected{enum_cast_error::invalid_cast}`, indicating the conversion failure.
+ *
+ * ## Usage
+ * The operator() attempts to convert a `std::string_view` to the specified enum type, returning a
+ * `expected<enum_type, enum_cast_error>`:
+ * - On success, it returns the enum value corresponding to the given string.
+ * - On failure, it returns an error indicating an invalid cast.
+ *
+ * ## Example
+ *
+ * @code{.cpp}
+ * enum class my_enum { value1, value2, value3 };
+ *
+ * consteval auto adl_enum_bounds(my_enum)
+ *  { return simple_enum::adl_info{my_enum::value1, my_enum::value3}; }
+ *
+ * auto result = enum_cast<my_enum>("value2");
+ * if(result) {
+ *     my_enum e = result.value();
+ *     // Use the enum value
+ * } else {
+ *     // Handle the invalid cast
+ * }
+ * @endcode
+ */
 template<enum_concept enum_type>
 inline constexpr enum_cast_t<enum_type> enum_cast{};
 

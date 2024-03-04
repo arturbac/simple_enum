@@ -68,12 +68,16 @@ struct adl_info
   enumeration last;
   };
 
+template<enum_concept enumeration>
+adl_info(enumeration const &, enumeration const &) -> adl_info<enumeration>;
+
 /**
  * @brief Function intended for ADL (Argument-Dependent Lookup) to provide custom enumeration bounds.
  *
- * This function is designed to be specialized by users who wish to add external enumeration bounds
- * information via ADL, specifically for enumeration types that satisfy the `enum_concept` constraint.
- * A user-defined specialization should return an instance of `adl_info` constructed with two elements:
+ * This function is designed to be defined by users who wish to add external enumeration bounds
+ * information via ADL.
+ * A user-defined function should be placed in same namespace as enumeration and
+ * should return an instance of `adl_info` constructed with two elements:
  * the first and last bounds of the enumeration, where both elements are of any `std::integral` type.
  *
  * The `adl_info` struct is templated to work with enumeration types.
@@ -93,13 +97,7 @@ struct adl_info
  * @endcode
  *
  * @note Specializations of this function must ensure that first <= last.
- *
- * @return An instance of `adl_info` initialized with the specified first and last bounds of the
- * compliant enumeration.
  */
-template<enum_concept enumeration>
-adl_info(enumeration const &, enumeration const &) -> adl_info<enumeration>;
-
 template<typename enumeration>
 constexpr auto adl_enum_bounds() -> void;
 
@@ -407,10 +405,18 @@ struct enum_name_t
   };
 
 /**
- * @brief Converts enumeration values to string names using compile-time metadata.
+ * @brief Converts enumeration values to string names at compile or runtime.
  *
- * `enum_name_t` allows for compile-time conversion of enum values to their string representations
- * by utilizing metadata defined during compile time evaluation
+ * `enum_name_t` allows for conversion of enum values to their string representations by utilizing metadata
+ * defined during compile time evaluation
+ * @code{.cpp}
+ * enum class my_enum { value1, value2, value3 };
+ *
+ * consteval auto adl_enum_bounds(my_enum)
+ *  { return simple_enum::adl_info{my_enum::value1, my_enum::value3}; }
+ *
+ * std::cout << enum_name(my_enum::value2);
+ * @endcode
  */
 inline constexpr enum_name_t enum_name;
 
