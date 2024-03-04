@@ -11,7 +11,13 @@
 
 namespace simple_enum::inline v0_5
   {
-using namespace cxx23;
+using cxx23::bad_expected_access;
+using cxx23::expected;
+using cxx23::in_place;
+using cxx23::in_place_t;
+using cxx23::unexpect;
+using cxx23::unexpect_t;
+using cxx23::unexpected;
 
 namespace detail
   {
@@ -76,14 +82,15 @@ struct enum_cast_t
   {
   [[nodiscard]]
   static_call_operator constexpr auto
-    operator()(std::string_view value) static_call_operator_const noexcept -> expected<enum_type, enum_cast_error>
+    operator()(std::string_view value) static_call_operator_const noexcept
+    -> cxx23::expected<enum_type, enum_cast_error>
     {
     using enum_meta_info = detail::enum_meta_info_t<enum_type>;
     using sorted_indices_type = detail::enum_meta_info_sorted_indices_t<enum_type>;
     auto it{detail::lower_bound_search_indices<enum_type>(value)};
     if(it != sorted_indices_type::indices.end())
       return static_cast<enum_type>(*it + enum_meta_info::first_index);
-    return unexpected{enum_cast_error::invalid_cast};
+    return cxx23::unexpected{enum_cast_error::invalid_cast};
     }
   };
 
