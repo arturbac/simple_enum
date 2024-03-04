@@ -10,7 +10,7 @@ namespace subnamespace
 
 enum weak_untyped_3_e
   {
-  v1 = 1,
+  v1 = -1000,
   v2,
   v3
   };
@@ -25,17 +25,19 @@ struct simple_enum::info<subnamespace::weak_untyped_3_e>
 // Example enumeration for demonstration
 enum class my_enum
   {
-  a,
+  a = 1000,
   b,
   c
   };
 
-template<>
-struct simple_enum::info<my_enum>
-  {
-  static constexpr auto first = my_enum::a;
-  static constexpr auto last = my_enum::c;
-  };
+consteval auto adl_enum_bounds(my_enum) { return simple_enum::adl_info{my_enum::a, my_enum::c}; }
+
+// template<>
+// struct simple_enum::info<my_enum>
+//   {
+//   static constexpr auto first = my_enum::a;
+//   static constexpr auto last = my_enum::c;
+//   };
 
 // Check if the end() is compatible with ranges::end and its iterator satisfies sentinel_for with its own iterator type
 static_assert(
