@@ -1,8 +1,8 @@
 #  Three Ways of Definig Enum Bounds
 
 - [ADL specified bounds using function `adl_enum_bounds`](#adl-specified-bounds-using-function-adl_enum_bounds)
-- [`info` Struct Specialization](#info-struct-specialization)
-- [Defining Enumeration Bounds In-Class](#defining-enumeration-bounds-in-class)
+- [`simple_enum::info` Template struct specialization](#info-struct-specialization)
+- [Defining enumeration bounds in-class](#defining-enumeration-bounds-in-class)
 
 # (ADL) specified bounds using function `adl_enum_bounds`
 
@@ -56,7 +56,7 @@ The `info` struct template enables the specification of custom bounds for enumer
 
 ## Specialization Requirements
 
-To specialize `info` for an enumeration, define two static constexpr members within the specialization:
+To specialize `simple_enum::info` for an enumeration, define two static constexpr members within the specialization:
 
 - `first`: The minimum value of the enumeration.
 - `last`: The maximum value of the enumeration.
@@ -68,13 +68,12 @@ These members should be of the enumeration type, and it is crucial that `first <
 The following example demonstrates how to provide custom bounds for the `std::memory_order` enumeration:
 
 ```cpp
-namespace simple_enum {
-  template<>
-  struct info<std::memory_order> {
-    static constexpr auto first = std::memory_order::relaxed; // Minimum value
-    static constexpr auto last = std::memory_order::seq_cst;  // Maximum value, ensuring first <= last
-  };
-}
+template<>
+struct simple_enum::info<std::memory_order> {
+  static constexpr auto first = std::memory_order::relaxed; // Minimum value
+  static constexpr auto last = std::memory_order::seq_cst;  // Maximum value, ensuring first <= last
+};
+
 ```
 
 # Defining Enumeration Bounds In-Class
