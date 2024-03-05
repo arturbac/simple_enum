@@ -4,8 +4,7 @@
 #define SMALL_VECTORS_EXPECTED
 #include <version>
 
-#if defined(__cpp_lib_expected)
-//&& __cpp_lib_expected >= 202211L
+#if defined(__cpp_lib_expected) && __cpp_lib_expected >= 202211L
 #include <expected>
 
 namespace cxx23
@@ -1245,7 +1244,10 @@ namespace detail
       else
         return expected<value_type, G>(std::in_place, std::forward<EX>(ex).value());
     else
-      return expected<value_type, G>(std::in_place, std::invoke(std::forward<F>(f), std::forward<EX>(ex).error()));
+      {
+      auto invoke_res{std::invoke(std::forward<F>(f), std::forward<EX>(ex).error())};
+      return expected<value_type, G>(unexpect, invoke_res);
+      }
     }
 
   template<bool use_noexcept, typename T>
