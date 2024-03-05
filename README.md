@@ -63,7 +63,7 @@ Minimum standard required by `simple_enum` is c++20, but it is tested and adopte
   
 ## Documentation
 
-[API documentation](docs/api.md)
+[API documentation](docs/index.md)
 
 ## Examples
  
