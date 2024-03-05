@@ -4,6 +4,10 @@
 
 The `enum_index_t` struct provides functionality for compile time and runtime converting enumeration values to their corresponding indices within a predefined enum range. Additionally, `consteval_enum_index` offers a compile-time variant using template arugment of this functionality.
 
+## Usage 
+
+Include the `simple_enum/enum_index.hpp` in your project to use `enum_index`
+
 ## `enum_index_t` Interface
 
 ```cpp
@@ -15,6 +19,8 @@ struct enum_index_t
       -> expected<std::size_t, enum_index_error>;
 };
 ```
+
+
 
 - **Usage**: Converts an enumeration value to its index. Returns a `expected<std::size_t, enum_index_error>` indicating success or failure (`out_of_range` error).
 
