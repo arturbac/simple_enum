@@ -60,6 +60,10 @@ Minimum standard required by `simple_enum` is c++20, but it is tested and adopte
 
 - emum bitmasks support
 - feature request are possible too
+  
+## Documentation
+
+[API documentation](docs/ap.md)
 
 ## Examples
  
