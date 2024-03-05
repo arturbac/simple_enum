@@ -8,7 +8,7 @@ The `enum_index` function object provides functionality for compile time and run
 
 Include the `simple_enum/enum_index.hpp` in your project to use `enum_index`
 
-## `enum_index_t` Interface
+## `enum_index` Interface
 
 ```cpp
 template<enum_concept enum_type>
@@ -18,6 +18,7 @@ struct enum_index_t
     constexpr auto operator()(enum_type value) const noexcept
       -> expected<std::size_t, enum_index_error>;
 };
+inline constexpr enum_index_t enum_index;
 ```
 
 
