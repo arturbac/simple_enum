@@ -136,6 +136,50 @@ enum_view(enumeration) -> enum_view<enumeration>;
 template<typename enumeration>
 enum_view(enumeration, enumeration) -> enum_view<enumeration>;
 
+/**
+ * @brief Returns a view over all enumeration values for bounded enumerations.
+ *
+ * This function object is designed to work specifically with bounded enumerations,
+ * which are enumerations where the range of valid values is explicitly defined.
+ * It utilizes `enum_view` to provide a range-based view over the entire collection
+ * of enumeration values, facilitating iteration and other range-based operations.
+ *
+ * Usage example:
+ * @code
+ * enum class Color { Red, Green, Blue, first = Red, last = Blue };
+ *
+ * auto color_values = enum_enumerations<Color>();
+ * for (auto enum_value : color_values) {
+ *     std::cout << int(enum_value) << std::endl;
+ * }
+ * @endcode
+ */
+template<bounded_enum enumeration>
+inline constexpr auto enum_enumerations = []() { return enum_view<enumeration>{}; };
+
+/**
+ * @brief Constructs a transform view over all values of a bounded enumeration, converting each to its string
+ * representation.
+ *
+ * This function object creates a view that iterates over all possible values of a bounded enumeration
+ * and transforms each value into its corresponding string name. This is facilitated by combining `enum_view` with
+ * `std::views::transform` and the `enum_name` function. It is designed for bounded enumerations, which are enumerations
+ * with explicitly defined bounds, typically via `first` and `last` enumerators.
+ *
+ * Example Usage:
+ * @code
+ * enum class Color { Red, Green, Blue, first = Red, last = Blue };
+ *
+ * // Assuming enum_name is a function that converts Color values to their string representations
+ * auto color_names{ enum_names<Color>() };
+ * for (auto color_name : color_names) {
+ *     std::cout << color_name << std::endl; // Outputs the string representation of each Color value
+ * }
+ * @endcode
+ */
+template<bounded_enum enumeration>
+inline constexpr auto enum_names = []() { return enum_view<enumeration>{} | std::views::transform(enum_name); };
+
 template<typename enumeration>
 constexpr auto begin(enum_view<enumeration> const & v) -> typename enum_view<enumeration>::iterator
   {
@@ -147,6 +191,7 @@ constexpr auto end(enum_view<enumeration> const & v) -> typename enum_view<enume
   {
   return v.end();
   }
+
   }  // namespace simple_enum::inline v0_5
 
 namespace std::ranges
