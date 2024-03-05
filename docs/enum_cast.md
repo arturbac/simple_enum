@@ -1,4 +1,4 @@
-# `enum_cast_t`
+# `enum_cast`
 
 ## Overview
 
