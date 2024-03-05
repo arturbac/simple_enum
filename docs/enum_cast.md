@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `enum_cast` struct facilitates compile-time or runtime conversion from `std::string_view` to enum values.
+The `enum_cast` function object facilitates compile-time or runtime conversion from `std::string_view` to enum values.
 
 ## Error Handling
 
@@ -18,6 +18,9 @@ struct enum_cast_t
     constexpr auto operator()(std::string_view value) const noexcept
       -> expected<enum_type, enum_cast_error>;
 };
+
+template<enum_concept enum_type>
+inline constexpr enum_cast_t<enum_type> enum_cast{};
 ```
 
 - **Parameters**:
