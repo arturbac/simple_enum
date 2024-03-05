@@ -1,8 +1,8 @@
-# `enum_name_t`
+# `enum_name`
 
 ## Overview
 
-The `enum_name_t` struct provides a mechanism to convert enumeration values to their string names efficiently at compile-time or runtime, leveraging pre-defined metadata.
+The `enum_name_t` struct provides a mechanism to convert enumeration values to their string literals efficiently at compile-time or runtime, leveraging pre-defined metadata.
 
 ## Interface Declaration
 
