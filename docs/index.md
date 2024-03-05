@@ -1,5 +1,6 @@
 ## API
 
+- [ Compiler and C++ Standard](compiler_and_standard_support.md) support for simple_enum
 - definig enum [bounds](enum_bounds.md)
 - [`enum_cast`](enum_cast.md) conversion from `std::string_view` to enum values
 - [`enum_index`](enum_index.md) and `consteval_enum_index`
