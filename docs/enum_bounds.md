@@ -19,7 +19,7 @@ template<enum_concept enumeration>
 constexpr auto adl_enum_bounds(enumeration) -> simple_enum::adl_info<enumeration>;
 ```
 
-- **Expected Return**: An instance of `adl_info<enumeration>` constructed with the first and last bounds of the enumeration.
+- **Expected Return**: An instance of `adl_info<enumeration>` constructed with the first and last bounds of the enumeration. enumeration function argument should be ignored and used only to enable (ADL) lookup.
 
 ## Template Deduction Guide
 
