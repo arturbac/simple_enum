@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `enum_cast_t` struct facilitates compile-time or runtime conversion from `std::string_view` to enum values.
+The `enum_cast` struct facilitates compile-time or runtime conversion from `std::string_view` to enum values.
 
 ## Error Handling
 
@@ -27,9 +27,13 @@ struct enum_cast_t
 
 ## Usage
 
+Include the `simple_enum/enum_cast.hpp` in your project to use `enum_cast`.
+
 To convert a `std::string_view` to an enum value, invoke `enum_cast` with the desired enum type and string. The operation returns an `expected` object that either holds the enum value or an error:
 
 ```cpp
+#include <simple_enum/enum_cast.hpp>
+
 enum class my_enum { value1, value2, value3 };
 
 // Define bounds for `my_enum`
