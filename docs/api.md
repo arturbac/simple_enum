@@ -5,4 +5,4 @@
 - [`enum_index`](enum_index.md) and `consteval_enum_index`
 - [`enum_name`](enum_name.md) convert enumeration values to their string literals
 - [`enum_view`](enum_view.md) range view over an enumeration
-- [`std::format`](std_format.md) Support for enumerations
+- [`std::format`](std_format.md) support for enumerations
