@@ -1,8 +1,8 @@
-# `enum_index_t` and `consteval_enum_index`
+# `enum_index` and `consteval_enum_index`
 
 ## Overview
 
-The `enum_index_t` struct provides functionality for compile time and runtime converting enumeration values to their corresponding indices within a predefined enum range. Additionally, `consteval_enum_index` offers a compile-time variant using template arugment of this functionality.
+The `enum_index` function object provides functionality for compile time and runtime converting enumeration values to their corresponding indices within a predefined enum range. Additionally, `consteval_enum_index` offers a compile-time variant using template arugment of this functionality.
 
 ## Usage 
 
