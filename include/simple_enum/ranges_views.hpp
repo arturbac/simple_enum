@@ -22,7 +22,7 @@ private:
 public:
   constexpr enum_view_iterator() noexcept = default;
 
-  constexpr explicit enum_view_iterator(enumeration current) : current_(current) {}
+  constexpr explicit enum_view_iterator(enumeration current) noexcept : current_(current) {}
 
   constexpr auto operator*() const noexcept -> reference { return current_; }
 
