@@ -4,6 +4,12 @@
 - [`simple_enum::info` Template struct specialization](#info-struct-specialization)
 - [Defining enumeration bounds in-class](#defining-enumeration-bounds-in-class)
 
+# Priority order of bounds definition evaluation in `simple_enum`
+
+- ADL
+- simple_enum::info
+- in class
+
 # (ADL) specified bounds using function `adl_enum_bounds`
 
 ## Overview
