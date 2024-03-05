@@ -1,4 +1,4 @@
-# `enum_index_t` and `consteval_enum_index` Documentation
+# `enum_index_t` and `consteval_enum_index`
 
 ## Overview
 
