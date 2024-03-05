@@ -6,9 +6,9 @@
 
 # Priority order of bounds definition evaluation in `simple_enum`
 
-- ADL
-- simple_enum::info
-- in class
+- ADL `adl_enum_bounds` declaration
+- `simple_enum::info` template specializaiton 
+- in class definition of first, last
 
 # (ADL) specified bounds using function `adl_enum_bounds`
 
