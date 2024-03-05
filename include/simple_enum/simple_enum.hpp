@@ -343,22 +343,14 @@ namespace detail
     (..., (cont_pass<static_cast<enum_type>(first + utype(indices))>(meta[indices + 1], enum_beg)));
     }
 
-  template<typename enum_type, std::integral auto first, std::integral auto last, std::size_t size, typename name_array>
-  constexpr void fold_array(name_array & meta)
-    {
-#ifdef SIMPLE_ENUM_OPT_IN_STATIC_ASSERTS
-    static_assert(size == static_cast<std::size_t>(last - first + 1), "size must match the number of enum values");
-#endif
-    size_t enum_beg{first_pass<static_cast<enum_type>(first)>(meta[0])};
-    if constexpr(size > 1)
-      apply_meta_enum<enum_type, first + 1, size - 1>(meta, enum_beg, std::make_index_sequence<size - 1>{});
-    }
-
   template<enum_concept enum_type, std::integral auto first_index, std::integral auto last_index>
-  constexpr auto prepare_meta_data() noexcept -> std::array<detail::meta_name, last_index - first_index + 1>
+  constexpr auto prepare_enum_meta_info() noexcept -> std::array<detail::meta_name, last_index - first_index + 1>
     {
-    std::array<detail::meta_name, last_index - first_index + 1> meta;
-    detail::fold_array<enum_type, first_index, last_index, last_index - first_index + 1>(meta);
+    constexpr std::size_t size_{last_index - first_index + 1};
+    std::array<detail::meta_name, size_> meta;
+    size_t enum_beg{first_pass<static_cast<enum_type>(first_index)>(meta[0])};
+    if constexpr(size_ > 1)
+      apply_meta_enum<enum_type, first_index + 1, size_ - 1>(meta, enum_beg, std::make_index_sequence<size_ - 1>{});
     return meta;
     }
 
@@ -375,7 +367,7 @@ namespace detail
 
     static constexpr auto last_index() noexcept { return simple_enum::to_underlying(emum_info_.last); }
 
-    static constexpr auto meta_data{detail::prepare_meta_data<enum_type, first_index(), last_index()>()};
+    static constexpr auto meta_data{detail::prepare_enum_meta_info<enum_type, first_index(), last_index()>()};
 
     static constexpr auto size() noexcept -> std::size_t { return last_index() - first_index() + 1; }
     };
