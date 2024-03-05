@@ -6,3 +6,4 @@
 - [`enum_name`](enum_name.md) convert enumeration values to their string literals
 - [`enum_view`](enum_view.md) range view over an enumeration
 - [`std::format`](std_format.md) support for enumerations
+- [`fmt::format`](fmt_format.md) support for enumerations
