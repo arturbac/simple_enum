@@ -24,7 +24,7 @@ namespace detail
   {
   template<enum_concept enum_type>
   [[nodiscard]]
-  constexpr auto sorted_indices() noexcept -> std::array<std::size_t, detail::enum_meta_info_t<enum_type>::size()>
+  constexpr auto sorted_indices() noexcept -> std::array<std::size_t, detail::enum_base_info_t<enum_type>::size()>
     {
     using enum_meta_info = detail::enum_meta_info_t<enum_type>;
     std::array<std::size_t, enum_meta_info::size()> indices;

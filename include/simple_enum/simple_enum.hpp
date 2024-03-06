@@ -10,7 +10,7 @@
 #endif
 #include <array>
 
-#define SIMPLE_ENUM_NAME_VERSION "0.5.8"
+#define SIMPLE_ENUM_NAME_VERSION "0.5.9"
 
 #include "detail/static_call_operator_prolog.h"
 
@@ -355,7 +355,7 @@ namespace detail
     }
 
   template<enum_concept enum_type>
-  struct enum_meta_info_t
+  struct enum_base_info_t
     {
     static constexpr auto emum_info_ = get_meta_info<enum_type>();
 
@@ -367,9 +367,16 @@ namespace detail
 
     static constexpr auto last_index() noexcept { return simple_enum::to_underlying(emum_info_.last); }
 
-    static constexpr auto meta_data{detail::prepare_enum_meta_info<enum_type, first_index(), last_index()>()};
-
     static constexpr auto size() noexcept -> std::size_t { return last_index() - first_index() + 1; }
+    };
+
+  template<enum_concept enum_type>
+  struct enum_meta_info_t : public enum_base_info_t<enum_type>
+    {
+    using base = enum_base_info_t<enum_type>;
+
+    static constexpr auto meta_data{detail::prepare_enum_meta_info<enum_type, base::first_index(), base::last_index()>()
+    };
     };
 
   }  // namespace detail
@@ -417,13 +424,13 @@ namespace detail
   template<bounded_enum enumeration>
   struct min_t
     {
-    consteval auto operator()() const -> enumeration { return detail::enum_meta_info_t<enumeration>::first(); }
+    consteval auto operator()() const -> enumeration { return detail::enum_base_info_t<enumeration>::first(); }
     };
 
   template<bounded_enum enumeration>
   struct max_t
     {
-    consteval auto operator()() const -> enumeration { return detail::enum_meta_info_t<enumeration>::last(); }
+    consteval auto operator()() const -> enumeration { return detail::enum_base_info_t<enumeration>::last(); }
     };
   }  // namespace detail
 

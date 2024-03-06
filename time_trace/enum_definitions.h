@@ -13,7 +13,7 @@ enum struct lorem_ipsum_short
 };
 enum struct lorem_ipsum_long
 {
-  eu = 10, occaecat, dolore, excepteur, mollit, adipiscing, sunt, ut, aliqua, quis, ad, proident, fugiat, eiusmod, magna, nisi, duis, minim, nulla, officia, amet, sit, voluptate, velit, deserunt, cillum, in, laboris, aute, lorem, incididunt, culpa, cupidatat, elit, sed, sint, nostrud, do_, et, exercitation, pariatur, ullamco, aliquip, esse, anim, commodo, est, tempor, enim, ipsum, non, labore, consequat, id, consectetur, qui, veniam, ex, reprehenderit, laborum, dolor, ea, irure, veritas, virtus, vis, vita, vivere, vox, vulnus, terra, caelum, aqua, ignis, spiritus, amor, pax, bellum, lux, tenebrae, sol, luna, stella, caelestis, infernus, aether, aer, ventus, flamma, umbra, aurora, crepusculum, sidus, astrum, galaxias, nebula, cosmos, universum, planetarium, solaris, lunaris, stellarum, cometes, asteroides, first = eu, last = asteroides
+  eu = 10, occaecat, dolore, excepteur, mollit, adipiscing, sunt, ut, aliqua, quis, ad, proident, fugiat, eiusmod, magna, nisi, duis, minim, nulla, officia, amet, sit, voluptate, velit, deserunt, cillum, in, laboris, aute, lorem, incididunt, culpa, cupidatat, elit, sed, sint, nostrud, do_, et, exercitation, pariatur, ullamco, aliquip, esse, anim, commodo, est, tempor, enim, ipsum, non, labore, consequat, id, consectetur, qui, veniam, ex, reprehenderit, laborum, dolor, ea, irure, veritas, virtus, vis, vita, vivere, vox, vulnus, terra, caelum, aqua, ignis, spiritus, amor, pax, bellum, lux, tenebrae, sol, luna, stella, caelestis, infernus, aether, aer, ventus, flamma, umbra, aurora, crepusculum, sidus, astrum, galaxias, nebula, cosmos, universum, planetarium, solaris, lunaris, stellarum, cometes, asteroides
 };
 
 // clang-format on

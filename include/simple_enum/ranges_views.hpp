@@ -115,7 +115,7 @@ private:
 public:
   constexpr enum_view() noexcept
     requires bounded_enum<enumeration>
-      : first_(detail::enum_meta_info_t<enumeration>::first()), last_(detail::enum_meta_info_t<enumeration>::last())
+      : first_(detail::enum_base_info_t<enumeration>::first()), last_(detail::enum_base_info_t<enumeration>::last())
 
     {
     }
