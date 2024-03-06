@@ -11,3 +11,6 @@
 - [`std::format`](std_format.md) support for enumerations
 - [`fmt::format`](fmt_format.md) support for enumerations
 - [examples](examples.md) example usage
+- [`simple_enum` CPM installation guide](simple_enum_installation_guide.md)
+- [`simple_enum` vcpkg installation guide](simple_enum_vcpkg_overlay_installation_instructions.md)
+
