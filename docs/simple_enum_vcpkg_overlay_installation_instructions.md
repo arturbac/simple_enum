@@ -12,8 +12,21 @@ This guide provides instructions on how to install the `simple_enum` library usi
 
 First, clone the repository containing the `simple_enum` overlay port.
 
+cloning master
 ```bash
 git clone https://github.com/arturbac/simple_enum.git path/to/your/local/overlay-ports-directory
+```
+
+cloning specific version ex v.5.7
+
+```bash
+git clone --branch v0.5.7 --single-branch https://github.com/arturbac/simple_enum.git path/to/your/local/overlay-ports-directory
+```
+ or downloading and unpacking
+
+```bash
+wget https://github.com/arturbac/simple_enum/archive/refs/tags/v0.5.7.tar.gz -O simple_enum_v0.5.7.tar.gz
+tar -xzvf simple_enum_v0.5.7.tar.gz -C path/to/your/local/overlay-ports-directory
 ```
 
 ## Step 2: Install simple_enum Using vcpkg
