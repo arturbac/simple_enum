@@ -38,7 +38,9 @@ jobs:
         sudo ./llvm.sh 17
         
     - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y cmake ninja-build clang-17 libfmt-dev
+      run: |
+           sudo apt-get update
+           sudo apt-get install -y cmake ninja-build clang-17 libfmt-dev
            sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-17 100
            sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-17 100
            
