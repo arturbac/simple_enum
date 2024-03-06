@@ -10,7 +10,7 @@
 #endif
 #include <array>
 
-#define SIMPLE_ENUM_NAME_VERSION "0.5.7"
+#define SIMPLE_ENUM_NAME_VERSION "0.5.8"
 
 #include "detail/static_call_operator_prolog.h"
 
