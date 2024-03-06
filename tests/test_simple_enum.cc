@@ -1,5 +1,13 @@
 #include "simple_enum_tests.hpp"
 
+// TODO chck impact of clang-18 attribute
+// enum E { Apple, Orange, Pear };
+// struct S {
+//   [[clang::preferred_type(E)]] unsigned FruitKind : 2;
+// };
+
+// When viewing S::FruitKind in a debugger, it will behave as if the member was declared as type E rather than unsigned.
+
 enum struct enum_bounded
   {
   v1 = 1,
@@ -13,6 +21,9 @@ consteval auto adl_enum_bounds(enum_bounded) { return simple_enum::adl_info{enum
 
 static_assert(simple_enum::detail::enum_meta_info_t<enum_bounded>::first() == enum_bounded::v1);
 static_assert(simple_enum::detail::enum_meta_info_t<enum_bounded>::last() == enum_bounded::v3);
+
+static_assert(simple_enum::limits::min<enum_bounded>() == enum_bounded::v1);
+static_assert(simple_enum::limits::max<enum_bounded>() == enum_bounded::v3);
 
 enum struct enum_upper_bounded
   {
@@ -72,6 +83,9 @@ consteval auto adl_enum_bounds(weak_global_untyped_e)
   return simple_enum::adl_info{weak_global_untyped_e::v1, weak_global_untyped_e::v3};
   }
 
+static_assert(simple_enum::limits::min<weak_global_untyped_e>() == weak_global_untyped_e::v1);
+static_assert(simple_enum::limits::max<weak_global_untyped_e>() == weak_global_untyped_e::v3);
+
 // check for external declarations
 enum struct global_untyped_externaly_e
   {
@@ -102,6 +116,10 @@ enum struct strong_typed : int8_t
   first = v1,
   last = v3
   };
+
+static_assert(simple_enum::limits::min<strong_typed>() == strong_typed::v1);
+static_assert(simple_enum::limits::max<strong_typed>() == strong_typed::v3);
+
 enum struct strong_untyped
   {
   v1 = 1500100900,
@@ -133,7 +151,7 @@ namespace test
 
   enum struct strong_untyped_2_e
     {
-    v1 = 1,
+    v1 = 11200,
     v2,
     v3,
     };
@@ -142,6 +160,9 @@ namespace test
     {
     return simple_enum::adl_info{strong_untyped_2_e::v1, strong_untyped_2_e::v3};
     }
+
+  static_assert(simple_enum::limits::min<strong_untyped_2_e>() == strong_untyped_2_e::v1);
+  static_assert(simple_enum::limits::max<strong_untyped_2_e>() == strong_untyped_2_e::v3);
 
   namespace subnamespace
     {

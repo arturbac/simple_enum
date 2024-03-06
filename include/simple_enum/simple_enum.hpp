@@ -412,6 +412,35 @@ struct enum_name_t
  */
 inline constexpr enum_name_t enum_name;
 
+namespace detail
+  {
+  template<bounded_enum enumeration>
+  struct min_t
+    {
+    consteval auto operator()() const -> enumeration { return detail::enum_meta_info_t<enumeration>::first(); }
+    };
+
+  template<bounded_enum enumeration>
+  struct max_t
+    {
+    consteval auto operator()() const -> enumeration { return detail::enum_meta_info_t<enumeration>::last(); }
+    };
+  }  // namespace detail
+
+namespace limits
+  {
+  /*!
+   * \brief Function object for getting the minimum enum value.
+   */
+  template<bounded_enum enumeration>
+  inline constexpr detail::min_t<enumeration> min{};
+
+  /*!
+   * \brief Function object for getting the maximum enum value.
+   */
+  template<bounded_enum enumeration>
+  inline constexpr detail::max_t<enumeration> max{};
+  }  // namespace limits
   }  // namespace simple_enum::inline v0_5
 
 #include "detail/static_call_operator_epilog.h"
