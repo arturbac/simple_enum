@@ -31,9 +31,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Add LLVM Repository
+      run: |
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x llvm.sh
+        sudo ./llvm.sh 17
+        
     - name: Install dependencies
       run: sudo apt-get update && sudo apt-get install -y cmake ninja-build clang-17 libfmt-dev
-
+           sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-17 100
+           sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-17 100
+           
+    - name: Configure Clang-17 as the default compiler
+      run: |
+        echo "CC=clang-17" >> $GITHUB_ENV
+        echo "CXX=clang++-17" >> $GITHUB_ENV
+        clang --version
+        clang++ --version
+        
     - name: Configure CMake with clang++-17
       run: cmake -B ${{github.workspace}}/build/clang-17 -DCMAKE_BUILD_TYPE=Release -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-17
     - name: Build with clang++-17
