@@ -10,7 +10,7 @@
 
 #include <simple_enum/expected.h>
 
-namespace simple_enum::inline v0_5
+namespace simple_enum::inline v0_6
   {
 using cxx23::bad_expected_access;
 using cxx23::expected;
@@ -118,9 +118,8 @@ template<enum_concept enum_type>
 struct enum_cast_t
   {
   [[nodiscard]]
-  static_call_operator constexpr auto
-    operator()(std::string_view value) static_call_operator_const noexcept
-    -> cxx23::expected<enum_type, enum_cast_error>
+  static_call_operator constexpr auto operator()(std::string_view value
+  ) static_call_operator_const noexcept -> cxx23::expected<enum_type, enum_cast_error>
     {
     using enum_meta_info = detail::enum_meta_info_t<enum_type>;
     using sorted_indices_type = detail::enum_meta_info_sorted_indices_t<enum_type>;
@@ -167,6 +166,6 @@ struct enum_cast_t
 template<enum_concept enum_type>
 inline constexpr enum_cast_t<enum_type> enum_cast{};
 
-  }  // namespace simple_enum::inline v0_5
+  }  // namespace simple_enum::inline v0_6
 
 #include "detail/static_call_operator_epilog.h"

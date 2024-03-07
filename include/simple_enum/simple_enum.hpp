@@ -10,11 +10,11 @@
 #endif
 #include <array>
 
-#define SIMPLE_ENUM_NAME_VERSION "0.5.9"
+#define SIMPLE_ENUM_NAME_VERSION "0.6.0"
 
 #include "detail/static_call_operator_prolog.h"
 
-namespace simple_enum::inline v0_5
+namespace simple_enum::inline v0_6
   {
 template<typename Enum>
 constexpr auto to_underlying(Enum e) noexcept -> std::underlying_type_t<Enum>
@@ -103,9 +103,7 @@ constexpr auto adl_enum_bounds() -> void;
 
 template<typename enumeration>
 concept has_valid_adl_enum_bounds = requires(enumeration e) {
-  {
-  adl_enum_bounds(e)
-  } -> std::same_as<adl_info<enumeration>>;
+  { adl_enum_bounds(e) } -> std::same_as<adl_info<enumeration>>;
 };
 
 namespace detail
@@ -114,16 +112,12 @@ namespace detail
   template<typename T>
   concept lower_bounded_enum = requires(T e) {
     requires enum_concept<T>;
-      {
-      T::first
-      } -> std::convertible_to<T>;
+      { T::first } -> std::convertible_to<T>;
   };
   template<typename T>
   concept upper_bounded_enum = requires(T e) {
     requires enum_concept<T>;
-      {
-      T::last
-      } -> std::convertible_to<T>;
+      { T::last } -> std::convertible_to<T>;
   };
 
   template<typename T>
@@ -143,6 +137,7 @@ namespace detail
     };
 
   // clang-format on
+
   struct meta_info_bounds_traits
     {
     bool lower_bound;
@@ -198,7 +193,7 @@ namespace detail
       return typename msvc_meta_info_wrapper<enumeration>::type{};
     }
   }  // namespace detail
-  }  // namespace simple_enum::inline v0_5
+  }  // namespace simple_enum::inline v0_6
 
 // this namespace is for reducing time crunching source location and .text data
 namespace se
@@ -274,7 +269,7 @@ static_assert(verify_offset());
 #endif
   }  // namespace se
 
-namespace simple_enum::inline v0_5
+namespace simple_enum::inline v0_6
   {
 namespace detail
   {
@@ -388,8 +383,8 @@ concept bounded_enum = has_valid_adl_enum_bounds<enumeration> || detail::has_inf
 struct enum_name_t
   {
   template<enum_concept enum_type>
-  static_call_operator constexpr auto operator()(enum_type value) static_call_operator_const noexcept
-    -> std::string_view
+  static_call_operator constexpr auto operator()(enum_type value
+  ) static_call_operator_const noexcept -> std::string_view
     {
     using enum_meta_info = detail::enum_meta_info_t<enum_type>;
     auto const requested_index{simple_enum::to_underlying(value)};
@@ -448,7 +443,7 @@ namespace limits
   template<bounded_enum enumeration>
   inline constexpr detail::max_t<enumeration> max{};
   }  // namespace limits
-  }  // namespace simple_enum::inline v0_5
+  }  // namespace simple_enum::inline v0_6
 
 #include "detail/static_call_operator_epilog.h"
 

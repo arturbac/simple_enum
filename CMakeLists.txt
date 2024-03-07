@@ -10,7 +10,7 @@ if(PROJECT_IS_TOP_LEVEL)
   message(STATUS "simple_enum version v${SIMPLE_ENUM_VERSION}")
 
   # Specify the C++ standard
-  set(CMAKE_CXX_STANDARD 20)
+  set(CMAKE_CXX_STANDARD 23)
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
   include(cmake/CPM.cmake)

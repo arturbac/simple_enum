@@ -6,7 +6,7 @@
 
 #include <simple_enum/expected.h>
 
-namespace simple_enum::inline v0_5
+namespace simple_enum::inline v0_6
   {
 using cxx23::bad_expected_access;
 using cxx23::expected;
@@ -32,8 +32,8 @@ struct enum_index_t
   {
   template<enum_concept enum_type>
   [[nodiscard]]
-  static_call_operator constexpr auto
-    operator()(enum_type value) static_call_operator_const noexcept -> cxx23::expected<std::size_t, enum_index_error>
+  static_call_operator constexpr auto operator()(enum_type value
+  ) static_call_operator_const noexcept -> cxx23::expected<std::size_t, enum_index_error>
     {
     using enum_meta_info = detail::enum_meta_info_t<enum_type>;
     auto const requested_index{simple_enum::to_underlying(value)};
@@ -79,6 +79,6 @@ consteval auto consteval_enum_index() -> std::size_t
   return enum_index(value).or_else([](auto &&) { throw; });
   }
 
-  }  // namespace simple_enum::inline v0_5
+  }  // namespace simple_enum::inline v0_6
 
 #include "detail/static_call_operator_epilog.h"

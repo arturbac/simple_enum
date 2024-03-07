@@ -4,7 +4,7 @@
   "description": "A header-only library for better enum management in C++.",
   "homepage": "https://github.com/arturbac/simple_enum",
   "documentation": "https://arturbac.github.io/simple_enum",
-  "license": "MIT",
+  "license": "BSL1.0",
   "features": {}
 }
 
