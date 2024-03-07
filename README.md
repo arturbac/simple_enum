@@ -1,8 +1,13 @@
-![MIT](https://img.shields.io/badge/license-MIT-blue.svg) [![CI](https://github.com/arturbac/simple_enum/actions/workflows/ci.yml/badge.svg)](https://github.com/arturbac/simple_enum/actions/workflows/ci.yml)
+![BSL](https://img.shields.io/badge/license-BSL1.0-blue.svg) [![CI](https://github.com/arturbac/simple_enum/actions/workflows/ci.yml/badge.svg)](https://github.com/arturbac/simple_enum/actions/workflows/ci.yml)
 ![C++](https://img.shields.io/badge/C%2B%2B-20%20%7C%2023-blue.svg) ![gcc version](https://img.shields.io/badge/gcc-%3E%3D10-green.svg) ![clang version](https://img.shields.io/badge/clang-%3E%3D13-blue.svg)
 ![Version](https://img.shields.io/badge/Version-_VERSION_-blue.svg)
 
 # simple_enum
+
+## License Update for Version 0.6.0
+
+I am updating the project license from the MIT License to the Boost Software License - Version 1.0, effective starting with version 0.6.0. This change aims to provide clearer patent rights while maintaining the permissiveness of our licensing. This transition affects no external contributors and requires no action from users. I believe this update supports my commitment to open-source best practices.
+
 
 ## Features
 
