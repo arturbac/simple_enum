@@ -50,7 +50,7 @@ suite string_literal_tests = []
 enum class test_error
   {
   success = 0,
-  failed,
+  failed_other_reason,
   unknown
   };
 
@@ -68,7 +68,7 @@ struct is_error_code_enum<test_error> : true_type
   };
   }  // namespace std
 
-static constexpr basic_fixed_string test_error_category_name{"test_error_category"};
+inline constexpr basic_fixed_string test_error_category_name{"test_error_category"};
 using test_error_category_name_literal = string_literal<test_error_category_name>;
 // Test cases
 static_assert(
@@ -112,9 +112,9 @@ suite erorr_category_tests = []
 
   "make_error_code_failed"_test = []
   {
-    auto ec = make_error_code<test_error_category_name_literal>(test_error::failed);
+    auto ec = make_error_code<test_error_category_name_literal>(test_error::failed_other_reason);
     expect(eq(1, ec.value()));
-    expect(eq("Failed"sv, ec.message()));
+    expect(eq("Failed Other Reason"sv, ec.message()));
   };
 
   "make_error_code_unknown"_test = []

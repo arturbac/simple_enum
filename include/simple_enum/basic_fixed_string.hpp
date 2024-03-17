@@ -55,10 +55,13 @@ consteval auto to_camel_case(basic_fixed_string<CharT, N> const & input) -> basi
 
   for(std::size_t i = 0; i < N; ++i)
     {
-    if(input.str[i] == ' ' || input.str[i] == '\0')
+    if(input.str[i] == '_' || input.str[i] == ' ' || input.str[i] == '\0')
       {
       to_upper = true;
-      result.str[i] = input.str[i];  // Copy space or null character as is
+      if(input.str[i] == '_')
+        result.str[i] = ' ';  // Copy space or null character as is
+      else
+        result.str[i] = input.str[i];  // Copy space or null character as is
       }
     else if(to_upper)
       {
@@ -85,10 +88,13 @@ constexpr auto to_camel_case(std::basic_string_view<CharT> input) -> std::basic_
     std::back_inserter(result),
     [&to_upper](CharT c) noexcept -> CharT
     {
-      if(c == ' ' || c == '\0')
+      if(c == '_' || c == ' ' || c == '\0')
         {
         to_upper = true;
-        return c;  // Copy space or null character as is
+        if(c == '_')
+          return ' ';
+        else
+          return c;  // Copy space or null character as is
         }
       else if(to_upper)
         {
