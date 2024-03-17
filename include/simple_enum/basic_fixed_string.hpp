@@ -8,6 +8,7 @@
 #include <type_traits>  // for std::is_same
 #include <simple_enum/detail/stralgo_inplace.hpp>
 #include <algorithm>
+#include <functional>
 
 namespace simple_enum::inline v0_6
   {
@@ -47,32 +48,44 @@ struct string_literal
   static constexpr auto & value = S;
   };
 
+namespace detail
+  {
+
+  struct camel_case_character_t
+    {
+    bool make_upper = true;
+
+    template<typename CharT>
+      requires std::convertible_to<CharT, char>
+    constexpr auto operator()(CharT c) noexcept -> CharT
+      {
+      if(c == '_' || c == ' ' || c == '\0')
+        {
+        make_upper = true;
+        if(c == '_')
+          return ' ';
+        else
+          return c;
+        }
+      else if(make_upper)
+        {
+        make_upper = false;
+        return detail::to_upper(c);
+        }
+      else [[likely]]
+        return c;
+      }
+    };
+  }  // namespace detail
+
 template<typename CharT, std::size_t N>
 consteval auto to_camel_case(basic_fixed_string<CharT, N> const & input) -> basic_fixed_string<CharT, N>
   {
   basic_fixed_string<CharT, N> result{};
-  bool to_upper = true;
 
+  detail::camel_case_character_t camel_case_character;
   for(std::size_t i = 0; i < N; ++i)
-    {
-    if(input.str[i] == '_' || input.str[i] == ' ' || input.str[i] == '\0')
-      {
-      to_upper = true;
-      if(input.str[i] == '_')
-        result.str[i] = ' ';  // Copy space or null character as is
-      else
-        result.str[i] = input.str[i];  // Copy space or null character as is
-      }
-    else if(to_upper)
-      {
-      result.str[i] = detail::to_upper(input.str[i]);
-      to_upper = false;
-      }
-    else
-      {
-      result.str[i] = input.str[i];
-      }
-    }
+    result.str[i] = camel_case_character(input.str[i]);
 
   return result;
   }
@@ -81,31 +94,9 @@ template<typename CharT>
 constexpr auto to_camel_case(std::basic_string_view<CharT> input) -> std::basic_string<CharT>
   {
   std::basic_string<CharT> result{};
-  bool to_upper = true;
+  detail::camel_case_character_t camel_case_character;
   result.reserve(input.size());
-  std::ranges::transform(
-    input,
-    std::back_inserter(result),
-    [&to_upper](CharT c) noexcept -> CharT
-    {
-      if(c == '_' || c == ' ' || c == '\0')
-        {
-        to_upper = true;
-        if(c == '_')
-          return ' ';
-        else
-          return c;  // Copy space or null character as is
-        }
-      else if(to_upper)
-        {
-        to_upper = false;
-        return detail::to_upper(c);
-        }
-      else
-        return c;
-    }
-  );
-
+  std::ranges::transform(input, std::back_inserter(result), camel_case_character);
   return result;
   }
   }  // namespace simple_enum::inline v0_6
