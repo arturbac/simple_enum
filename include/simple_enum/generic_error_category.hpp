@@ -43,16 +43,24 @@ template<concepts::error_enum ErrorEnum, concepts::error_code_category_name_lite
 class generic_error_category : public std::error_category
   {
 public:
+  using enumeration_type = ErrorEnum;
+
   /// Returns the name of the error category.
   char const * name() const noexcept override;
 
   /// Returns the message corresponding to the given error code.
   std::string message(int ev) const override;
 
+  static constexpr auto enumeration(std::integral auto ev) noexcept -> enumeration_type
+    {
+    return static_cast<enumeration_type>(ev);
+    }
+
   /// Provides access to the singleton instance of the error category.
   static auto instance() -> generic_error_category const &;
 
-  static auto make_error_code(ErrorEnum e) noexcept -> std::error_code;
+  /// Creates a std::error_code from an enumerated error code.
+  static auto make_error_code(enumeration_type e) noexcept -> std::error_code;
   };
 
 /**

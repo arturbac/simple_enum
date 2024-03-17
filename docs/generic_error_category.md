@@ -116,7 +116,7 @@ int main(int argc, char const * const *)
       "Error Category:"{}" message:"{}" enumeration value:"{}"",
       ec.category().name(),
       ec.message(),
-      static_cast<function_error>(ec.value())
+      function_error_category::enumeration(ec.value())
       );
     }
   return EXIT_SUCCESS;
