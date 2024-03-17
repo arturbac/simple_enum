@@ -25,7 +25,11 @@ std::string generic_error_category<ErrorEnum, eccn>::message(int ev) const
 template<concepts::error_enum ErrorEnum, concepts::error_code_category_name_literal eccn>
 auto generic_error_category<ErrorEnum, eccn>::instance() -> generic_error_category<ErrorEnum, eccn> const &
   {
-  static generic_error_category category;
+  static generic_error_category category
+#ifdef __clang__
+    [[clang::no_destroy]]
+#endif
+    ;
   return category;
   }
 
