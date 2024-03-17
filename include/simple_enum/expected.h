@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2024 Artur Bać
+// SPDX-License-Identifier: BSL-1.0
+// SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
+
 #pragma once
 
 #ifndef SMALL_VECTORS_EXPECTED
@@ -25,6 +29,8 @@ using std::unexpected;
 #include <memory>
 #include <cassert>
 #include <functional>
+
+#include <simple_enum/detail/static_call_operator_prolog.h>
 
 namespace cxx23
   {
@@ -99,8 +105,8 @@ namespace detail
   {
   template<typename T, typename E>
   inline constexpr bool swap_no_throw
-    = (std::is_nothrow_move_constructible_v<T> || std::is_void_v<T>)&&std::is_nothrow_move_constructible_v<E>
-      && (std::is_nothrow_swappable_v<T> || std::is_void_v<T>)&&std::is_nothrow_swappable_v<E>;
+    = (std::is_nothrow_move_constructible_v<T> || std::is_void_v<T>) && std::is_nothrow_move_constructible_v<E>
+      && (std::is_nothrow_swappable_v<T> || std::is_void_v<T>) && std::is_nothrow_swappable_v<E>;
   }
 
 template<typename E>
@@ -296,7 +302,7 @@ namespace concepts
     requires !std::is_constructible_v<unexpected<E>, expected<U, G> const &>;
     requires !std::is_constructible_v<unexpected<E>, expected<U, G> const>;
   };
-  }
+  }  // namespace concepts
 
 template<typename T, typename E>
 class expected
@@ -488,56 +494,49 @@ public:
     }
 
   [[nodiscard]]
-  constexpr value_type const *
-    operator->() const noexcept
+  constexpr value_type const * operator->() const noexcept
     {
     assert(has_value_);
     return std::addressof(value_);
     }
 
   [[nodiscard]]
-  constexpr value_type *
-    operator->() noexcept
+  constexpr value_type * operator->() noexcept
     {
     assert(has_value_);
     return std::addressof(value_);
     }
 
   [[nodiscard]]
-  constexpr value_type const &
-    operator*() const & noexcept
+  constexpr value_type const & operator*() const & noexcept
     {
     assert(has_value_);
     return value_;
     }
 
   [[nodiscard]]
-  constexpr value_type &
-    operator*() & noexcept
+  constexpr value_type & operator*() & noexcept
     {
     assert(has_value_);
     return value_;
     }
 
   [[nodiscard]]
-  constexpr value_type const &&
-    operator*() const && noexcept
+  constexpr value_type const && operator*() const && noexcept
     {
     assert(has_value_);
     return std::move(value_);
     }
 
   [[nodiscard]]
-  constexpr value_type &&
-    operator*() && noexcept
+  constexpr value_type && operator*() && noexcept
     {
     assert(has_value_);
     return std::move(value_);
     }
 
   [[nodiscard]]
-  constexpr explicit
-    operator bool() const noexcept
+  constexpr explicit operator bool() const noexcept
     {
     return has_value_;
     }
@@ -954,8 +953,7 @@ public:
   constexpr void operator*() const noexcept { assert(has_value_); }
 
   [[nodiscard]]
-  constexpr explicit
-    operator bool() const noexcept
+  constexpr explicit operator bool() const noexcept
     {
     return has_value_;
     }
@@ -1350,5 +1348,7 @@ namespace detail
   }  // namespace detail
 
   }  // namespace cxx23
+
+#include <simple_enum/detail/static_call_operator_epilog.h>
 #endif
 #endif

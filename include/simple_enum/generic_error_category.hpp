@@ -51,6 +51,8 @@ public:
 
   /// Provides access to the singleton instance of the error category.
   static auto instance() -> generic_error_category const &;
+
+  static auto make_error_code(ErrorEnum e) noexcept -> std::error_code;
   };
 
 /**

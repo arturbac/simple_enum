@@ -8,7 +8,6 @@
 #include <type_traits>  // for std::is_same
 #include <simple_enum/detail/stralgo_inplace.hpp>
 #include <algorithm>
-#include <functional>
 
 namespace simple_enum::inline v0_6
   {

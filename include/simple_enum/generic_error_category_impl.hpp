@@ -29,6 +29,12 @@ auto generic_error_category<ErrorEnum, eccn>::instance() -> generic_error_catego
   return category;
   }
 
+template<concepts::error_enum ErrorEnum, concepts::error_code_category_name_literal eccn>
+auto generic_error_category<ErrorEnum, eccn>::make_error_code(ErrorEnum e) noexcept -> std::error_code
+  {
+  return {static_cast<int>(e), generic_error_category<ErrorEnum, eccn>::instance()};
+  }
+
 template<concepts::error_code_category_name_literal eccn, concepts::error_enum ErrorEnum>
 auto make_error_code(ErrorEnum e) -> std::error_code
   {
