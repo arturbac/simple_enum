@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Artur Bać
+// SPDX-License-Identifier: BSL-1.0
+// SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
 #ifdef USE_SIMPLE_ENUM
 #include <simple_enum/enum_cast.hpp>
 using simple_enum::enum_cast;

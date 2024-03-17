@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Artur Bać
+// SPDX-License-Identifier: BSL-1.0
+// SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
 #include "simple_enum_tests.hpp"
 
 // TODO chck impact of clang-18 attribute
@@ -221,9 +224,9 @@ namespace test
           last = v3
           };
         }  // namespace
-      }    // namespace v2_0
-    }      // namespace subnamespace
-  }        // namespace test
+      }  // namespace v2_0
+    }  // namespace subnamespace
+  }  // namespace test
 
 enum struct one_elem_untyped
   {

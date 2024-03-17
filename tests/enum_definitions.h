@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2024 Artur Bać
+// SPDX-License-Identifier: BSL-1.0
+// SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
 #pragma once
 
 #include <cstdint>
@@ -17,6 +20,7 @@ enum struct lorem_ipsum_long
 };
 
 // clang-format on
+
 constexpr lorem_ipsum_short & operator++(lorem_ipsum_short & value) noexcept
   {
   return value = static_cast<lorem_ipsum_short>(static_cast<std::underlying_type_t<lorem_ipsum_short>>(value) + 1);
@@ -174,6 +178,6 @@ namespace subnamespace
         last = v3
         };
       }  // namespace
-    }    // namespace v2_0
-  }      // namespace subnamespace
-  }      // namespace test
+    }  // namespace v2_0
+  }  // namespace subnamespace
+  }  // namespace test

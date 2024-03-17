@@ -1,5 +1,6 @@
 // SPDX-FileCopyrightText: 2024 Artur Bać
 // SPDX-License-Identifier: BSL-1.0
+// SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
 #include <simple_enum/generic_error_category_impl.hpp>
 #include <boost/ut.hpp>  // Ensure boost-ext/ut is available
 
