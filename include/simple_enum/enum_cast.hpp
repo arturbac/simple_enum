@@ -5,10 +5,9 @@
 #include <numeric>
 #include <algorithm>
 #include <iterator>
+#include <simple_enum/expected.h>
 
 #include "detail/static_call_operator_prolog.h"
-
-#include <simple_enum/expected.h>
 
 namespace simple_enum::inline v0_6
   {
