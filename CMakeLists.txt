@@ -19,10 +19,10 @@ if(PROJECT_IS_TOP_LEVEL)
   #----------------------------------------------------------------
   CPMAddPackage(
     ut
-    GITHUB_REPOSITORY boost-ext/ut
-    GIT_TAG        v2.0.1
+    GITHUB_REPOSITORY arturbac/ut-ext
+    GIT_TAG        v2.0.1_2
   )
-  find_package(ut REQUIRED)
+  find_package(ut-ext REQUIRED)
   if( SIMPLE_ENUM_ENABLE_TIME_TRACE AND (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "AppleClang"))
     # external dependencies only for comparison benchmarking 
     CPMAddPackage(

@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 6,
   "cmakeMinimumRequired": {
     "major": 3,
     "minor": 21,
@@ -85,8 +85,8 @@
     {
       "name": "clang-release-test-asan",
       "description": "Configure for release build with address sanitizer",
-      "inherits": [ "cfg-clang" ],
-      "binaryDir": "${sourceDir}/build/release-test-asan",
+      "inherits": [ "cfg-clang", "cfg-libc++" ],
+      "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_CXX_FLAGS": "-ggdb -fvisibility=default -fno-omit-frame-pointer -fsanitize=address -fsanitize-address-use-after-scope -fsanitize=undefined",
@@ -120,5 +120,23 @@
         "outputOnFailure": true
       }
     }
-  ]
+  ],
+  "workflowPresets": [
+    {
+      "name": "clang-release-test-asan",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "clang-release-test-asan"
+        },
+        {
+          "type": "build",
+          "name": "clang-release-test-asan"
+        },
+        {
+          "type": "test",
+          "name": "clang-release-test-asan"
+        }
+      ]
+  }]
 }
