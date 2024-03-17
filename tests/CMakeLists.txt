@@ -11,6 +11,9 @@ target_compile_definitions( enum_cast_ut PRIVATE BOOST_UT_DISABLE_MODULE)
 add_ut_test(enum_index_ut.cc)
 target_compile_definitions( enum_index_ut PRIVATE BOOST_UT_DISABLE_MODULE)
 
+add_ut_test(generic_error_category_ut.cc)
+target_compile_definitions( generic_error_category_ut PRIVATE BOOST_UT_DISABLE_MODULE)
+
 if ((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "13") OR
     (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL "16") OR
     (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC"))
