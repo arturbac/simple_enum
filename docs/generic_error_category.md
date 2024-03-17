@@ -123,4 +123,4 @@ int main(int argc, char const * const *)
   }
 ```
 
-Full example is available here : [generic_error_category](examples/generic_error_category.cc)
+Full example is available here : [generic_error_category](https://github.com/arturbac/simple_enum/blob/master/examples/generic_error_category.cc)

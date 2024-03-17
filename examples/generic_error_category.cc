@@ -66,6 +66,11 @@ template class simple_enum::generic_error_category<function_error, category_name
 #pragma clang diagnostic pop
 #endif
 
+// >>>>>-----[[[***]]]-----<<<<<>>>>>-----[[[***]]]-----<<<<<>>>>>-----[[[***]]]-----<<<<<>>>>>-----[[[***]]]-----<<<<<>
+//
+//                                                 Example use
+//
+// >>>>>-----[[[***]]]-----<<<<<>>>>>-----[[[***]]]-----<<<<<>>>>>-----[[[***]]]-----<<<<<>>>>>-----[[[***]]]-----<<<<<>
 namespace custom_error_example
   {
 using cxx23::expected;
