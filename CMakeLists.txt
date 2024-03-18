@@ -6,6 +6,9 @@ project(simple_enum
    LANGUAGES CXX
    )
 
+include(cmake/CPM.cmake)
+CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.11.2")
+
 if(PROJECT_IS_TOP_LEVEL)
   message(STATUS "simple_enum version v${SIMPLE_ENUM_VERSION}")
 
@@ -13,7 +16,7 @@ if(PROJECT_IS_TOP_LEVEL)
   set(CMAKE_CXX_STANDARD 23)
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-  include(cmake/CPM.cmake)
+  
   #----------------------------------------------------------------
   # boost-ext/ut
   #----------------------------------------------------------------
@@ -46,10 +49,48 @@ if(PROJECT_IS_TOP_LEVEL)
   endif()
 endif()
 
+
+
 # Header-only library target
 add_library(simple_enum INTERFACE)
-add_library(simple_enum::simple_enum ALIAS simple_enum )
-target_include_directories(simple_enum INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+if(PROJECT_IS_TOP_LEVEL)
+  add_library(simple_enum::simple_enum ALIAS simple_enum )
+endif()
+if(SIMPLE_ENUM_OPT_IN_STATIC_ASSERTS)
+  target_compile_definitions( simple_enum INTERFACE SIMPLE_ENUM_OPT_IN_STATIC_ASSERTS=1)
+endif()
+target_include_directories(simple_enum 
+    INTERFACE   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+                $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>
+  )
+  
+install(TARGETS simple_enum
+    EXPORT simple_enum_targets
+    INCLUDES DESTINATION include
+)
+
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
+        DESTINATION include
+)
+
+install(EXPORT simple_enum_targets
+    FILE simple_enumTargets.cmake
+    NAMESPACE simple_enum::
+    DESTINATION lib/cmake/simple_enum
+)
+
+packageProject(
+    NAME simple_enum
+    VERSION ${SIMPLE_ENUM_VERSION}
+    NAMESPACE simple_enum
+    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
+    INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include
+    INCLUDE_DESTINATION include
+    VERSION_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/include/simple_enum/core.hpp"
+    COMPATIBILITY SameMinorVersion
+    DEPENDENCIES ""
+    DISABLE_VERSION_SUFFIX YES
+)
 
 if(PROJECT_IS_TOP_LEVEL)
   include(cmake/unit_test_integration.cmake)

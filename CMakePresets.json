@@ -11,7 +11,8 @@
       "generator": "Ninja",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "clang++"
+        "CMAKE_CXX_COMPILER": "clang++",
+        "SIMPLE_ENUM_OPT_IN_STATIC_ASSERTS" : "ON"
       }
     },
     {
