@@ -1,5 +1,7 @@
 #!/bin/bash
-
+# SPDX-FileCopyrightText: 2024 Artur Bać
+# SPDX-License-Identifier: BSL-1.0
+# SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
 # Check if a tag name was provided as the first argument
 if [ $# -eq 0 ]; then
     echo "Usage: $0 <tagname>"

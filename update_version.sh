@@ -1,5 +1,7 @@
 #!/bin/bash
-
+# SPDX-FileCopyrightText: 2024 Artur Bać
+# SPDX-License-Identifier: BSL-1.0
+# SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
 # Define the file path
 file_path="include/simple_enum/core.hpp"
 
