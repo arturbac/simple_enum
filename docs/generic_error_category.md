@@ -91,6 +91,7 @@ using cxx23::expected;
 using cxx23::unexpected;
 
 static auto my_function(int arg) -> expected<void, std::error_code> 
+try
   {
   if(arg != 0)
     return unexpected{function_error_category::make_error_code(function_error::failed_other_reason)};
