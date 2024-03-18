@@ -38,7 +38,7 @@ struct enum_index_t
   ) static_call_operator_const noexcept -> cxx23::expected<std::size_t, enum_index_error>
     {
     using enum_meta_info = detail::enum_meta_info_t<enum_type>;
-    auto const requested_index{simple_enum::to_underlying(value)};
+    auto const requested_index{simple_enum::detail::to_underlying(value)};
     if(requested_index >= enum_meta_info::first_index() && requested_index <= enum_meta_info::last_index()) [[likely]]
       return requested_index;
     else

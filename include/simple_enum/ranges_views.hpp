@@ -33,7 +33,7 @@ public:
 
   constexpr auto operator++() noexcept -> enum_view_iterator &
     {
-    current_ = static_cast<enumeration>(simple_enum::to_underlying(current_) + 1);
+    current_ = static_cast<enumeration>(simple_enum::detail::to_underlying(current_) + 1);
     return *this;
     }
 
@@ -46,7 +46,7 @@ public:
 
   constexpr auto operator--() noexcept -> enum_view_iterator &
     {
-    current_ = static_cast<enumeration>(simple_enum::to_underlying(current_) - 1);
+    current_ = static_cast<enumeration>(simple_enum::detail::to_underlying(current_) - 1);
     return *this;
     }
 
@@ -59,41 +59,41 @@ public:
 
   constexpr auto operator+=(difference_type n) noexcept -> enum_view_iterator &
     {
-    current_ = static_cast<enumeration>(simple_enum::to_underlying(current_) + n);
+    current_ = static_cast<enumeration>(simple_enum::detail::to_underlying(current_) + n);
     return *this;
     }
 
   constexpr auto operator-=(difference_type n) noexcept -> enum_view_iterator &
     {
-    current_ = static_cast<enumeration>(simple_enum::to_underlying(current_) - n);
+    current_ = static_cast<enumeration>(simple_enum::detail::to_underlying(current_) - n);
     return *this;
     }
 
   constexpr auto operator-(enum_view_iterator const & other) const noexcept -> difference_type
     {
-    return simple_enum::to_underlying(current_) - simple_enum::to_underlying(other.current_);
+    return simple_enum::detail::to_underlying(current_) - simple_enum::detail::to_underlying(other.current_);
     }
 
   constexpr auto operator[](difference_type n) const noexcept -> reference { return *(*this + n); }
 
   constexpr auto operator<(enum_view_iterator const & other) const noexcept -> bool
     {
-    return simple_enum::to_underlying(current_) < simple_enum::to_underlying(other.current_);
+    return simple_enum::detail::to_underlying(current_) < simple_enum::detail::to_underlying(other.current_);
     }
 
   constexpr auto operator>(enum_view_iterator const & other) const noexcept -> bool
     {
-    return simple_enum::to_underlying(current_) > simple_enum::to_underlying(other.current_);
+    return simple_enum::detail::to_underlying(current_) > simple_enum::detail::to_underlying(other.current_);
     }
 
   constexpr auto operator<=(enum_view_iterator const & other) const noexcept -> bool
     {
-    return simple_enum::to_underlying(current_) <= simple_enum::to_underlying(other.current_);
+    return simple_enum::detail::to_underlying(current_) <= simple_enum::detail::to_underlying(other.current_);
     }
 
   constexpr auto operator>=(enum_view_iterator const & other) const noexcept -> bool
     {
-    return simple_enum::to_underlying(current_) >= simple_enum::to_underlying(other.current_);
+    return simple_enum::detail::to_underlying(current_) >= simple_enum::detail::to_underlying(other.current_);
     }
 
   constexpr auto operator==(enum_view_iterator const & other) const noexcept -> bool = default;
@@ -129,7 +129,7 @@ public:
 
   constexpr auto end() const noexcept -> iterator
     {
-    return iterator(static_cast<enumeration>(simple_enum::to_underlying(last_) + 1));
+    return iterator(static_cast<enumeration>(simple_enum::detail::to_underlying(last_) + 1));
     }
   };
 
