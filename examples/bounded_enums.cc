@@ -2,7 +2,8 @@
 // SPDX-License-Identifier: BSL-1.0
 // SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
 
-#include <simple_enum/simple_enum.hpp>
+#include <simple_enum/core.hpp>         //This header is enough to include for declaring enum bounds
+#include <simple_enum/simple_enum.hpp>  // this header is included for enum name
 #include <atomic>
 #include <iostream>
 

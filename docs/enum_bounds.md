@@ -3,6 +3,7 @@
 - [ADL specified bounds using function `adl_enum_bounds`](#adl-specified-bounds-using-function-adl_enum_bounds)
 - [`simple_enum::info` Template struct specialization](#info-struct-specialization)
 - [Defining enumeration bounds in-class](#defining-enumeration-bounds-in-class)
+- [Full example](#full-example)
 
 # Priority order of bounds definition evaluation in `simple_enum`
 
@@ -18,10 +19,11 @@
 
 ## Interface Declaration
 
-While `adl_enum_bounds` itself does not have a direct interface in the traditional sense, it relies on user specializations to provide bounds:
+While `adl_enum_bounds` itself does not have a direct interface in the traditional sense, it relies on user function overloads to provide bounds:
 
 ```cpp
-template<enum_concept enumeration>
+#include <simple_enum/core.hpp>
+
 constexpr auto adl_enum_bounds(enumeration) -> simple_enum::adl_info<enumeration>;
 ```
 
@@ -41,6 +43,8 @@ adl_info(enumeration const &, enumeration const &) -> adl_info<enumeration>;
 Define `adl_enum_bounds` for a custom enumeration to specify its bounds:
 
 ```cpp
+#include <simple_enum/core.hpp>
+
 enum class my_enum { v1, v2, v3 };
 
 // User-defined bounds for my_enum using (ADL)
@@ -74,6 +78,8 @@ These members should be of the enumeration type, and it is crucial that `first <
 The following example demonstrates how to provide custom bounds for the `std::memory_order` enumeration:
 
 ```cpp
+#include <simple_enum/core.hpp>
+
 template<>
 struct simple_enum::info<std::memory_order> {
   static constexpr auto first = std::memory_order::relaxed; // Minimum value
@@ -106,4 +112,6 @@ enum class my_enum { v1, v2, v3, first = v1, last = v3 };
 - `last = v3`: Specifies the maximum (or last) valid value of the enumeration.
 - The condition `first <= last` is inherently satisfied by this definition.
 
+# Full example
 
+[Full example code available here](https://github.com/arturbac/simple_enum/blob/master/examples/bounded_enums.cc)
