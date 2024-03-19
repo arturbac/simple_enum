@@ -165,6 +165,91 @@ namespace detail
     constexpr auto operator<=>(meta_name r) const noexcept { return as_view() <=> r.as_view(); }
     };
 
+  struct meta_enum_name
+    {
+    meta_name enum_name;
+    meta_name enumeration_name;
+    };
+
+  constexpr char const * find_sentinel(char const * str)
+    {
+    while(*str != ':' && *str != ')')
+      ++str;
+    return str;
+    }
+
+  template<char end_of_enum = ']'>
+  constexpr void parse_enumeration_name(char const * str, meta_name & result) noexcept
+    {
+    if(*str == '(')
+      ++str;
+    char const * prev_colon = str;
+    char const * current_colon = str;
+
+    while(*str != end_of_enum)
+      {
+      if(*str == ':')
+        {
+        prev_colon = current_colon;
+        current_colon = str;
+        str += 2;
+        continue;
+        }
+      else if(*str == '(')
+        {
+        prev_colon = current_colon;
+        current_colon = str;
+        str += 1;
+        continue;
+        }
+#if defined(_MSC_VER) || defined(SIMPLE_ENNUM_ENABLE_PEN_TEST)
+      else if(*str == ' ')  // msvc
+        {
+        prev_colon = current_colon;
+        current_colon = str;
+        str += 1;
+        continue;
+        }
+#endif
+      else if(*str == ')')
+        {
+        prev_colon = current_colon;
+        current_colon = str;
+        str += 1;
+        if(*str == ':')
+          {
+          str += 2;
+          continue;
+          }
+        continue;
+        }
+      ++str;
+      }
+
+    if(*prev_colon == ':')
+      prev_colon += 2;
+    else if(*prev_colon == '(')
+      ++prev_colon;
+#if defined(_MSC_VER) || defined(SIMPLE_ENNUM_ENABLE_PEN_TEST)
+    else if(*prev_colon == ' ')  // msvc
+      ++prev_colon;
+#endif
+    else if(prev_colon[0] == ')' && prev_colon[1] == ':')
+      prev_colon += 3;
+    // Calculate the size and set the result
+    result.data = prev_colon;
+    result.size = size_t(current_colon - prev_colon);
+    }
+
+  template<concepts::strong_enum enumeration>
+  constexpr meta_name parse_enumeration_name() noexcept
+    {
+    char const * const func{se::f<enumeration{}>()};
+    meta_name result;
+    parse_enumeration_name<se::end_of_enumeration_name>(func + se::initial_offset + 1, result);
+    return result;
+    }
+
   template<auto enumeration>
   constexpr auto first_pass(meta_name & res) noexcept
     {
@@ -289,6 +374,32 @@ struct enum_name_t
  * @endcode
  */
 inline constexpr enum_name_t enum_name;
+
+namespace detail
+  {
+
+  template<concepts::strong_enum enum_type>
+  struct enumeration_name_t
+    {
+    static constexpr detail::meta_name name_{detail::parse_enumeration_name<enum_type>()};
+    static constexpr std::string_view value{name_.data, name_.size};
+    };
+  }  // namespace detail
+
+/**
+ * @brief Provides the enumeration name for a specified enum type.
+ *
+ * @details This template deduces and provides access to the name of the enumeration specified by the enum_type
+ * parameter, utilizing the compile-time parsing utilities. Usage example:
+ *
+ * enum class MyEnum { Value1, Value2 };
+ * std::cout << enumeration_name_v<MyEnum> << std::endl;
+ *
+ * This will output the name of the enumeration (e.g., "MyEnum") as a compile-time
+ * constant std::string_view.
+ */
+template<concepts::strong_enum enum_type>
+inline constexpr std::string_view enumeration_name_v = detail::enumeration_name_t<enum_type>::value;
 
 namespace detail
   {

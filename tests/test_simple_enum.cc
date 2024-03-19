@@ -1,6 +1,9 @@
 // SPDX-FileCopyrightText: 2024 Artur Bać
 // SPDX-License-Identifier: BSL-1.0
 // SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
+
+#define SIMPLE_ENNUM_ENABLE_PEN_TEST
+
 #include "simple_enum_tests.hpp"
 
 // TODO chck impact of clang-18 attribute
@@ -10,6 +13,7 @@
 // };
 
 // When viewing S::FruitKind in a debugger, it will behave as if the member was declared as type E rather than unsigned.
+//
 
 enum struct enum_bounded
   {
@@ -228,6 +232,17 @@ namespace test
     }  // namespace subnamespace
   }  // namespace test
 
+static_assert(enumeration_name_v<enum_bounded> == "enum_bounded");
+static_assert(enumeration_name_v<enum_upper_bounded> == "enum_upper_bounded");
+static_assert(enumeration_name_v<enum_lower_bounded> == "enum_lower_bounded");
+static_assert(enumeration_name_v<strong_typed> == "strong_typed");
+static_assert(enumeration_name_v<test::strong_typed_2_e> == "strong_typed_2_e");
+static_assert(enumeration_name_v<test::strong_untyped_2_e> == "strong_untyped_2_e");
+static_assert(enumeration_name_v<test::subnamespace::example_3_e> == "example_3_e");
+static_assert(enumeration_name_v<test::subnamespace::detail::example_4_e> == "example_4_e");
+static_assert(enumeration_name_v<test::subnamespace::example_5_e> == "example_5_e");
+static_assert(enumeration_name_v<test::subnamespace::v2_0::example_5_e> == "example_5_e");
+
 enum struct one_elem_untyped
   {
   v1 = 1,
@@ -263,7 +278,209 @@ constexpr auto se_view() noexcept -> std::string_view
   cont_pass<enumeration>(value, beg);
   return std::string_view{value.data, value.size};
   }
+// " (strong_typed)0]"
+// " strong_typed::v1]"
+// " strong_typed::v1]"
+// "detial::strong_typed::v1]"
+// "test::detail::(strong_typed)0]"
+// "more_test::test::detial::strong_typed::v1]"
 
+enum struct test_enumeration_name
+  {
+  first_en = 10,
+  sec,
+  v2,
+  last_en
+  };
+
+static ut::suite<"msv tests"> msvc_tests = []
+{
+  "test auto __cdecl se::f<(enum strong_typed)0x0>(void) noexcept"_test = []
+  {
+    meta_name result{};
+    parse_enumeration_name<'>'>("(enum strong_typed)0x0>", result);
+    expect(eq(std::string_view{result.data, result.size}, "strong_typed"sv));
+  };
+
+  "test auto __cdecl se::f<(enum strong_untyped)0x0>(void) noexcept"_test = []
+  {
+    meta_name result{};
+    parse_enumeration_name<'>'>("(enum strong_untyped)0x0>", result);
+    expect(eq(std::string_view{result.data, result.size}, "strong_untyped"sv));
+  };
+
+  "test auto __cdecl se::f<(enum weak_untyped_e)0x0>(void) noexcept"_test = []
+  {
+    meta_name result{};
+    parse_enumeration_name<'>'>("(enum weak_untyped_e)0x0>", result);
+    expect(eq(std::string_view{result.data, result.size}, "weak_untyped_e"sv));
+  };
+
+  "test auto __cdecl se::f<(enum test::strong_typed_2_e)0x0>(void) noexcept"_test = []
+  {
+    meta_name result{};
+    parse_enumeration_name<'>'>("(enum test::strong_typed_2_e)0x0>", result);
+    expect(eq(std::string_view{result.data, result.size}, "strong_typed_2_e"sv));
+  };
+
+  "test auto __cdecl se::f<(enum test::subnamespace::example_3_e)0x0>(void) noexcept"_test = []
+  {
+    meta_name result{};
+    parse_enumeration_name<'>'>("(enum test::subnamespace::example_3_e)0x0>", result);
+    expect(eq(std::string_view{result.data, result.size}, "example_3_e"sv));
+  };
+
+  "test auto __cdecl se::f<(enum test::subnamespace::detail::`anonymous-namespace'::example_4_e)0x0>(void) noexcept"_test
+    = []
+  {
+    meta_name result{};
+    parse_enumeration_name<'>'>("(enum test::subnamespace::detail::`anonymous-namespace'::example_4_e)0x0>", result);
+    expect(eq(std::string_view{result.data, result.size}, "example_4_e"sv));
+  };
+
+  "test auto __cdecl se::f<(enum test::subnamespace::v2_0::`anonymous-namespace'::example_5_e)0x0>(void) noexcept"_test
+    = []
+  {
+    meta_name result{};
+    parse_enumeration_name<'>'>("(enum test::subnamespace::v2_0::`anonymous-namespace'::example_5_e)0x0>", result);
+    expect(eq(std::string_view{result.data, result.size}, "example_5_e"sv));
+  };
+
+  "test auto __cdecl se::f<strong_typed::a>(void) noexcept"_test = []
+  {
+    meta_name result{};
+    parse_enumeration_name<'>'>("strong_typed::a>", result);
+    expect(eq(std::string_view{result.data, result.size}, "strong_typed"sv));
+  };
+
+  "test auto __cdecl se::f<strong_untyped::a>(void) noexcept"_test = []
+  {
+    meta_name result{};
+    parse_enumeration_name<'>'>("strong_untyped::a>", result);
+    expect(eq(std::string_view{result.data, result.size}, "strong_untyped"sv));
+  };
+
+  "test auto __cdecl se::f<test::strong_typed_2_e::a>(void) noexcept"_test = []
+  {
+    meta_name result{};
+    parse_enumeration_name<'>'>("test::strong_typed_2_e::a>", result);
+    expect(eq(std::string_view{result.data, result.size}, "strong_typed_2_e"sv));
+  };
+
+  "test auto __cdecl se::f<test::subnamespace::example_3_e::a>(void) noexcept"_test = []
+  {
+    meta_name result{};
+    parse_enumeration_name<'>'>("test::subnamespace::example_3_e::a>", result);
+    expect(eq(std::string_view{result.data, result.size}, "example_3_e"sv));
+  };
+
+  "test auto __cdecl se::f<test::subnamespace::detail::`anonymous-namespace'::example_4_e::a>(void) noexcept"_test = []
+  {
+    meta_name result{};
+    parse_enumeration_name<'>'>("test::subnamespace::detail::`anonymous-namespace'::example_4_e::a>", result);
+    expect(eq(std::string_view{result.data, result.size}, "example_4_e"sv));
+  };
+
+  "test auto __cdecl se::f<test::subnamespace::v2_0::`anonymous-namespace'::example_5_e::a>(void) noexcept"_test = []
+  {
+    meta_name result{};
+    parse_enumeration_name<'>'>("test::subnamespace::v2_0::`anonymous-namespace'::example_5_e::a>", result);
+    expect(eq(std::string_view{result.data, result.size}, "example_5_e"sv));
+  };
+};
+static ut::suite<"enumeratioN_name"> enumeratioN_name = []
+{
+  using namespace ut;
+  using namespace std::string_view_literals;
+  using namespace simple_enum::detail;
+
+  "test strong_typed from (strong_typed)0]"_test = []
+  {
+    meta_name result{};
+    parse_enumeration_name("(strong_typed)0]", result);
+    expect(eq(std::string_view{result.data, result.size}, "strong_typed"sv));
+  };
+
+  "test strong_typed from strong_typed::v1]"_test = []
+  {
+    meta_name result{};
+    parse_enumeration_name("strong_typed::v1]", result);
+    expect(eq(std::string_view{result.data, result.size}, "strong_typed"sv));
+  };
+  "test strong_typed from strong_typed::v1]"_test = []
+  {
+    meta_name result{};
+    parse_enumeration_name("strong_typed::v1]", result);
+    expect(eq(std::string_view{result.data, result.size}, "strong_typed"sv));
+  };
+  "test strong_typed from detial::strong_typed::v1]"_test = []
+  {
+    meta_name result{};
+    parse_enumeration_name("de::str::v1]", result);
+    expect(eq(std::string_view{result.data, result.size}, "str"sv));
+  };
+
+  "test strong_typed from test::detail::(strong_typed)0]"_test = []
+  {
+    meta_name result{};
+    parse_enumeration_name("test::detail::(strong_typed)0]", result);
+    expect(eq(std::string_view{result.data, result.size}, "strong_typed"sv));
+  };
+
+  "test strong_typed from more_test::test::detial::strong_typed::v1]"_test = []
+  {
+    meta_name result{};
+    parse_enumeration_name("more_test::test::detial::strong_typed::v1]", result);
+    expect(eq(std::string_view{result.data, result.size}, "strong_typed"sv));
+  };
+};
+
+enum class ScopedEnum
+  {
+  SE_Value1,
+  SE_Value2
+  };
+
+static ut::suite<"enumeration_name_tests"> enumeration_name_tests = []
+{
+  "ScopedEnum_name"_test = []
+  {
+    char const * const func{se::f<ScopedEnum{}>()};
+    meta_name result;
+    parse_enumeration_name(func + se::initial_offset + 1, result);
+    expect(eq(result.as_view(), "ScopedEnum"sv));
+    expect(eq(enumeration_name_v<ScopedEnum>, "ScopedEnum"sv));
+  };
+
+  // Testing an enumeration with no values as a corner case
+  enum struct EmptyEnum
+    {
+    };
+  "EmptyEnum_name"_test = []
+  {
+    char const * const func{se::f<EmptyEnum{}>()};
+    meta_name result;
+    parse_enumeration_name(func + se::initial_offset + 1, result);
+    expect(eq(result.as_view(), "EmptyEnum"sv));
+    expect(eq(enumeration_name_v<EmptyEnum>, "EmptyEnum"sv));
+  };
+
+  // anonymous namespace
+  enum class MultiValuedEnum
+    {
+    Value1,
+    Value2,
+    Value3
+    };
+  "MultiValuedEnum_name"_test = []
+  {
+    char const * const func{se::f<MultiValuedEnum{}>()};
+    meta_name result;
+    parse_enumeration_name(func + se::initial_offset + 1, result);
+    expect(eq(result.as_view(), "MultiValuedEnum"sv)) << func;
+    expect(eq(enumeration_name_v<MultiValuedEnum>, "MultiValuedEnum"sv));
+  };
+};
 static ut::suite<"simple_enum"> _ = []
 {
   using namespace ut;
@@ -382,6 +599,7 @@ static ut::suite<"simple_enum"> _ = []
     ut::expect(enum_name(test::subnamespace::v3) == "v3");
   };
 };
+
   }  // namespace simple_enum
 
 int main() { se::verify_offset(); }

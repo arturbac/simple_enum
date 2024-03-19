@@ -19,6 +19,12 @@ inline constexpr auto default_unbounded_upper_range = 10;
 template<typename type>
 concept enum_concept = std::is_enum_v<type>;
 
+namespace concepts
+  {
+  template<typename T>
+  concept strong_enum = enum_concept<T> && !std::convertible_to<T, std::underlying_type_t<T>>;
+  }
+
 /**
  * @brief Struct template designed for user specialization to provide enumeration bounds information.
  *
