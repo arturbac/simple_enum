@@ -9,7 +9,7 @@
 #include <simple_enum/detail/stralgo_inplace.hpp>
 #include <algorithm>
 
-namespace simple_enum::inline v0_6
+namespace simple_enum::inline v0_7
   {
 namespace concepts
   {
@@ -78,6 +78,15 @@ namespace detail
   }  // namespace detail
 
 template<typename CharT, std::size_t N>
+consteval auto as_basic_fixed_string(char const * input) -> basic_fixed_string<CharT, N>
+  {
+  basic_fixed_string<CharT, N> result{};
+  for(std::size_t i = 0; i < N; ++i)
+    result.str[i] = input[i];
+  return result;
+  }
+
+template<typename CharT, std::size_t N>
 consteval auto to_camel_case(basic_fixed_string<CharT, N> const & input) -> basic_fixed_string<CharT, N>
   {
   basic_fixed_string<CharT, N> result{};
@@ -98,4 +107,4 @@ constexpr auto to_camel_case(std::basic_string_view<CharT> input) -> std::basic_
   std::ranges::transform(input, std::back_inserter(result), camel_case_character);
   return result;
   }
-  }  // namespace simple_enum::inline v0_6
+  }  // namespace simple_enum::inline v0_7

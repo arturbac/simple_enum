@@ -3,13 +3,7 @@
 // SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
 #include <simple_enum/generic_error_category_impl.hpp>
 #include <boost/ut.hpp>  // Ensure boost-ext/ut is available
-
-namespace simple_enum
-  {
-constexpr auto my_string_decl = basic_fixed_string{"A"};
-using custom_string_literal = string_literal<my_string_decl>;
-
-  }  // namespace simple_enum
+#include <simple_enum/basic_fixed_string.hpp>
 
 using namespace boost::ut;
 using namespace simple_enum;
@@ -69,8 +63,6 @@ struct is_error_code_enum<test_error> : true_type
   };
   }  // namespace std
 
-inline constexpr basic_fixed_string test_error_category_name{"test_error_category"};
-using test_error_category_name_literal = string_literal<test_error_category_name>;
 // Test cases
 static_assert(
   std::is_same_v<decltype(to_camel_case(basic_fixed_string{"hello"})), basic_fixed_string<char, 5>>,
@@ -95,32 +87,29 @@ suite erorr_category_tests = []
 {
   using namespace boost::ut;
 
-  "test_error_category_name"_test
-    = [] { expect(eq("test_error_category"sv, test_error_category_name_literal::value)); };
-
   "generic_error_category_instance"_test = []
   {
-    auto const & instance = generic_error_category<test_error, test_error_category_name_literal>::instance();
-    expect(eq("test_error_category"sv, instance.name()));
+    auto const & instance = generic_error_category<test_error>::instance();
+    expect("Test Error"sv == instance.name());
   };
 
   "make_error_code_success"_test = []
   {
-    auto ec = make_error_code<test_error_category_name_literal>(test_error::success);
+    auto ec = make_error_code(test_error::success);
     expect(eq(0, ec.value()));
     expect(eq("Success"sv, ec.message()));
   };
 
   "make_error_code_failed"_test = []
   {
-    auto ec = make_error_code<test_error_category_name_literal>(test_error::failed_other_reason);
+    auto ec = make_error_code(test_error::failed_other_reason);
     expect(eq(1, ec.value()));
     expect(eq("Failed Other Reason"sv, ec.message()));
   };
 
   "make_error_code_unknown"_test = []
   {
-    auto ec = make_error_code<test_error_category_name_literal>(test_error::unknown);
+    auto ec = make_error_code(test_error::unknown);
     expect(eq(2, ec.value()));
     expect(eq("Unknown"sv, ec.message()));
   };
