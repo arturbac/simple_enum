@@ -101,21 +101,63 @@ enum weak_untyped_e
   last = v3
   };
 
+namespace test
+  {
+enum struct strong_typed_2_e : int16_t
+  {
+  };
+
+namespace subnamespace
+  {
+  enum struct example_3_e : uint8_t
+    {
+    };
+
+  namespace detail
+    {
+    namespace
+      {
+      enum struct example_4_e : uint8_t
+        {
+        };
+      }
+    }  // namespace detail
+
+  inline namespace v2_0
+    {
+    namespace
+      {
+      enum struct example_5_e : uint8_t
+        {
+        };
+      }
+    }  // namespace v2_0
+  }  // namespace subnamespace
+  }  // namespace test
+
 // using namespace simple_enum;
 int main()
   {
   using std::cout, std::endl;
   print_compiler_info();
+  std::cout << "\t" << se::f<strong_typed{}>() << std::endl;
+  std::cout << "\t" << se::f<strong_untyped{}>() << std::endl;
+  std::cout << "\t" << se::f<weak_untyped_e{}>() << std::endl;
+  std::cout << "\t" << se::f<test::strong_typed_2_e{}>() << std::endl;
+  std::cout << "\t" << se::f<test::subnamespace::example_3_e{}>() << std::endl;
+  std::cout << "\t" << se::f<test::subnamespace::detail::example_4_e{}>() << std::endl;
+  std::cout << "\t" << se::f<test::subnamespace::v2_0::example_5_e{}>() << std::endl;
+  std::cout << "\t" << se::f<test::subnamespace::example_5_e{}>() << std::endl;
     {
-    constexpr auto v{static_cast<strong_typed>(0)};
-    se::meta_name value{};
-    se::first_pass<static_cast<strong_typed>(0)>(value);
-    se::first_pass<strong_typed::v1>(value);
-
-    se::first_pass<static_cast<strong_untyped>(0)>(value);
-    se::first_pass<strong_untyped::v1>(value);
-
-    se::first_pass<static_cast<weak_untyped_e>(0)>(value);
-    se::first_pass<v1>(value);
+    // constexpr auto v{static_cast<strong_typed>(0)};
+    // se::meta_name value{};
+    // se::first_pass<static_cast<strong_typed>(0)>(value);
+    // se::first_pass<strong_typed::v1>(value);
+    //
+    // se::first_pass<static_cast<strong_untyped>(0)>(value);
+    // se::first_pass<strong_untyped::v1>(value);
+    //
+    // se::first_pass<static_cast<weak_untyped_e>(0)>(value);
+    // se::first_pass<v1>(value);
     }
   }
