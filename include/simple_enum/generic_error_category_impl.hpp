@@ -66,15 +66,22 @@ namespace detail
   */
 
   template<concepts::error_enum ErrorEnum>
+  struct cxx20_generic_error_category_name
+    {
+    static constexpr auto error_category_name = simple_enum::enumeration_name_v<ErrorEnum>;
+    static constexpr size_t error_category_name_len{error_category_name.size()};
+    };
+
+  template<concepts::error_enum ErrorEnum>
   consteval auto generic_error_category_name()
     {
     if constexpr(error_category_name_specialized<ErrorEnum>)
       return std::is_error_code_enum<ErrorEnum>::category_name;
     else
       {
-      static constexpr auto error_category_name = simple_enum::enumeration_name_v<ErrorEnum>;
-      static constexpr size_t error_category_name_len{error_category_name.size()};
-      return to_camel_case(as_basic_fixed_string<char, error_category_name_len>(error_category_name.data()));
+      using meta = cxx20_generic_error_category_name<ErrorEnum>;
+      return to_camel_case(as_basic_fixed_string<char, meta::error_category_name_len>(meta::error_category_name.data())
+      );
       }
     }
   }  // namespace detail
