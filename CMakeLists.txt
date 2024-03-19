@@ -78,7 +78,7 @@ install(EXPORT simple_enum_targets
     NAMESPACE simple_enum::
     DESTINATION lib/cmake/simple_enum
 )
-
+if( NOT MSVC)
 packageProject(
     NAME simple_enum
     VERSION ${SIMPLE_ENUM_VERSION}
@@ -91,6 +91,7 @@ packageProject(
     DEPENDENCIES ""
     DISABLE_VERSION_SUFFIX YES
 )
+endif()
 
 if(PROJECT_IS_TOP_LEVEL)
   include(cmake/unit_test_integration.cmake)
