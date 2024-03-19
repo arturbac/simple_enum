@@ -10,25 +10,79 @@
 namespace simple_enum::inline v0_7
   {
 
-template<concepts::error_enum ErrorEnum>
-struct meta_enumeration_name
+/**
+ * @brief Setting custom category name thru std::is_error_code_enum.
+ *
+ * Because std::is_error_code_enum must be specialized anyway it can be used to set different category name value. By
+ * adding static constexpr std::string_view category_name to this specialization , users can provide a constexpr
+ * std::string_view that represents a custom category name for their specific error enumeration. When not specialized
+ * cateogry name will be deduced form enumeration type name applying Camel space Casing
+ *
+ * @tparam ErrorEnum The error enum class for which the category name is being defined. This type should conform
+ *         to the concepts::error_enum concept, ensuring it is an enum suited for error representation.
+ *
+ * @code
+ * enum class MyError {
+ *     Error1,
+ *     Error2
+ * };
+ *
+ * template<>
+ * struct simple_enum::error_category_name<MyError> {
+ *     static constexpr std::string_view value = "My Error Category";
+ * };
+ * @endcode
+ */
+
+namespace detail
   {
-  static constexpr auto error_category_name = simple_enum::enumeration_name_v<ErrorEnum>;
-  static constexpr size_t error_category_name_len{error_category_name.size()};
+  // Define the concept error_category_name_specialized
+  template<typename ErrorEnum>
+  concept error_category_name_specialized = requires {
+    { std::is_error_code_enum<ErrorEnum>::category_name } -> std::same_as<std::string_view const &>;
   };
 
-template<concepts::error_enum ErrorEnum>
-consteval auto generic_error_category_name()
-  {
-  static constexpr auto error_category_name = simple_enum::enumeration_name_v<ErrorEnum>;
-  static constexpr size_t error_category_name_len{error_category_name.size()};
-  return as_basic_fixed_string<char, error_category_name_len>(error_category_name.data());
-  }
+  /*
+  // Example usage
+  template<error_enum ErrorEnum>
+  struct error_category_name<ErrorEnum> {
+      static constexpr std::string_view value = "DefaultErrorCategory";
+  };
+
+  // A test enum to specialize error_category_name
+  enum class MyError {
+      ErrorCode1,
+      ErrorCode2
+  };
+
+  // Specialization for MyError
+  template<>
+  struct error_category_name<MyError> {
+      static constexpr std::string_view value = "MyErrorCategory";
+  };
+
+  static_assert(error_category_name_specialized<MyError>, "MyError must specialize error_category_name with a static
+  constexpr std::string_view value.");
+  */
+
+  template<concepts::error_enum ErrorEnum>
+  consteval auto generic_error_category_name()
+    {
+    if constexpr(error_category_name_specialized<ErrorEnum>)
+      return std::is_error_code_enum<ErrorEnum>::category_name;
+    else
+      {
+      static constexpr auto error_category_name = simple_enum::enumeration_name_v<ErrorEnum>;
+      static constexpr size_t error_category_name_len{error_category_name.size()};
+      return to_camel_case(as_basic_fixed_string<char, error_category_name_len>(error_category_name.data()));
+      }
+    }
+  }  // namespace detail
 
 template<concepts::error_enum ErrorEnum>
 char const * generic_error_category<ErrorEnum>::name() const noexcept
   {
-  static constexpr auto name_{to_camel_case(generic_error_category_name<ErrorEnum>())};
+  static constexpr auto name_{detail::generic_error_category_name<ErrorEnum>()};
   return name_.data();
   }
 

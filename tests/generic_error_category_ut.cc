@@ -55,13 +55,10 @@ consteval auto adl_enum_bounds(test_error)
   return simple_enum::adl_info{success, unknown};
   }
 
-namespace std
-  {
 template<>
-struct is_error_code_enum<test_error> : true_type
+struct std::is_error_code_enum<test_error> : true_type
   {
   };
-  }  // namespace std
 
 // Test cases
 static_assert(
@@ -80,6 +77,28 @@ static_assert(to_camel_case(basic_fixed_string{"a "}) == basic_fixed_string{"A "
 static_assert(
   to_camel_case(basic_fixed_string{"hello world"}) != basic_fixed_string{"hello world"}, "Incorrect CamelCase equality"
 );
+static_assert(!simple_enum::detail::error_category_name_specialized<test_error>);
+
+enum class test_error_class_spec
+  {
+  success = 0,
+  failed_other_reason,
+  unknown
+  };
+
+consteval auto adl_enum_bounds(test_error_class_spec)
+  {
+  using enum test_error_class_spec;
+  return simple_enum::adl_info{success, unknown};
+  }
+
+template<>
+struct std::is_error_code_enum<test_error_class_spec> : true_type
+  {
+  static constexpr std::string_view category_name = "My Custom Error Category Name";
+  };
+
+static_assert(simple_enum::detail::error_category_name_specialized<test_error_class_spec>);
 
 namespace
   {
@@ -91,6 +110,12 @@ suite erorr_category_tests = []
   {
     auto const & instance = generic_error_category<test_error>::instance();
     expect("Test Error"sv == instance.name());
+  };
+
+  "generic_error_category_instance custom name"_test = []
+  {
+    auto const & instance = generic_error_category<test_error_class_spec>::instance();
+    expect("My Custom Error Category Name"sv == instance.name());
   };
 
   "make_error_code_success"_test = []

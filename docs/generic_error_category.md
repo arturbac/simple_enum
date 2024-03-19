@@ -44,6 +44,8 @@ To integrate seamlessly with the C++ error handling mechanisms, specialize the `
 ```cpp
 template<>
 struct std::is_error_code_enum<custom_error_example::function_error> : true_type {
+  // optional if not defined Camel space Cased enumeration type name is used
+  static constexpr std::string_view category_name = "My Custom Error Category Name";
 };
 ```
 
@@ -54,10 +56,7 @@ Within your namespace, define a unique error category by specifying a category n
 ```cpp
 namespace custom_error_example 
   {
-inline constexpr simple_enum::basic_fixed_string category_name{"Function Error Category Name"};
-using category_name_literal = simple_enum::string_literal<category_name>;
-
-using function_error_category = simple_enum::generic_error_category<function_error, category_name_literal>;
+using function_error_category = simple_enum::generic_error_category<function_error>;
   }  // namespace custom_error_example
 ```
 
@@ -66,8 +65,7 @@ Note this specialization is defined in namespace simple_enum;
 
 ```cpp
 using custom_error_example::function_error;
-using custom_error_example::category_name_literal;
-extern template class simple_enum::generic_error_category<function_error, category_name_literal>;
+extern template class simple_enum::generic_error_category<function_error>;
 ```
 
 ## Implementation in Translation Unit
@@ -77,7 +75,7 @@ To ensure there's only a single instantiation of the error category, include the
 ```cpp
 #include <simple_enum/generic_error_category_impl.hpp>
 
-template class simple_enum::generic_error_category<function_error, category_name_literal>;
+template class simple_enum::generic_error_category<function_error>;
 ```
 
 ## Using the Custom Error Category
@@ -94,7 +92,8 @@ static auto my_function(int arg) -> expected<void, std::error_code>
 try
   {
   if(arg != 0)
-    return unexpected{function_error_category::make_error_code(function_error::failed_other_reason)};
+    // simple_enum::make_error_code or function_error_category::make_error_code can be used
+    return unexpected{simple_enum::make_error_code(function_error::failed_other_reason)};
   return {};
   }
 catch(...) 

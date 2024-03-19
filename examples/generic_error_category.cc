@@ -31,19 +31,18 @@ consteval auto adl_enum_bounds(function_error)
 template<>
 struct std::is_error_code_enum<custom_error_example::function_error> : true_type
   {
+  // optional if not defined Camel space Cased enumeration type name is used
+  static constexpr std::string_view category_name = "My Custom Error Category Name";
   };
 
 namespace custom_error_example
   {
 
-inline constexpr simple_enum::basic_fixed_string category_name{"Function Error"};
-using category_name_literal = simple_enum::string_literal<category_name>;
-using function_error_category = simple_enum::generic_error_category<function_error, category_name_literal>;
+using function_error_category = simple_enum::generic_error_category<function_error>;
 
   }  // namespace custom_error_example
 
-extern template class simple_enum::
-  generic_error_category<custom_error_example::function_error, custom_error_example::category_name_literal>;
+extern template class simple_enum::generic_error_category<custom_error_example::function_error>;
 
 // >>>>>-----[[[***]]]-----<<<<<>>>>>-----[[[***]]]-----<<<<<>>>>>-----[[[***]]]-----<<<<<>>>>>-----[[[***]]]-----<<<<<>
 //
@@ -52,19 +51,13 @@ extern template class simple_enum::
 // >>>>>-----[[[***]]]-----<<<<<>>>>>-----[[[***]]]-----<<<<<>>>>>-----[[[***]]]-----<<<<<>>>>>-----[[[***]]]-----<<<<<>
 #include <simple_enum/generic_error_category_impl.hpp>
 
-using custom_error_example::category_name_literal;
 using custom_error_example::function_error;
 
-#ifdef __clang__
-#pragma clang diagnostic push
 // The design of std::error_code necessitates an instance of error_category, and given that the base class includes a
 // virtual destructor, it cannot be declared inline constexpr.
-#pragma clang diagnostic ignored "-Wexit-time-destructors"
-#endif
-template class simple_enum::generic_error_category<function_error, category_name_literal>;
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
+// With clang however destruction is omitted with attribute no_destroy
+
+template class simple_enum::generic_error_category<function_error>;
 
 // >>>>>-----[[[***]]]-----<<<<<>>>>>-----[[[***]]]-----<<<<<>>>>>-----[[[***]]]-----<<<<<>>>>>-----[[[***]]]-----<<<<<>
 //
@@ -80,7 +73,8 @@ static auto my_function(int arg) -> expected<void, std::error_code>
 try
   {
   if(arg != 0)
-    return unexpected{function_error_category::make_error_code(function_error::failed_other_reason)};
+    // simple_enum::make_error_code or function_error_category::make_error_code can be used
+    return unexpected{simple_enum::make_error_code(function_error::failed_other_reason)};
   return {};
   }
 catch(...)
