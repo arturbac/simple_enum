@@ -440,43 +440,42 @@ enum class ScopedEnum
   SE_Value1,
   SE_Value2
   };
-
+// Testing an enumeration with no values as a corner case
+enum struct EmptyEnum
+{
+};
+// anonymous namespace
+enum class MultiValuedEnum
+{
+  Value1,
+  Value2,
+  Value3
+};
 static ut::suite<"enumeration_name_tests"> enumeration_name_tests = []
 {
   "ScopedEnum_name"_test = []
   {
     char const * const func{se::f<ScopedEnum{}>()};
     meta_name result;
-    parse_enumeration_name(func + se::initial_offset + 1, result);
+    parse_enumeration_name<se::end_of_enumeration_name>(func + se::initial_offset + 1, result);
     expect(eq(result.as_view(), "ScopedEnum"sv));
     expect(eq(enumeration_name_v<ScopedEnum>, "ScopedEnum"sv));
   };
 
-  // Testing an enumeration with no values as a corner case
-  enum struct EmptyEnum
-    {
-    };
   "EmptyEnum_name"_test = []
   {
     char const * const func{se::f<EmptyEnum{}>()};
     meta_name result;
-    parse_enumeration_name(func + se::initial_offset + 1, result);
-    expect(eq(result.as_view(), "EmptyEnum"sv));
+    parse_enumeration_name<se::end_of_enumeration_name>(func + se::initial_offset + 1, result);
+    expect(eq(result.as_view(), "EmptyEnum"sv)) << func;
     expect(eq(enumeration_name_v<EmptyEnum>, "EmptyEnum"sv));
   };
 
-  // anonymous namespace
-  enum class MultiValuedEnum
-    {
-    Value1,
-    Value2,
-    Value3
-    };
   "MultiValuedEnum_name"_test = []
   {
     char const * const func{se::f<MultiValuedEnum{}>()};
     meta_name result;
-    parse_enumeration_name(func + se::initial_offset + 1, result);
+    parse_enumeration_name<se::end_of_enumeration_name>(func + se::initial_offset + 1, result);
     expect(eq(result.as_view(), "MultiValuedEnum"sv)) << func;
     expect(eq(enumeration_name_v<MultiValuedEnum>, "MultiValuedEnum"sv));
   };
