@@ -6,9 +6,12 @@ The `enumeration_name_v` variable template provides a compile-time approach to r
 
 ## Interface Declaration
 
-template<concepts::strong_enum enum_type>
-inline constexpr std::string_view enumeration_name_v = detail::enumeration_name_t<enum_type>::value;
+```cpp
 
+template<concepts::strong_enum enum_type>
+inline constexpr std::string_view enumeration_name_v;
+
+```
 
 - **Parameters**:
   - `enum_type`: The enumeration type for which the name is desired. This template parameter should be an enumeration type satisfying a specific enum concept ensuring it's an enum.
@@ -22,6 +25,8 @@ To utilize `enumeration_name_v`, ensure that your enumeration type is compatible
 
 ## Usage Example
 
+```cpp
+
 #include <simple_enum/simple_enum.hpp>
 #include <iostream>
 
@@ -30,6 +35,7 @@ enum class MyEnum { Value1, Value2 };
 // Example usage of `enumeration_name_v`
 std::cout << simple_enum::enumeration_name_v<MyEnum> << std::endl;  // Output: "MyEnum"
 
+```
 
 This example demonstrates how to print the name of the enumeration `MyEnum` using `enumeration_name_v`. The output will be the name of the enumeration as specified in the code, i.e., "MyEnum". The variable template `enumeration_name_v` simplifies accessing enumeration names without requiring runtime computations, thereby enhancing efficiency and code readability.
 
