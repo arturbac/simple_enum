@@ -7,7 +7,7 @@
 #include <iterator>
 #include <ranges>
 
-namespace simple_enum::inline v0_6::detail
+namespace simple_enum::inline v0_7::detail
   {
 template<bounded_enum enumeration>
 class enum_view_iterator
@@ -98,9 +98,9 @@ public:
 
   constexpr auto operator==(enum_view_iterator const & other) const noexcept -> bool = default;
   };
-  }  // namespace simple_enum::inline v0_6::detail
+  }  // namespace simple_enum::inline v0_7::detail
 
-namespace simple_enum::inline v0_6
+namespace simple_enum::inline v0_7
   {
 
 template<enum_concept enumeration>
@@ -195,7 +195,7 @@ constexpr auto end(enum_view<enumeration> const & v) -> typename enum_view<enume
   return v.end();
   }
 
-  }  // namespace simple_enum::inline v0_6
+  }  // namespace simple_enum::inline v0_7
 
 namespace std::ranges
   {

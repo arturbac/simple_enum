@@ -8,7 +8,7 @@
 
 #define SIMPLE_ENUM_NAME_VERSION "0.6.4"
 
-namespace simple_enum::inline v0_6
+namespace simple_enum::inline v0_7
   {
 
 #ifndef SIMPLE_ENUM_CUSTOM_UNBOUNDED_RANGE
@@ -139,4 +139,4 @@ namespace detail
 template<typename enumeration>
 concept bounded_enum = detail::has_valid_adl_enum_bounds<enumeration> || detail::has_info_specialization<enumeration>
                        || detail::internaly_bounded_enum<enumeration>;
-  }  // namespace simple_enum::inline v0_6
+  }  // namespace simple_enum::inline v0_7
