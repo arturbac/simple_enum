@@ -26,15 +26,24 @@ consteval auto adl_enum_bounds(function_error)
   return simple_enum::adl_info{failed_other_reason, unhandled_exaption};
   }
 
+// There are 2 ways to declare enum as error_code
+#define USE_ADL_WAY_TO_DECL_ERROR_CODE 1
+
+#if USE_ADL_WAY_TO_DECL_ERROR_CODE
+// using provided by simple_enum partial specialization of std::is_error_code_enum
+consteval auto adl_decl_error_code(function_error) -> bool { return true; }
+#endif
   }  // namespace custom_error_example
 
+// or declaring it Yourself with optional ability to customise category name
+#if !USE_ADL_WAY_TO_DECL_ERROR_CODE
 template<>
 struct std::is_error_code_enum<custom_error_example::function_error> : true_type
   {
   // optional if not defined Camel space Cased enumeration type name is used
   static constexpr std::string_view category_name = "My Custom Error Category Name";
   };
-
+#endif
 namespace custom_error_example
   {
 

@@ -39,7 +39,12 @@ consteval auto adl_enum_bounds(function_error)
 
 ## Making the Enum Compatible with `std::is_error_code_enum`
 
-To integrate seamlessly with the C++ error handling mechanisms, specialize the `std::is_error_code_enum` for your custom error enum:
+To integrate seamlessly with the C++ error handling mechanisms You have to either declare adl function
+```cpp
+consteval auto adl_decl_error_code(function_error) -> bool { return true; }
+```
+
+or specialize the `std::is_error_code_enum` for your custom error enum:
 
 ```cpp
 template<>

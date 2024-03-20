@@ -55,6 +55,8 @@ consteval auto adl_enum_bounds(test_error)
   return simple_enum::adl_info{success, unknown};
   }
 
+static_assert(!simple_enum::concepts::declared_error_code<test_error>);
+
 template<>
 struct std::is_error_code_enum<test_error> : true_type
   {
@@ -99,6 +101,47 @@ struct std::is_error_code_enum<test_error_class_spec> : true_type
   };
 
 static_assert(simple_enum::detail::error_category_name_specialized<test_error_class_spec>);
+
+namespace test_adl_decl_error_code
+  {
+enum class test_adl_decl_error_code
+  {
+  success = 0,
+  failed_other_reason,
+  unknown
+  };
+
+consteval auto adl_enum_bounds(test_adl_decl_error_code)
+  {
+  using enum test_adl_decl_error_code;
+  return simple_enum::adl_info{success, unknown};
+  }
+
+consteval auto adl_decl_error_code(test_adl_decl_error_code) -> bool { return true; }
+
+static_assert(simple_enum::concepts::declared_error_code<test_adl_decl_error_code>);
+static_assert(std::is_error_code_enum<test_adl_decl_error_code>::value);
+static_assert(!simple_enum::detail::error_category_name_specialized<test_adl_decl_error_code>);
+  }  // namespace test_adl_decl_error_code
+
+namespace test_non_adl_decl_error_code
+  {
+enum class test_non_adl_decl_error_code
+  {
+  success = 0,
+  failed_other_reason,
+  unknown
+  };
+
+consteval auto adl_enum_bounds(test_non_adl_decl_error_code)
+  {
+  using enum test_non_adl_decl_error_code;
+  return simple_enum::adl_info{success, unknown};
+  }
+
+static_assert(!simple_enum::detail::error_category_name_specialized<test_non_adl_decl_error_code>);
+static_assert(!std::is_error_code_enum<test_non_adl_decl_error_code>::value);
+  }  // namespace test_non_adl_decl_error_code
 
 namespace
   {

@@ -11,12 +11,17 @@ namespace simple_enum::inline v0_7
   {
 namespace concepts
   {
+  template<typename T>
+  concept declared_error_code = bounded_enum<T> && requires(T enum_value) {
+    { adl_decl_error_code(enum_value) } -> std::same_as<bool>;
+    adl_decl_error_code(enum_value) == true;
+  };
   /**
    * @concept error_enum
    * @brief Checks if a type is an enum and specialized for std::is_error_code_enum.
    */
   template<typename T>
-  concept error_enum = bounded_enum<T> && std::is_error_code_enum<T>::value;
+  concept error_enum = bounded_enum<T> && strong_enum<T> && std::is_error_code_enum<T>::value;
 
   }  // namespace concepts
 
@@ -64,3 +69,34 @@ template<concepts::error_enum ErrorEnum>
 auto make_error_code(ErrorEnum e) -> std::error_code;
 
   }  // namespace simple_enum::inline v0_7
+
+/**
+ * @brief Partial specialization of std::is_error_code_enum for enumeration types providing ADL function.
+ *
+ * The specialization is conditioned on the presence of an ADL-discoverable function that marks the enumeration as an
+ * error code enumeration.
+ *
+ * The example below illustrates how to define such an enumeration and the necessary ADL functions.
+ * @example
+ *
+ * enum class test_adl_decl_error_code
+ * {
+ *   success = 0,
+ *   failed_other_reason,
+ *   unknown
+ * };
+ *
+ * consteval auto adl_enum_bounds(test_adl_decl_error_code)
+ * {
+ *   using enum test_adl_decl_error_code;
+ *   return simple_enum::adl_info{success, unknown};
+ * }
+ *
+ * consteval auto adl_decl_error_code(test_adl_decl_error_code) -> bool { return true; }
+ */
+template<typename T>
+  requires simple_enum::concepts::declared_error_code<T>
+struct std::is_error_code_enum<T> : std::true_type
+  {
+  };
+
