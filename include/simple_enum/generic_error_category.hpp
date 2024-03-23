@@ -67,7 +67,10 @@ public:
  * @return std::error_code The corresponding std::error_code object.
  */
 template<concepts::error_enum ErrorEnum>
-auto make_error_code(ErrorEnum e) -> std::error_code;
+inline auto make_error_code(ErrorEnum e) -> std::error_code
+  {
+  return {static_cast<int>(e), generic_error_category<ErrorEnum>::instance()};
+  }
 
 using cxx23::bad_expected_access;
 using cxx23::expected;
@@ -81,6 +84,12 @@ template<typename T>
 using expected_ec = expected<T, std::error_code>;
 
 using unexpected_ec = unexpected<std::error_code>;
+
+template<concepts::error_enum ErrorEnum>
+inline auto make_unexpected_ec(ErrorEnum e) -> unexpected_ec
+  {
+  return unexpected_ec{make_error_code(e)};
+  }
 
   }  // namespace simple_enum::inline v0_7
 
