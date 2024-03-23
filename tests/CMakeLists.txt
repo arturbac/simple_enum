@@ -30,6 +30,20 @@ CPMAddPackage(
 add_ut_test(fmtlib_format_ut.cc)
 target_link_libraries(fmtlib_format_ut PRIVATE fmt::fmt)
 
+#----------------------------------------------------------------
+# glaze
+#----------------------------------------------------------------
+CPMAddPackage(
+  glaze
+  GITHUB_REPOSITORY stephenberry/glaze
+  GIT_TAG        v2.3.2
+  GIT_SHALLOW TRUE
+  )
+add_ut_test(glaze_enum_name_ut.cc)
+
+target_link_libraries(glaze_enum_name_ut PRIVATE glaze::glaze)
+
 add_executable(diagnostics EXCLUDE_FROM_ALL)
 target_sources( diagnostics PRIVATE diagnostics.cc)
 target_compile_definitions( diagnostics PRIVATE BOOST_UT_DISABLE_MODULE)
+
