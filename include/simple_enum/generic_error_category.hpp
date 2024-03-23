@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: BSL-1.0
 // SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
 #pragma once
-#include <simple_enum/simple_enum.hpp>
 
+#include <simple_enum/simple_enum.hpp>
+#include <simple_enum/expected.h>
 #include <system_error>
 #include <string_view>
 
@@ -67,6 +68,20 @@ public:
  */
 template<concepts::error_enum ErrorEnum>
 auto make_error_code(ErrorEnum e) -> std::error_code;
+
+using cxx23::bad_expected_access;
+using cxx23::expected;
+using cxx23::in_place;
+using cxx23::in_place_t;
+using cxx23::unexpect;
+using cxx23::unexpect_t;
+using cxx23::unexpected;
+
+template<typename T>
+using expected_ec = expected<T, std::error_code>;
+
+template<typename T>
+using unexpected_ec = unexpected<std::error_code>;
 
   }  // namespace simple_enum::inline v0_7
 
