@@ -36,6 +36,12 @@ concept write_json_supported = glz::detail::write_json_invocable<
   std::string &,
   size_t &>;
   }  // namespace simple_enum::inline v0_7::concepts
+enum struct test_enum_e
+  {
+  foo,
+  bar,
+  baz
+  };
 
 namespace glz
   {
@@ -49,9 +55,6 @@ struct meta<enumeration_type>
 
 namespace glz::detail
   {
-enum struct test_enum
-  {
-  };
 
 template<simple_enum::enum_concept enumeration_type>
 struct from_json<enumeration_type>
@@ -76,7 +79,7 @@ struct from_json<enumeration_type>
     }
   };
 
-static_assert(simple_enum::concepts::read_json_supported<test_enum>);
+static_assert(simple_enum::concepts::read_json_supported<test_enum_e>);
 
 template<simple_enum::enum_concept enumeration_type>
 struct to_json<enumeration_type>
@@ -89,7 +92,7 @@ struct to_json<enumeration_type>
     }
   };
 
-static_assert(simple_enum::concepts::write_json_supported<test_enum>);
+static_assert(simple_enum::concepts::write_json_supported<test_enum_e>);
 // template <auto Opts, class T, class Ctx, class B, class IX>
 // static_assert(write_json_invocable<glz::opts{},test_enum, glz::context, std::string, int>);
 
