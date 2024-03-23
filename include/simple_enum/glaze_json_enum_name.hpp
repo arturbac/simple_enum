@@ -37,6 +37,16 @@ concept write_json_supported = glz::detail::write_json_invocable<
   size_t &>;
   }  // namespace simple_enum::inline v0_7::concepts
 
+namespace glz
+  {
+template<simple_enum::enum_concept enumeration_type>
+struct meta<enumeration_type>
+  {
+  static constexpr bool custom_write = true;
+  static constexpr bool custom_read = true;
+  };
+  }  // namespace glz
+
 namespace glz::detail
   {
 enum struct test_enum
