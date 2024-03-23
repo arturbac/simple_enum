@@ -9,7 +9,7 @@
 
 Ensure inclusion .
 ```cpp
-#include <simple_enum/generic_error_categor.hpp>
+#include <simple_enum/generic_error_category.hpp>
 ```
 
 ## `expected_ec` Type Alias
