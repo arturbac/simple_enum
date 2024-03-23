@@ -4,13 +4,6 @@
 #include <simple_enum/glaze_json_enum_name.hpp>
 #include "simple_enum_tests.hpp"
 
-enum struct test_enum_e
-  {
-  foo,
-  bar,
-  baz
-  };
-
 struct test_data_t
   {
   test_enum_e enum_field;
