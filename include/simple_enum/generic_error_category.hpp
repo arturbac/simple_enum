@@ -80,7 +80,6 @@ using cxx23::unexpected;
 template<typename T>
 using expected_ec = expected<T, std::error_code>;
 
-template<typename T>
 using unexpected_ec = unexpected<std::error_code>;
 
   }  // namespace simple_enum::inline v0_7
