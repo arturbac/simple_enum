@@ -13,7 +13,7 @@
 - [`std::format`](std_format.md) support for enumerations
 - [`fmt::format`](fmt_format.md) support for enumerations
 - [`generic_error_category`](generic_error_category.md) generic template for error handling with std::expected<T,std::error_code> 
-- [`make_unexpected_ec`, `expected_ec`, `unexpected_ec`](expected_error_code_helpers.md) expected error code helpers
+- [`expected_ec` and `make_unexpected_ec`](expected_error_code_helpers.md) expected error code helpers
 - [examples](examples.md) example usage
 - [`simple_enum` CPM installation guide](simple_enum_installation_guide.md)
 - [`simple_enum` vcpkg installation guide](simple_enum_vcpkg_overlay_installation_instructions.md)
