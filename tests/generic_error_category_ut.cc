@@ -181,6 +181,13 @@ suite erorr_category_tests = []
     expect(eq(2, ec.value()));
     expect(eq("Unknown"sv, ec.message()));
   };
+
+  "make_unexpected_ec_unknown"_test = []
+  {
+    auto ec = make_unexpected_ec(test_error::unknown);
+    expect(eq(make_error_code(test_error::unknown), ec.error()));
+    expect(eq("Unknown"sv, ec.error().message()));
+  };
 };
   }  // namespace
 

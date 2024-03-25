@@ -32,6 +32,7 @@ if(PROJECT_IS_TOP_LEVEL)
         NAME magic_enum
         GITHUB_REPOSITORY Neargye/magic_enum
         GIT_TAG v0.9.5
+        GIT_SHALLOW TRUE
     )
     find_package(magic_enum REQUIRED)
 
@@ -39,6 +40,7 @@ if(PROJECT_IS_TOP_LEVEL)
       Name reflect
       GITHUB_REPOSITORY boost-ext/reflect
       GIT_TAG main
+      GIT_SHALLOW TRUE
     )
 
     add_library(reflect INTERFACE)

@@ -115,11 +115,4 @@ auto generic_error_category<ErrorEnum>::make_error_code(ErrorEnum e) noexcept ->
   {
   return {static_cast<int>(e), generic_error_category<ErrorEnum>::instance()};
   }
-
-template<concepts::error_enum ErrorEnum>
-auto make_error_code(ErrorEnum e) -> std::error_code
-  {
-  return {static_cast<int>(e), generic_error_category<ErrorEnum>::instance()};
-  }
-
   }  // namespace simple_enum::inline v0_7
