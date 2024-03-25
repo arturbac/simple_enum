@@ -21,7 +21,7 @@ int main()
   };
   "read_file_json test"_test = []
   {
-    constexpr test_data_t data{};
+    test_data_t data{};
     auto err{glz::read_file_json(data, std::string{"rboxes_file_name"}, std::string{})};
     expect(err.ec == glz::error_code::none);
   };
