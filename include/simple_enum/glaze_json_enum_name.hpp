@@ -36,16 +36,10 @@ concept write_json_supported = glz::detail::write_json_invocable<
   std::string &,
   size_t &>;
   }  // namespace simple_enum::inline v0_7::concepts
-enum struct test_enum_e
-  {
-  foo,
-  bar,
-  baz
-  };
 
 namespace glz
   {
-template<simple_enum::bounded_enum enumeration_type>
+template<simple_enum::enum_concept enumeration_type>
 struct meta<enumeration_type>
   {
   static constexpr bool custom_write = true;
@@ -56,9 +50,11 @@ struct meta<enumeration_type>
 namespace glz::detail
   {
 
-template<simple_enum::bounded_enum enumeration_type>
+template<simple_enum::enum_concept enumeration_type>
 struct from_json<enumeration_type>
   {
+  static_assert(simple_enum::bounded_enum<enumeration_type>);
+
   template<auto Opts>
   static void op(enumeration_type & arg, is_context auto && ctx, auto &&... args)
     {
@@ -79,11 +75,11 @@ struct from_json<enumeration_type>
     }
   };
 
-static_assert(simple_enum::concepts::read_json_supported<test_enum_e>);
-
-template<simple_enum::bounded_enum enumeration_type>
+template<simple_enum::enum_concept enumeration_type>
 struct to_json<enumeration_type>
   {
+  static_assert(simple_enum::bounded_enum<enumeration_type>);
+
   template<auto Opts>
   static void op(enumeration_type const & arg, auto &&... args) noexcept
     {
@@ -91,9 +87,4 @@ struct to_json<enumeration_type>
     write<json>::op<Opts>(value, args...);
     }
   };
-
-static_assert(simple_enum::concepts::write_json_supported<test_enum_e>);
-// template <auto Opts, class T, class Ctx, class B, class IX>
-// static_assert(write_json_invocable<glz::opts{},test_enum, glz::context, std::string, int>);
-
   }  // namespace glz::detail
