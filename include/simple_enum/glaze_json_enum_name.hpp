@@ -45,7 +45,7 @@ enum struct test_enum_e
 
 namespace glz
   {
-template<simple_enum::enum_concept enumeration_type>
+template<simple_enum::bounded_enum enumeration_type>
 struct meta<enumeration_type>
   {
   static constexpr bool custom_write = true;
@@ -56,7 +56,7 @@ struct meta<enumeration_type>
 namespace glz::detail
   {
 
-template<simple_enum::enum_concept enumeration_type>
+template<simple_enum::bounded_enum enumeration_type>
 struct from_json<enumeration_type>
   {
   template<auto Opts>
@@ -81,7 +81,7 @@ struct from_json<enumeration_type>
 
 static_assert(simple_enum::concepts::read_json_supported<test_enum_e>);
 
-template<simple_enum::enum_concept enumeration_type>
+template<simple_enum::bounded_enum enumeration_type>
 struct to_json<enumeration_type>
   {
   template<auto Opts>
