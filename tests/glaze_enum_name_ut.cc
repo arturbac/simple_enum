@@ -17,22 +17,12 @@ int main()
   {
     constexpr test_data_t data{.enum_field = test_enum_e::baz};
     glz::write_error err{glz::write_file_json<pretty>(data, std::string{"rboxes_file_name"}, std::string{})};
+    expect(err.ec == glz::error_code::none);
+  };
+  "read_file_json test"_test = []
+  {
+    constexpr test_data_t data{};
+    auto err{glz::read_file_json(data, std::string{"rboxes_file_name"}, std::string{})};
+    expect(err.ec == glz::error_code::none);
   };
   }
-
-/*
-if constexpr (write_json_invocable<Opts, T, Ctx, B, IX>) {
-               to_json<std::remove_cvref_t<T>>::template op<Opts>(std::forward<T>(value), std::forward<Ctx>(ctx),
-                                                                  std::forward<B>(b), std::forward<IX>(ix));
-error: static assertion failed due to requirement 'false_v<const test_enum_e &>': Glaze metadata is probably needed for
-your type te T type is from get_member(value, member) and it is  test_enum_e const &
-
-// OK no test
-write<json>::op<Opts>(get_member(value, member), ctx, b, ix);
-glz::detail::write<10>::op<opts{}, const test_enum_e &, glz::context &, std::string &, unsigned long &>
-
-// Goes thru op_base<write_unknown_on<Options>()>(std::forward<V>(value), ctx, b, ix);
-glz::detail::to_json<test_data_t>::op_base<opts{}, const test_data_t &, glz::context &, std::string &, unsigned long &>
-
-//OK test if constexpr (write_json_invocable<Opts, T, Ctx, B, IX>) {
-glz::detail::to_json<test_data_t>::op<opts{}, const test_data_t &, glz::context &, std::string &, unsigned long &>*/
