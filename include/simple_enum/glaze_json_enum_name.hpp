@@ -89,7 +89,9 @@ constexpr auto convert_to_glz_tuple(std::tuple<Args...> const & stdTuple)
   {
   // Use std::apply to unpack the std::tuple and forward its elements
   // to the constructor of glz::tuplet::tuple.
-  return std::apply([](auto &&... args) { return glz::tuplet::tuple<std::decay_t<Args>...>{args...}; }, stdTuple);
+  return glz::detail::Enum{
+    std::apply([](auto &&... args) { return glz::tuplet::tuple<std::decay_t<Args>...>{args...}; }, stdTuple)
+  };
   }
   }  // namespace simple_enum::inline v0_7
 
@@ -117,11 +119,13 @@ struct meta<enumeration_type>
   static constexpr bool custom_write = true;
   static constexpr bool custom_read = true;
 
-  static constexpr auto color_values{simple_enum::enum_names_array<enumeration_type>};
-  static constexpr auto color_names{simple_enum::enum_values_array<enumeration_type>};
+  // static constexpr auto color_values{simple_enum::enum_names_array<enumeration_type>};
+  // static constexpr auto color_names{simple_enum::enum_values_array<enumeration_type>};
   static constexpr std::string_view name = simple_enum::enumeration_name_v<enumeration_type>;
-  static constexpr auto value
-    = simple_enum::convert_to_glz_tuple(simple_enum::make_glaze_tuple(color_values, color_names));
+  static constexpr auto value = simple_enum::convert_to_glz_tuple(
+    simple_enum::
+      make_glaze_tuple(simple_enum::enum_names_array<enumeration_type>, simple_enum::enum_values_array<enumeration_type>)
+  );
   };
 
 template<simple_enum::enum_concept enumeration_type>

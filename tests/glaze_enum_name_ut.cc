@@ -92,50 +92,13 @@ int main()
   "write_json_schema test"_test = []
   {
     std::string schema = glz::write_json_schema<test_data_t>();
-    expect(false) << schema;
+    // expect(false) << schema;
     expect(eq(
       schema,
-      R"({"type":["object"],"properties":{"enum_field":{"$ref":"#/$defs/test_enum_e"}},"additionalProperties":false,"$defs":{"test_enum_e":{"type":["string"],"oneOf":[{"description":"foo","const":"foo"},{"description":"bar","const":"bar"},{"description":"baz","const":"baz"}]}}})"sv
+      R"({"type":["object"],"properties":{"enum_field":{"$ref":"#/$defs/test_enum_e"}},"additionalProperties":false,"$defs":{"test_enum_e":{"type":["string"],"oneOf":[{"const":"foo"},{"const":"bar"},{"const":"baz"}]}}})"sv
     ));
-    auto color_values{simple_enum::enum_values_array<Color>};
-    auto color_names{simple_enum::enum_names_array<Color>};
-    auto interleaved = simple_enum::interleave(color_names, color_values);
-    std::string_view name = simple_enum::enumeration_name_v<Color>;
-    auto value = std::apply(
-      [](auto &&... args) noexcept { return glz::enumerate_no_reflect(std::forward<decltype(args)>(args)...); },
-      interleaved
-    );
-    auto value2 = simple_enum::convert_to_glz_tuple(simple_enum::make_glaze_tuple(color_names, color_values));
-
-    glz::detail::Enum<glz::tuplet::tuple<std::tuple<
-      glz::tuplet::tuple<std::basic_string_view<char>, Color>,
-      glz::tuplet::tuple<std::basic_string_view<char>, Color>,
-      glz::tuplet::tuple<std::basic_string_view<char>, Color>>>>
-      value2a;
-    glz::detail::Enum<glz::tuplet::tuple<
-      glz::tuplet::tuple<std::basic_string_view<char>, Color>,
-      glz::tuplet::tuple<std::basic_string_view<char>, Color>,
-      glz::tuplet::tuple<std::basic_string_view<char>, Color>>>
-      value3;
-
-    auto valuea = glz::enumerate(
-      "Red",
-      Color::Red,  //
-      "Green",
-      Color::Green,  //
-      "Blue",
-      Color::Blue  //
-    );
-    // constexpr auto color_values{simple_enum::enum_enumerations<Color>()};
-    // constexpr auto color_names{simple_enum::enum_names<Color>()};
-
-    std::tuple<
-      std::pair<Color, std::basic_string_view<char, std::char_traits<char>>>,
-      std::pair<Color, std::basic_string_view<char, std::char_traits<char>>>,
-      std::pair<Color, std::basic_string_view<char, std::char_traits<char>>>>
-      value4;
   };
-  "write_json_schema test"_test = []
+  "json rpc call test"_test = []
   {
     glz::rpc::server<glz::rpc::method<"foo", test_data_t, test_data_t>> server;
     glz::rpc::client<glz::rpc::method<"foo", test_data_t, test_data_t>> client;
@@ -150,8 +113,11 @@ int main()
         // Access to value and/or id
       }
     );
-    expect(false) << request_str;
+    // expect(false) << request_str;
+    expect(eq(R"({"jsonrpc":"2.0","method":"foo","params":{"enum_field":"bar"},"id":"42"})"sv, request_str));
     std::string response = server.call(request_str);
-    expect(false) << response;
+    // expect(false) << response;
+    expect(eq(R"({"jsonrpc":"2.0","result":{"enum_field":"baz"},"id":"42"})"sv, response));
   };
   }
+
