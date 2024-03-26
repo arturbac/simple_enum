@@ -14,6 +14,7 @@
 - [`fmt::format`](fmt_format.md) support for enumerations
 - [`generic_error_category`](generic_error_category.md) generic template for error handling with std::expected<T,std::error_code> 
 - [`expected_ec` and `make_unexpected_ec`](expected_error_code_helpers.md) expected error code helpers
+- [glaze json/rpc with enum names support](glaze_json_enum_support.md)
 - [examples](examples.md) example usage
 - [`simple_enum` CPM installation guide](simple_enum_installation_guide.md)
 - [`simple_enum` vcpkg installation guide](simple_enum_vcpkg_overlay_installation_instructions.md)

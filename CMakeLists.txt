@@ -49,6 +49,17 @@ if(PROJECT_IS_TOP_LEVEL)
     add_library(reflect::reflect ALIAS reflect)
     find_package(reflect REQUIRED)
   endif()
+  
+
+  #----------------------------------------------------------------
+  # glaze
+  #----------------------------------------------------------------
+  CPMAddPackage(
+    glaze
+    GITHUB_REPOSITORY stephenberry/glaze
+    GIT_TAG        v2.3.3
+    GIT_SHALLOW TRUE
+    )
 endif()
 
 

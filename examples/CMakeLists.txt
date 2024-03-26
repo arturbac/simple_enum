@@ -10,3 +10,7 @@ target_link_libraries(enum_view PRIVATE simple_enum::simple_enum)
 
 add_executable(generic_error_category EXCLUDE_FROM_ALL generic_error_category.cc)
 target_link_libraries(generic_error_category PRIVATE simple_enum::simple_enum fmt::fmt)
+
+add_executable(glaze_json_enum_support EXCLUDE_FROM_ALL glaze_json_enum_support.cc)
+
+target_link_libraries(glaze_json_enum_support PRIVATE simple_enum::simple_enum glaze::glaze)

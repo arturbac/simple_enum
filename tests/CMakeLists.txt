@@ -30,15 +30,6 @@ CPMAddPackage(
 add_ut_test(fmtlib_format_ut.cc)
 target_link_libraries(fmtlib_format_ut PRIVATE fmt::fmt)
 
-#----------------------------------------------------------------
-# glaze
-#----------------------------------------------------------------
-CPMAddPackage(
-  glaze
-  GITHUB_REPOSITORY arturbac/glaze
-  GIT_TAG        main
-  GIT_SHALLOW TRUE
-  )
 add_ut_test(glaze_enum_name_ut.cc)
 
 target_link_libraries(glaze_enum_name_ut PRIVATE glaze::glaze)

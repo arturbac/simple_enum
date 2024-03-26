@@ -66,33 +66,34 @@ namespace detail
     // return std::make_tuple(std::make_pair(a1[I], a2[I])...);
     return std::make_tuple(make_glz_enum_tuple(a1[I], a2[I])...);
     }
+
+  template<typename Array1, typename Array2>
+  constexpr auto make_glaze_tuple(Array1 const & a1, Array2 const & a2)
+    {
+    constexpr auto size1 = std::tuple_size<std::decay_t<Array1>>::value;
+    constexpr auto size2 = std::tuple_size<std::decay_t<Array2>>::value;
+    static_assert(size1 == size2);
+    return make_glaze_tuple_impl(a1, a2, std::make_index_sequence<size1>{});
+    }
+
+  template<typename... Args>
+  constexpr auto convert_to_glz_tuple(std::tuple<Args...> const & stdTuple)
+    {
+    // Use std::apply to unpack the std::tuple and forward its elements
+    // to the constructor of glz::tuplet::tuple.
+    return glz::detail::Enum{
+      std::apply([](auto &&... args) { return glz::tuplet::tuple<std::decay_t<Args>...>{args...}; }, stdTuple)
+    };
+    }  // namespace detail
+
+  // Interleave: Creates a tuple of interleaved elements from two arrays
+  template<typename Array1, typename Array2>
+  constexpr auto interleave(Array1 const & a1, Array2 const & a2)
+    {
+    return detail::interleave_impl(a1, a2, std::make_index_sequence<std::tuple_size_v<Array1>>{});
+    }
+
   }  // namespace detail
-
-// Interleave: Creates a tuple of interleaved elements from two arrays
-template<typename Array1, typename Array2>
-constexpr auto interleave(Array1 const & a1, Array2 const & a2)
-  {
-  return detail::interleave_impl(a1, a2, std::make_index_sequence<std::tuple_size_v<Array1>>{});
-  }
-
-template<typename Array1, typename Array2>
-constexpr auto make_glaze_tuple(Array1 const & a1, Array2 const & a2)
-  {
-  constexpr auto size1 = std::tuple_size<std::decay_t<Array1>>::value;
-  constexpr auto size2 = std::tuple_size<std::decay_t<Array2>>::value;
-  static_assert(size1 == size2);
-  return detail::make_glaze_tuple_impl(a1, a2, std::make_index_sequence<size1>{});
-  }
-
-template<typename... Args>
-constexpr auto convert_to_glz_tuple(std::tuple<Args...> const & stdTuple)
-  {
-  // Use std::apply to unpack the std::tuple and forward its elements
-  // to the constructor of glz::tuplet::tuple.
-  return glz::detail::Enum{
-    std::apply([](auto &&... args) { return glz::tuplet::tuple<std::decay_t<Args>...>{args...}; }, stdTuple)
-  };
-  }
   }  // namespace simple_enum::inline v0_7
 
 namespace simple_enum::inline v0_7::concepts
@@ -122,8 +123,8 @@ struct meta<enumeration_type>
   // static constexpr auto color_values{simple_enum::enum_names_array<enumeration_type>};
   // static constexpr auto color_names{simple_enum::enum_values_array<enumeration_type>};
   static constexpr std::string_view name = simple_enum::enumeration_name_v<enumeration_type>;
-  static constexpr auto value = simple_enum::convert_to_glz_tuple(
-    simple_enum::
+  static constexpr auto value = simple_enum::detail::convert_to_glz_tuple(
+    simple_enum::detail::
       make_glaze_tuple(simple_enum::enum_names_array<enumeration_type>, simple_enum::enum_values_array<enumeration_type>)
   );
   };

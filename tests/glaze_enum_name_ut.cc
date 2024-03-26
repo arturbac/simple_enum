@@ -10,15 +10,6 @@
 #include <utility>
 #include <algorithm>
 
-namespace glz::rpc
-  {
-// consteval auto adl_enum_bounds(error_e)
-// {
-//   using enum error_e;
-//   return simple_enum::adl_info{server_error_lower, parse_error};
-// }
-  }
-
 namespace views = std::views;
 namespace ranges = std::ranges;
 enum struct test_enum_e
@@ -56,19 +47,21 @@ consteval auto adl_enum_bounds(Color)
   return simple_enum::adl_info{Red, Blue};
   }
 
-// Template to generate a compile-time sequence of pairs from two arrays
-template<auto & Values, auto & Names, std::size_t... Is>
-constexpr auto make_enumeration_seq(std::index_sequence<Is...>)
+struct complex_request_t
   {
-  return std::tuple(std::make_pair(Names[Is], Values[Is])...);
-  }
+  Color color;
+  test_data_t data;
+  int value;
+  std::string name;
+  };
 
-// Utility to create the enumeration sequence
-template<auto & Values, auto & Names>
-constexpr auto make_enumeration()
+struct complex_response_t
   {
-  return make_enumeration_seq<Values, Names>(std::make_index_sequence<Values.size()>{});
-  }
+  Color color;
+  test_enum_e enum_field;
+  int value;
+  std::string name;
+  };
 
 int main()
   {
@@ -104,6 +97,7 @@ int main()
     glz::rpc::client<glz::rpc::method<"foo", test_data_t, test_data_t>> client;
 
     server.on<"foo">([](test_data_t const & params) { return test_data_t{.enum_field = test_enum_e::baz}; });
+
     std::string uuid{"42"};
     auto [request_str, inserted] = client.request<"foo">(
       uuid,
