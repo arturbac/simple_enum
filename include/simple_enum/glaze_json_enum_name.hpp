@@ -52,6 +52,20 @@ namespace detail
     {
     return std::tuple_cat(std::make_tuple(std::get<I>(a1), std::get<I>(a2))...);
     }
+
+  template<typename enumeration_type>
+  constexpr auto make_glz_enum_tuple(std::string_view string_value, enumeration_type enumeration)
+    -> glz::tuplet::tuple<std::string_view, enumeration_type>
+    {
+    return glz::tuplet::tuple<std::string_view, enumeration_type>{string_value, enumeration};
+    }
+
+  template<typename Array1, typename Array2, std::size_t... I>
+  constexpr auto make_glaze_tuple_impl(Array1 const & a1, Array2 const & a2, std::index_sequence<I...>)
+    {
+    // return std::make_tuple(std::make_pair(a1[I], a2[I])...);
+    return std::make_tuple(make_glz_enum_tuple(a1[I], a2[I])...);
+    }
   }  // namespace detail
 
 // Interleave: Creates a tuple of interleaved elements from two arrays
@@ -59,6 +73,23 @@ template<typename Array1, typename Array2>
 constexpr auto interleave(Array1 const & a1, Array2 const & a2)
   {
   return detail::interleave_impl(a1, a2, std::make_index_sequence<std::tuple_size_v<Array1>>{});
+  }
+
+template<typename Array1, typename Array2>
+constexpr auto make_glaze_tuple(Array1 const & a1, Array2 const & a2)
+  {
+  constexpr auto size1 = std::tuple_size<std::decay_t<Array1>>::value;
+  constexpr auto size2 = std::tuple_size<std::decay_t<Array2>>::value;
+  static_assert(size1 == size2);
+  return detail::make_glaze_tuple_impl(a1, a2, std::make_index_sequence<size1>{});
+  }
+
+template<typename... Args>
+constexpr auto convert_to_glz_tuple(std::tuple<Args...> const & stdTuple)
+  {
+  // Use std::apply to unpack the std::tuple and forward its elements
+  // to the constructor of glz::tuplet::tuple.
+  return std::apply([](auto &&... args) { return glz::tuplet::tuple<std::decay_t<Args>...>{args...}; }, stdTuple);
   }
   }  // namespace simple_enum::inline v0_7
 
@@ -80,6 +111,7 @@ concept write_json_supported = glz::detail::write_json_invocable<
 namespace glz
   {
 template<simple_enum::enum_concept enumeration_type>
+  requires simple_enum::bounded_enum<enumeration_type>
 struct meta<enumeration_type>
   {
   static constexpr bool custom_write = true;
@@ -87,12 +119,17 @@ struct meta<enumeration_type>
 
   static constexpr auto color_values{simple_enum::enum_names_array<enumeration_type>};
   static constexpr auto color_names{simple_enum::enum_values_array<enumeration_type>};
-  static constexpr auto interleaved = simple_enum::interleave(color_names, color_values);
   static constexpr std::string_view name = simple_enum::enumeration_name_v<enumeration_type>;
-  static constexpr auto value = std::apply(
-    [](auto &&... args) noexcept { return glz::enumerate_no_reflect(std::forward<decltype(args)>(args)...); },
-    interleaved
-  );
+  static constexpr auto value
+    = simple_enum::convert_to_glz_tuple(simple_enum::make_glaze_tuple(color_values, color_names));
+  };
+
+template<simple_enum::enum_concept enumeration_type>
+  requires(!simple_enum::bounded_enum<enumeration_type>)
+struct meta<enumeration_type>
+  {
+  static constexpr bool custom_write = true;
+  static constexpr bool custom_read = true;
   };
   }  // namespace glz
 
@@ -102,9 +139,8 @@ namespace glz::detail
 template<simple_enum::enum_concept enumeration_type>
 struct from_json<enumeration_type>
   {
-  static_assert(simple_enum::bounded_enum<enumeration_type>);
-
   template<auto Opts>
+    requires simple_enum::bounded_enum<enumeration_type>
   static void op(enumeration_type & arg, is_context auto && ctx, auto &&... args)
     {
     std::string_view value;
@@ -122,18 +158,35 @@ struct from_json<enumeration_type>
       }
     arg = res.value();
     }
+
+  template<auto Opts>
+    requires(!simple_enum::bounded_enum<enumeration_type>)
+  static void op(enumeration_type & arg, is_context auto && ctx, auto &&... args)
+    {
+    using underlying_type = std::underlying_type_t<enumeration_type>;
+    underlying_type value;
+    read<json>::op<Opts>(value, ctx, args...);
+    arg = static_cast<enumeration_type>(value);
+    }
   };
 
 template<simple_enum::enum_concept enumeration_type>
 struct to_json<enumeration_type>
   {
-  static_assert(simple_enum::bounded_enum<enumeration_type>);
-
   template<auto Opts>
+    requires simple_enum::bounded_enum<enumeration_type>
   static void op(enumeration_type const & arg, auto &&... args) noexcept
     {
     std::string_view value{simple_enum::enum_name(arg)};
     write<json>::op<Opts>(value, args...);
     }
+
+  template<auto Opts>
+    requires(!simple_enum::bounded_enum<enumeration_type>)
+  static void op(enumeration_type const & arg, auto &&... args) noexcept
+    {
+    write<json>::op<Opts>(simple_enum::detail::to_underlying(arg), args...);
+    }
   };
   }  // namespace glz::detail
+
