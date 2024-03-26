@@ -35,7 +35,7 @@ target_link_libraries(fmtlib_format_ut PRIVATE fmt::fmt)
 #----------------------------------------------------------------
 CPMAddPackage(
   glaze
-  GITHUB_REPOSITORY arturbac/glaze
+  GITHUB_REPOSITORY stephenberry/glaze
   GIT_TAG        main
   GIT_SHALLOW TRUE
   )
