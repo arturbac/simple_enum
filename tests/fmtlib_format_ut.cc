@@ -3,7 +3,15 @@
 // SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
 #include <simple_enum/fmtlib_format.hpp>
 #include "simple_enum_tests.hpp"
+
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Weverything"
+#endif
 #include <fmt/format.h>
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 int main()
   {

@@ -1,4 +1,5 @@
 include( ${CMAKE_CURRENT_LIST_DIR}/default_clang_warnings.cmake)
+include(CheckCXXCompilerFlag)
 
 function(add_ut_test source_file_name)
 
@@ -12,7 +13,11 @@ function(add_ut_test source_file_name)
 
   if(CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "AppleClang")
     target_compile_options( ${test_executable_name} PRIVATE ${clang_default_warnings} )
-	target_compile_options(${test_executable_name} PRIVATE -Wno-global-constructors )
+    check_cxx_compiler_flag("-Wswitch-default" COMPILER_SUPPORTS_WSWITCH_DEFAULT)
+    if(COMPILER_SUPPORTS_WSWITCH_DEFAULT)
+      target_compile_options(${test_executable_name} PRIVATE "-Wno-switch-default")
+    endif()
+  target_compile_options(${test_executable_name} PRIVATE -Wno-global-constructors -Werror=sign-conversion )
   elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     target_compile_options( ${test_executable_name} PRIVATE -Wall -Wextra )
   endif()

@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: BSL-1.0
 // SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
 #include <simple_enum/generic_error_category_impl.hpp>
-#include <boost/ut.hpp>  // Ensure boost-ext/ut is available
 #include <simple_enum/basic_fixed_string.hpp>
+#include "simple_enum_tests.hpp"
 
 using namespace boost::ut;
 using namespace simple_enum;

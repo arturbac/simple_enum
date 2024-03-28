@@ -4,7 +4,15 @@
 #pragma once
 
 #include <simple_enum/simple_enum.hpp>
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdocumentation-unknown-command"
+#endif
 #include <fmt/format.h>
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
+
 #include <type_traits>
 
 namespace fmt

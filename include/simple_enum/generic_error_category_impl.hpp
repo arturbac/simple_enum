@@ -18,7 +18,7 @@ namespace simple_enum::inline v0_7
  * std::string_view that represents a custom category name for their specific error enumeration. When not specialized
  * cateogry name will be deduced form enumeration type name applying Camel space Casing
  *
- * @tparam ErrorEnum The error enum class for which the category name is being defined. This type should conform
+ * ErrorEnum The error enum class for which the category name is being defined. This type should conform
  *         to the concepts::error_enum concept, ensuring it is an enum suited for error representation.
  *
  * @code
