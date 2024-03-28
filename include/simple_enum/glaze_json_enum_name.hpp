@@ -39,8 +39,10 @@ static constexpr auto enum_values_array = []()
 {
   constexpr auto size = detail::enum_base_info_t<enumeration_type>::size();
   std::array<enumeration_type, size> values;
+  using underlying_type = std::underlying_type_t<enumeration_type>;
   for(size_t ix{}; size != ix; ++ix)
-    values[ix] = static_cast<enumeration_type>(ix + detail::enum_base_info_t<enumeration_type>::first_index());
+    values[ix]
+      = static_cast<enumeration_type>(underlying_type(ix) + detail::enum_base_info_t<enumeration_type>::first_index());
   return values;
 }();
 

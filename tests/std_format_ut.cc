@@ -3,6 +3,7 @@
 // SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
 #include <simple_enum/std_format.hpp>
 #include "simple_enum_tests.hpp"
+#include <concepts>
 
 int main()
   {

@@ -34,11 +34,11 @@ struct test_data_t
   };
 
 inline constexpr glz::opts pretty{.prettify = true};
-enum class Color
+enum class Color : int8_t
   {
-  Red,
   Green,
-  Blue
+  Blue,
+  Red = -1
   };
 
 consteval auto adl_enum_bounds(Color)
@@ -96,13 +96,13 @@ int main()
     glz::rpc::server<glz::rpc::method<"foo", test_data_t, test_data_t>> server;
     glz::rpc::client<glz::rpc::method<"foo", test_data_t, test_data_t>> client;
 
-    server.on<"foo">([](test_data_t const & params) { return test_data_t{.enum_field = test_enum_e::baz}; });
+    server.on<"foo">([](test_data_t const & /*params*/) { return test_data_t{.enum_field = test_enum_e::baz}; });
 
     std::string uuid{"42"};
     auto [request_str, inserted] = client.request<"foo">(
       uuid,
       test_data_t{.enum_field = test_enum_e::bar},
-      [](glz::expected<test_data_t, glz::rpc::error> value, glz::rpc::id_t id) -> void
+      [](glz::expected<test_data_t, glz::rpc::error> /*value*/, glz::rpc::id_t /*id*/) -> void
       {
         // Access to value and/or id
       }

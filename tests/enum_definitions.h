@@ -62,12 +62,12 @@ enum struct strong_typed : uint8_t
   v3
   };
 
-template<>
-struct simple_enum::info<strong_typed>
+consteval auto adl_enum_bounds(strong_typed)
   {
-  static constexpr auto first = strong_typed::v1;
-  static constexpr auto last = strong_typed::v3;
-  };
+  using enum strong_typed;
+  return simple_enum::adl_info{v1, v3};
+  }
+
 enum struct strong_untyped
   {
   v1 = 1,
