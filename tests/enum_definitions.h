@@ -86,9 +86,9 @@ struct simple_enum::info<strong_untyped>
 
 namespace weak
   {
-enum weak_typed_e : uint8_t
+enum weak_typed_e : int8_t
   {
-  v1 = 3,
+  v1 = -3,
   v2,
   v3
   };
@@ -125,7 +125,7 @@ namespace subnamespace
   {
   enum struct example_3_e : uint8_t
     {
-    v1 = 1,
+    v1 = 5,
     v2,
     v3,
     first = v1,

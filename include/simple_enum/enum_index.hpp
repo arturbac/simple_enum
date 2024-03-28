@@ -40,7 +40,7 @@ struct enum_index_t
     using enum_meta_info = detail::enum_meta_info_t<enum_type>;
     auto const requested_index{simple_enum::detail::to_underlying(value)};
     if(requested_index >= enum_meta_info::first_index() && requested_index <= enum_meta_info::last_index()) [[likely]]
-      return requested_index;
+      return requested_index - enum_meta_info::first_index();
     else
       return cxx23::unexpected{enum_index_error::out_of_range};
     }

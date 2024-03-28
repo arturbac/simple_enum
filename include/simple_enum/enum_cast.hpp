@@ -125,10 +125,11 @@ struct enum_cast_t
   ) static_call_operator_const noexcept -> cxx23::expected<enum_type, enum_cast_error>
     {
     using enum_meta_info = detail::enum_meta_info_t<enum_type>;
+    using underlying_type = std::underlying_type_t<enum_type>;
     using sorted_indices_type = detail::enum_meta_info_sorted_indices_t<enum_type>;
     auto it{detail::lower_bound_search_indices<enum_type>(value)};
     if(it != sorted_indices_type::indices.end())
-      return static_cast<enum_type>(*it + enum_meta_info::first_index());
+      return static_cast<enum_type>(underlying_type(*it) + enum_meta_info::first_index());
     return cxx23::unexpected{enum_cast_error::invalid_cast};
     }
   };
