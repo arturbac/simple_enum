@@ -6,7 +6,7 @@
 #include <concepts>
 #include <type_traits>
 
-#define SIMPLE_ENUM_NAME_VERSION "0.7.7"
+#define SIMPLE_ENUM_NAME_VERSION "0.7.8"
 
 namespace simple_enum::inline v0_7
   {
