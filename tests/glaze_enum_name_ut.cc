@@ -46,18 +46,24 @@ consteval auto adl_enum_bounds(Color)
   using enum Color;
   return simple_enum::adl_info{Red, Blue};
   }
+enum class ColorUnbounded : int8_t
+  {
+  Green,
+  Blue,
+  Red = -1
+  };
 
 struct complex_request_t
   {
   Color color;
-  test_data_t data;
+  ColorUnbounded color2;
   int value;
-  std::string name;
   };
 
 struct complex_response_t
   {
   Color color;
+  ColorUnbounded color2;
   test_enum_e enum_field;
   int value;
   std::string name;
@@ -113,5 +119,59 @@ int main()
     // expect(false) << response;
     expect(eq(R"({"jsonrpc":"2.0","result":{"enum_field":"baz"},"id":"42"})"sv, response));
   };
-  }
+  "write_json2 test"_test = []
+  {
+    complex_request_t data{.color = Color::Blue, .color2 = ColorUnbounded::Blue, .value = 3};
+    glz::write_error err{glz::write_file_json<pretty>(data, std::string{"testfile2"}, std::string{})};
+    expect(err.ec == glz::error_code::none);
 
+    auto str = glz::write_json(data);
+    expect(eq(R"({"color":"Blue","color2":1,"value":3})"sv, str));
+  };
+  "read_file_json test"_test = []
+  {
+    complex_request_t data{};
+    auto err{glz::read_file_json(data, std::string{"testfile2"}, std::string{})};
+    expect(err.ec == glz::error_code::none);
+    expect(data.color == Color::Blue);
+    expect(data.color2 == ColorUnbounded::Blue);
+    expect(data.value == 3);
+  };
+  "json rpc call2 test"_test = []
+  {
+    glz::rpc::server<glz::rpc::method<"foo", complex_request_t, complex_response_t>> server;
+    glz::rpc::client<glz::rpc::method<"foo", complex_request_t, complex_response_t>> client;
+
+    server.on<"foo">(
+      [](complex_request_t const & params)
+      {
+        expect(eq(params.color, Color::Green));
+        expect(eq(params.color2, ColorUnbounded::Green));
+        return complex_response_t{.color = Color::Red, .color2 = ColorUnbounded::Red, .value = 13};
+      }
+    );
+
+    std::string uuid{"42"};
+    auto [request_str, inserted] = client.request<"foo">(
+      uuid,
+      complex_request_t{.color = Color::Green, .color2 = ColorUnbounded::Green},
+      [](glz::expected<complex_response_t, glz::rpc::error> value, glz::rpc::id_t /*id*/) -> void
+      {
+        expect(eq(value->color, Color::Red));
+        expect(eq(value->color2, ColorUnbounded::Red));
+      }
+    );
+    // expect(false) << request_str;
+    expect(
+      eq(R"({"jsonrpc":"2.0","method":"foo","params":{"color":"Green","color2":0,"value":0},"id":"42"})"sv, request_str)
+    );
+    std::string response = server.call(request_str);
+    // expect(false) << response;
+    expect(eq(
+      R"({"jsonrpc":"2.0","result":{"color":"Red","color2":-1,"enum_field":"foo","value":13,"name":""},"id":"42"})"sv,
+      response
+    ));
+
+    std::cout << "request schema :" << glz::write_json_schema<complex_request_t>() << std::endl;
+  };
+  }
