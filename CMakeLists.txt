@@ -9,7 +9,8 @@ project(simple_enum
  include(FeatureSummary)
  option(ENABLE_PACKAGING "Indicates whether packageProject should be enabled." ON)
  add_feature_info("ENABLE_PACKAGING" ENABLE_PACKAGING "Indicates whether packageProject should be enabled.")
-
+ option(ENABLE_TESTING "Indicates whether tests should be enabled." ${PROJECT_IS_TOP_LEVEL})
+ add_feature_info("ENABLE_TESTING" ENABLE_TESTING "Indicates whether tests should be enabled.")
 
 include(cmake/CPM.cmake)
 if(ENABLE_PACKAGING)
@@ -113,7 +114,7 @@ packageProject(
 )
 endif()
 
-if(PROJECT_IS_TOP_LEVEL)
+if(ENABLE_TESTING)
   include(cmake/unit_test_integration.cmake)
   # Enable testing and add the tests directory
   enable_testing()
