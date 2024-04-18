@@ -39,7 +39,7 @@
       }
     },
     {
-      "name": "clnag-debug",
+      "name": "clang-debug",
       "description": "Configure for clang debug build",
       "inherits": [ "cfg-clang" ],
       "cacheVariables": {
@@ -47,7 +47,7 @@
       }
     },
     {
-      "name": "clnag-debug-libstdc++",
+      "name": "clang-debug-libstdc++",
       "description": "Configure for clang debug build",
       "inherits": [ "cfg-clang", "cfg-libc++" ],
       "cacheVariables": {
@@ -97,8 +97,8 @@
   ],
   "buildPresets": [
     {
-      "name": "clnag-debug",
-      "configurePreset": "clnag-debug"
+      "name": "clang-debug",
+      "configurePreset": "clang-debug"
     },
     {
       "name": "release-time-trace",

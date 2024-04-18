@@ -6,8 +6,15 @@ project(simple_enum
    LANGUAGES CXX
    )
 
+ include(FeatureSummary)
+ option(ENABLE_PACKAGING "Indicates whether packageProject should be enabled." ON)
+ add_feature_info("ENABLE_PACKAGING" ENABLE_PACKAGING "Indicates whether packageProject should be enabled.")
+
+
 include(cmake/CPM.cmake)
-CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.11.2")
+if(ENABLE_PACKAGING)
+  CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.11.2")
+endif()
 
 if(PROJECT_IS_TOP_LEVEL)
   message(STATUS "simple_enum version v${SIMPLE_ENUM_VERSION}")
@@ -91,7 +98,7 @@ install(EXPORT simple_enum_targets
     NAMESPACE simple_enum::
     DESTINATION lib/cmake/simple_enum
 )
-if( NOT MSVC)
+if( NOT MSVC AND ENABLE_PACKAGING)
 packageProject(
     NAME simple_enum
     VERSION ${SIMPLE_ENUM_VERSION}
