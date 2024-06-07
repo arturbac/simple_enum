@@ -57,7 +57,7 @@ if(PROJECT_IS_TOP_LEVEL)
   CPMAddPackage(
     glaze
     GITHUB_REPOSITORY stephenberry/glaze
-    GIT_TAG        v2.4.4
+    GIT_TAG        v2.8.0
     GIT_SHALLOW TRUE
     )
 endif()

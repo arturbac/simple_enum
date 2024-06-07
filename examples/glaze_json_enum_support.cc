@@ -37,8 +37,8 @@ static void json_enum_example()
   // bounded_enum
   test_struct data{.color_field = Color::Green};
   auto json_data{glz::write_json(data)};
-
-  std::cout << json_data << std::endl;
+  if(json_data)
+    std::cout << json_data.value() << std::endl;
   // prints {"color_field":"Green"}
 
   [[maybe_unused]]
@@ -87,7 +87,7 @@ static void json_rpc_w_schema_example()
   std::cout << "response :" << response << std::endl;
   // prints response :{"jsonrpc":"2.0","result":{"response_color":"Green"},"id":"42"}
 
-  std::cout << "request schema :" << glz::write_json_schema<request_t>() << std::endl;
+  std::cout << "request schema :" << glz::write_json_schema<request_t>().value() << std::endl;
   // {
   //   "type": [
   //     "object"
@@ -125,7 +125,7 @@ static void json_rpc_w_schema_example()
   //     }
   //   }
   // }
-  std::cout << "response schema :" << glz::write_json_schema<response_t>() << std::endl;
+  std::cout << "response schema :" << glz::write_json_schema<response_t>().value() << std::endl;
   // {
   //   "type": [
   //     "object"

@@ -74,11 +74,13 @@ int main()
   "write_file_json test"_test = []
   {
     constexpr test_data_t data{.enum_field = test_enum_e::baz};
-    glz::write_error err{glz::write_file_json<pretty>(data, std::string{"rboxes_file_name"}, std::string{})};
-    expect(err.ec == glz::error_code::none);
+    auto reserr{glz::write_file_json<pretty>(data, std::string{"rboxes_file_name"}, std::string{})};
+    expect(reserr.ec == glz::error_code::none);
 
     auto str = glz::write_json(data);
-    expect(eq("{\"enum_field\":\"baz\"}"sv, str));
+    expect(bool(str));
+    if(str)
+      expect(eq("{\"enum_field\":\"baz\"}"sv, str.value()));
   };
   "read_file_json test"_test = []
   {
@@ -90,12 +92,18 @@ int main()
 
   "write_json_schema test"_test = []
   {
-    std::string schema = glz::write_json_schema<test_data_t>();
-    // expect(false) << schema;
-    expect(eq(
-      schema,
-      R"({"type":["object"],"properties":{"enum_field":{"$ref":"#/$defs/test_enum_e"}},"additionalProperties":false,"$defs":{"test_enum_e":{"type":["string"],"oneOf":[{"const":"foo"},{"const":"bar"},{"const":"baz"}]}}})"sv
-    ));
+    auto schemares{glz::write_json_schema<test_data_t>()};
+    expect(bool(schemares));
+    if(schemares)
+      {
+      std::string schema{std::move(schemares.value())};
+      // expect(false) << schema;
+      //
+      expect(eq(
+        schema,
+        R"({"type":["object"],"properties":{"enum_field":{"$ref":"#/$defs/test_enum_e"}},"additionalProperties":false,"$defs":{"test_enum_e":{"type":["string"],"oneOf":[{"title":"foo","const":"foo"},{"title":"bar","const":"bar"},{"title":"baz","const":"baz"}]}}})"sv
+      ));
+      }
   };
   "json rpc call test"_test = []
   {
@@ -122,11 +130,13 @@ int main()
   "write_json2 test"_test = []
   {
     complex_request_t data{.color = Color::Blue, .color2 = ColorUnbounded::Blue, .value = 3};
-    glz::write_error err{glz::write_file_json<pretty>(data, std::string{"testfile2"}, std::string{})};
+    auto err{glz::write_file_json<pretty>(data, std::string{"testfile2"}, std::string{})};
     expect(err.ec == glz::error_code::none);
 
     auto str = glz::write_json(data);
-    expect(eq(R"({"color":"Blue","color2":1,"value":3})"sv, str));
+    expect(bool(str));
+    if(str)
+      expect(eq(R"({"color":"Blue","color2":1,"value":3})"sv, str.value()));
   };
   "read_file_json test"_test = []
   {
@@ -172,6 +182,9 @@ int main()
       response
     ));
 
-    std::cout << "request schema :" << glz::write_json_schema<complex_request_t>() << std::endl;
+    auto reqschemares{glz::write_json_schema<complex_request_t>()};
+    expect(bool(reqschemares));
+    if(reqschemares)
+      std::cout << "request schema :" << reqschemares.value() << std::endl;
   };
   }
