@@ -7,7 +7,7 @@
 #include <type_traits>
 
 #if(defined(__cpp_lib_format) && !(defined(__clang__) && __GLIBCXX__ < 202103L)) \
-  || ((defined(_LIBCPP_VERSION) || __GLIBCXX__ >= 202103L) && __cplusplus >= 202002L)
+  || ((_LIBCPP_VERSION >= 1800 || __GLIBCXX__ >= 202103L) && __cplusplus >= 202002L)
 #include <format>
 #define SIMPLE_ENUM_STD_FORMAT_ENABLED
 
