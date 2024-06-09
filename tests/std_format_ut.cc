@@ -7,9 +7,7 @@
 
 int main()
   {
-  expect(std::format("{}", lorem_ipsum_short::eu) == std::string_view{"eu"});
-
-#if defined(__cpp_lib_format) || (defined(__cplusplus) && __cplusplus >= 202002L)
+#ifdef SIMPLE_ENUM_STD_FORMAT_ENABLED
   "std::format formatter test"_test = []
   {
     expect(std::format("{}", lorem_ipsum_short::eu) == std::string_view{"eu"});
