@@ -4,11 +4,6 @@
 
 # simple_enum
 
-## License Update for Version 0.6.0
-
-I am updating the project license from the MIT License to the Boost Software License - Version 1.0, effective starting with version 0.6.0. This change aims to provide clearer patent rights while maintaining the permissiveness of our licensing. This transition affects no external contributors and requires no action from users. I believe this update supports my commitment to open-source best practices.
-
-
 ## Features
 
 - **Bounded Enum Views**: Provides `enum_view` for iterating over bounded enumerations, leveraging `std::ranges::views`.
@@ -57,7 +52,7 @@ The inception of this project was driven by the noticeable absence of an efficie
 
 ## Current Development Status
 
-`simple_enum` is under active development on **Clang 17**, **GCC 13** and tested on **MSVC** with support down to **Clang 13** and**GCC 10**.
+`simple_enum` is under active development on **Clang 18**, **GCC 14** and tested on **MSVC** with support on request down to **Clang 13** and**GCC 10**.
 
 Minimum standard required by `simple_enum` is c++20, but it is tested and adopted to exploit c++23 features where it is possible.
 
