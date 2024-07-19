@@ -2,6 +2,7 @@ name: C++ CI
 
 on:
   push:
+    branches: [ "master" ]
     paths-ignore:
       - 'README.md'
       - 'docs/**'
@@ -13,14 +14,15 @@ on:
 
 jobs:
   build-and-test-gcc:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v2
     - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y cmake ninja-build gcc g++ libfmt-dev
+      run: |
+        sudo apt-get update && sudo apt-get install -y cmake ninja-build gcc-14 g++-14
 
     - name: Configure CMake with gcc
-      run: cmake -B ${{github.workspace}}/build/gcc -DCMAKE_BUILD_TYPE=Release -G "Ninja" -DCMAKE_CXX_COMPILER=g++
+      run: cmake -B ${{github.workspace}}/build/gcc -DCMAKE_BUILD_TYPE=Release -G "Ninja" -DCMAKE_CXX_COMPILER=g++-14
     - name: Build with gcc
       run: cmake --build ${{github.workspace}}/build/gcc
     - name: Test with gcc
@@ -28,43 +30,34 @@ jobs:
       run: ctest
 
   build-and-test-clang:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v2
     - name: Add LLVM Repository
       run: |
         wget https://apt.llvm.org/llvm.sh
         chmod +x llvm.sh
-        sudo ./llvm.sh 17
+        sudo ./llvm.sh 18
         
     - name: Install dependencies
       run: |
            sudo apt-get update
-           sudo apt-get install -y cmake ninja-build clang-17 libfmt-dev libc++-17-dev libc++abi-17-dev
-           sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-17 100
-           sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-17 100
-           
-    - name: Configure Clang-17 as the default compiler
-      run: |
-        echo "CC=clang-17" >> $GITHUB_ENV
-        echo "CXX=clang++-17" >> $GITHUB_ENV
-        clang --version
-        clang++ --version
+           sudo apt-get install -y cmake g++-14 ninja-build clang-18 libfmt-dev libc++-18-dev libc++abi-18-dev
 
-    - name: Configure CMake with clang++-17 llvm libc++
-      run: cmake -B ${{github.workspace}}/build/clang-17-libcxx -DCMAKE_BUILD_TYPE=Release -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-17 -DCMAKE_CXX_FLAGS="-stdlib=libc++"
-    - name: Build with clang++-17 llvm libc++
-      run: cmake --build ${{github.workspace}}/build/clang-17-libcxx
-    - name: Test with clang++-17 llvm libc++
-      working-directory: ${{github.workspace}}/build/clang-17-libcxx
+    - name: Configure CMake with clang++-18 llvm libc++
+      run: cmake -B ${{github.workspace}}/build/clang-18-libcxx -DCMAKE_BUILD_TYPE=Release -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-18 -DCMAKE_CXX_FLAGS="-stdlib=libc++"
+    - name: Build with clang++-18 llvm libc++
+      run: cmake --build ${{github.workspace}}/build/clang-18-libcxx
+    - name: Test with clang++-18 llvm libc++
+      working-directory: ${{github.workspace}}/build/clang-18-libcxx
       run: ctest
 
-    - name: Configure CMake with clang++-17 gnu libstdc++
-      run: cmake -B ${{github.workspace}}/build/clang-17 -DCMAKE_BUILD_TYPE=Release -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-17
-    - name: Build with clang++-17
-      run: cmake --build ${{github.workspace}}/build/clang-17
-    - name: Test with clang++-17
-      working-directory: ${{github.workspace}}/build/clang-17
+    - name: Configure CMake with clang++-18 gnu libstdc++
+      run: cmake -B ${{github.workspace}}/build/clang-18 -DCMAKE_BUILD_TYPE=Release -G "Ninja" -DCMAKE_CXX_COMPILER=clang++-18
+    - name: Build with clang++-18
+      run: cmake --build ${{github.workspace}}/build/clang-18
+    - name: Test with clang++-18
+      working-directory: ${{github.workspace}}/build/clang-18
       run: ctest
       
   build-and-test-msvc:
