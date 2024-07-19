@@ -24,13 +24,31 @@
 
 namespace simple_enum::inline v0_7
   {
+namespace detail
+  {
+  template<bounded_enum enumeration_type>
+  constexpr auto enum_value_at_index(size_t ix) -> enumeration_type
+    {
+    using underlying_type = std::underlying_type_t<enumeration_type>;
+    return static_cast<enumeration_type>(
+      detail::enum_base_info_t<enumeration_type>::first_index() + underlying_type(ix)
+    );
+    }
+
+  template<bounded_enum enumeration_type>
+  constexpr auto enum_name_at_index(size_t ix) -> std::string_view
+    {
+    return detail::enum_meta_info_t<enumeration_type>::meta_data[ix].as_view();
+    }
+  }  // namespace detail
+
 template<bounded_enum enumeration_type>
 static constexpr auto enum_names_array = []()
 {
   constexpr auto size = detail::enum_base_info_t<enumeration_type>::size();
   std::array<std::string_view, size> names;
   for(uint16_t ix{}; size != ix; ++ix)
-    names[ix] = detail::enum_meta_info_t<enumeration_type>::meta_data[ix].as_view();
+    names[ix] = detail::enum_name_at_index<enumeration_type>(ix);
   return names;
 }();
 
@@ -39,10 +57,8 @@ static constexpr auto enum_values_array = []()
 {
   constexpr auto size = detail::enum_base_info_t<enumeration_type>::size();
   std::array<enumeration_type, size> values;
-  using underlying_type = std::underlying_type_t<enumeration_type>;
   for(size_t ix{}; size != ix; ++ix)
-    values[ix]
-      = static_cast<enumeration_type>(underlying_type(ix) + detail::enum_base_info_t<enumeration_type>::first_index());
+    values[ix] = detail::enum_value_at_index<enumeration_type>(ix);
   return values;
 }();
 
@@ -61,12 +77,21 @@ namespace detail
     return glz::tuplet::tuple<std::string_view, enumeration_type>{string_value, enumeration};
     }
 
+#define GLZ_3_1_x
+
+#if defined(GLZ_2_x)
   template<typename Array1, typename Array2, std::size_t... I>
   constexpr auto make_glaze_tuple_impl(Array1 const & a1, Array2 const & a2, std::index_sequence<I...>)
     {
     return std::make_tuple(make_glz_enum_tuple(a1[I], a2[I])...);
     }
-
+#elif defined(GLZ_3_1_x)
+  template<typename Array1, typename Array2, std::size_t... I>
+  constexpr auto make_glaze_tuple_impl(Array1 const & a1, Array2 const & a2, std::index_sequence<I...>)
+    {
+    return std::tuple_cat(std::make_tuple(a1[I], a2[I])...);
+    }
+#endif
   template<typename Array1, typename Array2>
   constexpr auto make_glaze_tuple(Array1 const & a1, Array2 const & a2)
     {
