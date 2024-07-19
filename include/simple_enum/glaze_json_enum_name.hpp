@@ -64,42 +64,6 @@ static constexpr auto enum_values_array = []()
 
 namespace detail
   {
-  template<typename Array1, typename Array2, std::size_t... I>
-  constexpr auto interleave_impl(Array1 const & a1, Array2 const & a2, std::index_sequence<I...>)
-    {
-    return std::tuple_cat(std::make_tuple(std::get<I>(a1), std::get<I>(a2))...);
-    }
-
-  template<typename enumeration_type>
-  constexpr auto make_glz_enum_tuple(std::string_view string_value, enumeration_type enumeration)
-    -> glz::tuplet::tuple<std::string_view, enumeration_type>
-    {
-    return glz::tuplet::tuple<std::string_view, enumeration_type>{string_value, enumeration};
-    }
-
-#define GLZ_3_1_x
-
-#if defined(GLZ_2_x)
-  template<typename Array1, typename Array2, std::size_t... I>
-  constexpr auto make_glaze_tuple_impl(Array1 const & a1, Array2 const & a2, std::index_sequence<I...>)
-    {
-    return std::make_tuple(make_glz_enum_tuple(a1[I], a2[I])...);
-    }
-#elif defined(GLZ_3_1_x)
-  template<typename Array1, typename Array2, std::size_t... I>
-  constexpr auto make_glaze_tuple_impl(Array1 const & a1, Array2 const & a2, std::index_sequence<I...>)
-    {
-    return std::tuple_cat(std::make_tuple(a1[I], a2[I])...);
-    }
-#endif
-  template<typename Array1, typename Array2>
-  constexpr auto make_glaze_tuple(Array1 const & a1, Array2 const & a2)
-    {
-    constexpr auto size1 = std::tuple_size<std::decay_t<Array1>>::value;
-    constexpr auto size2 = std::tuple_size<std::decay_t<Array2>>::value;
-    static_assert(size1 == size2);
-    return make_glaze_tuple_impl(a1, a2, std::make_index_sequence<size1>{});
-    }
 
   template<typename... Args>
   constexpr auto convert_to_glz_enum(std::tuple<Args...> const & stdTuple)
@@ -107,13 +71,49 @@ namespace detail
     return glz::detail::Enum{
       std::apply([](auto &&... args) { return glz::tuplet::tuple<std::decay_t<Args>...>{args...}; }, stdTuple)
     };
-    }  // namespace detail
-
-  template<typename Array1, typename Array2>
-  constexpr auto interleave(Array1 const & a1, Array2 const & a2)
-    {
-    return detail::interleave_impl(a1, a2, std::make_index_sequence<std::tuple_size_v<Array1>>{});
     }
+
+#if defined(SIMPLE_ENUM_GLZ_2_X)
+  template<typename enumeration_type>
+  constexpr auto make_glz_enum_tuple(std::string_view string_value, enumeration_type enumeration)
+    -> glz::tuplet::tuple<std::string_view, enumeration_type>
+    {
+    return glz::tuplet::tuple<std::string_view, enumeration_type>{string_value, enumeration};
+    }
+
+  template<typename enumeration_type, std::size_t... ix>
+  constexpr auto glaze_tuple_pairs(std::index_sequence<ix...>)
+    {
+    return std::make_tuple(make_glz_enum_tuple(
+      detail::enum_name_at_index<enumeration_type>(ix), detail::enum_value_at_index<enumeration_type>(ix)
+    )...);
+    }
+
+  template<typename enumeration_type>
+  constexpr auto make_glaze_tuple()
+    {
+    constexpr auto size = detail::enum_base_info_t<enumeration_type>::size();
+    return convert_to_glz_enum(glaze_tuple_pairs<enumeration_type>(std::make_index_sequence<size>{}));
+    }
+#elif defined(SIMPLE_ENUM_GLZ_3_1_x)
+
+  template<typename enumeration_type, std::size_t... ix>
+  constexpr auto glaze_tuple_pairs(std::index_sequence<ix...>)
+    {
+    return std::tuple_cat(std::make_tuple(
+      detail::enum_name_at_index<enumeration_type>(ix), detail::enum_value_at_index<enumeration_type>(ix)
+    )...);
+    }
+
+  template<typename enumeration_type>
+  constexpr auto make_glaze_tuple()
+    {
+    constexpr auto size = detail::enum_base_info_t<enumeration_type>::size();
+    return convert_to_glz_enum(glaze_tuple_pairs<enumeration_type>(std::make_index_sequence<size>{}));
+    }
+#else
+#error "Unimplemented support for glaze other than 2.x and 3.1.x"
+#endif
 
   }  // namespace detail
   }  // namespace simple_enum::inline v0_7
@@ -134,10 +134,7 @@ struct meta<enumeration_type>
   static constexpr bool custom_read = true;
 
   static constexpr std::string_view name = simple_enum::enumeration_name_v<enumeration_type>;
-  static constexpr auto value = simple_enum::detail::convert_to_glz_enum(
-    simple_enum::detail::
-      make_glaze_tuple(simple_enum::enum_names_array<enumeration_type>, simple_enum::enum_values_array<enumeration_type>)
-  );
+  static constexpr auto value = simple_enum::detail::make_glaze_tuple<enumeration_type>();
   };
 
   }  // namespace glz
