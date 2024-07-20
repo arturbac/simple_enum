@@ -15,16 +15,32 @@ The first step involves including the necessary headers from the `simple_enum` l
 
 ## Declaring Custom Error Enum
 
+
 Define a custom error enumeration within your namespace for use by functions. This example uses `function_error` as the custom enumeration:
 
 ```cpp
 namespace custom_error_example 
   {
-enum class function_error {
+enum class function_error 
+  {
   failed_other_reason,
   unhandled_exaption
   };
 ```
+
+## Simplified modern adl way using only adl_enum_bounds
+
+Following the declaration, define the bounds for your custom enum using the `adl_enum_bounds` function, ensuring the enum is compatible with the `simple_enum` library's functionalities and pass last argument as true declaring it as error enum:
+
+```cpp
+consteval auto adl_enum_bounds(function_error) 
+  {
+  using enum function_error;
+  return simple_enum::adl_info{failed_other_reason, unhandled_exaption, true };
+  }
+}  // namespace custom_error_example
+```
+## Alternative old way with separate adl_decl_error_code or by specializing std::is_error_code_enum
 
 Following the declaration, define the bounds for your custom enum using the `adl_enum_bounds` function, ensuring the enum is compatible with the `simple_enum` library's functionalities:
 
@@ -32,12 +48,12 @@ Following the declaration, define the bounds for your custom enum using the `adl
 consteval auto adl_enum_bounds(function_error) 
   {
   using enum function_error;
-  return simple_enum::adl_info{failed_other_reason, unhandled_exaption};
+  return simple_enum::adl_info{failed_other_reason, unhandled_exaption };
   }
 }  // namespace custom_error_example
 ```
 
-## Making the Enum Compatible with `std::is_error_code_enum`
+### Making the Enum Compatible with `std::is_error_code_enum`
 
 To integrate seamlessly with the C++ error handling mechanisms You have to either declare adl function
 ```cpp

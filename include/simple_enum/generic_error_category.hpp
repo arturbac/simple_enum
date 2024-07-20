@@ -10,13 +10,34 @@
 
 namespace simple_enum::inline v0_7
   {
+namespace detail
+  {
+  // clang-format off
+  // adl error code enum may be now declared directly inside adl_enum_bounds
+  template<typename T>
+  concept adl_info_error_declared_enum =
+    detail::has_valid_adl_enum_bounds<T> &&
+    requires { requires adl_enum_bounds(T{}).error_code_enum == true; };
+    
+  template<typename T>
+  concept adl_decl_error_code_declared_enum =
+    requires(T enum_value) 
+      {
+      { adl_decl_error_code(enum_value) } -> std::same_as<bool>;
+      adl_decl_error_code(enum_value) == true;
+      };
+  // clang-format on
+  }  // namespace detail
+
 namespace concepts
   {
+  // clang-format off
+
+      
   template<typename T>
-  concept declared_error_code = bounded_enum<T> && requires(T enum_value) {
-    { adl_decl_error_code(enum_value) } -> std::same_as<bool>;
-    adl_decl_error_code(enum_value) == true;
-  };
+  concept declared_error_code = bounded_enum<T> 
+    and ( detail::adl_decl_error_code_declared_enum<T> or detail::adl_info_error_declared_enum<T> );
+  // clang-format on
   /**
    * @concept error_enum
    * @brief Checks if a type is an enum and specialized for std::is_error_code_enum.

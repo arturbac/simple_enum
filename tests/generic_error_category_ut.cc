@@ -42,6 +42,21 @@ suite string_literal_tests = []
 // Assuming the error category template and other necessary code is defined above
 
 // Example enum for demonstration purposes
+enum class test_error_modern
+  {
+  success = 0,
+  failed_other_reason,
+  unknown
+  };
+
+consteval auto adl_enum_bounds(test_error_modern)
+  {
+  using enum test_error_modern;
+  return simple_enum::adl_info{success, unknown, true};
+  }
+template class simple_enum::generic_error_category<test_error_modern>;
+
+// old approach on declaring error_code
 enum class test_error
   {
   success = 0,
@@ -141,11 +156,73 @@ consteval auto adl_enum_bounds(test_non_adl_decl_error_code)
 
 static_assert(!simple_enum::detail::error_category_name_specialized<test_non_adl_decl_error_code>);
 static_assert(!std::is_error_code_enum<test_non_adl_decl_error_code>::value);
+
+namespace test_adl_enum_bounds_error_code
+  {
+  // declare as error enum just using adl_enum_bounds
+  enum struct strong_typed_as_error : uint8_t
+    {
+    v1 = 1,
+    v2,
+    v3
+    };
+
+  consteval auto adl_enum_bounds(strong_typed_as_error)
+    {
+    using enum strong_typed_as_error;
+    return simple_enum::adl_info{v1, v3, true};
+    }
+
+  static_assert(adl_enum_bounds(strong_typed_as_error{}).error_code_enum);
+  static_assert(simple_enum::detail::has_valid_adl_enum_bounds<strong_typed_as_error>);
+
+  static_assert(simple_enum::detail::adl_info_error_declared_enum<strong_typed_as_error>);
+  static_assert(simple_enum::concepts::declared_error_code<strong_typed_as_error>);
+  static_assert(std::is_error_code_enum<strong_typed_as_error>::value);
+  }  // namespace test_adl_enum_bounds_error_code
   }  // namespace test_non_adl_decl_error_code
 
 namespace
   {
-suite erorr_category_tests = []
+suite modern_error_category_tests = []
+{
+  using namespace boost::ut;
+
+  "generic_error_category_instance"_test = []
+  {
+    auto const & instance = generic_error_category<test_error_modern>::instance();
+    expect("Test Error Modern"sv == instance.name());
+  };
+
+  "make_error_code_success"_test = []
+  {
+    auto ec = make_error_code(test_error_modern::success);
+    expect(eq(0, ec.value()));
+    expect(eq("Success"sv, ec.message()));
+  };
+
+  "make_error_code_failed"_test = []
+  {
+    auto ec = make_error_code(test_error_modern::failed_other_reason);
+    expect(eq(1, ec.value()));
+    expect(eq("Failed Other Reason"sv, ec.message()));
+  };
+
+  "make_error_code_unknown"_test = []
+  {
+    auto ec = make_error_code(test_error_modern::unknown);
+    expect(eq(2, ec.value()));
+    expect(eq("Unknown"sv, ec.message()));
+  };
+
+  "make_unexpected_ec_unknown"_test = []
+  {
+    auto ec = make_unexpected_ec(test_error_modern::unknown);
+    expect(eq(make_error_code(test_error_modern::unknown), ec.error()));
+    expect(eq("Unknown"sv, ec.error().message()));
+  };
+};
+suite error_category_tests = []
 {
   using namespace boost::ut;
 
