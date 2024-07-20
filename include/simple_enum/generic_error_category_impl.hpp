@@ -7,7 +7,7 @@
 #include <simple_enum/generic_error_category.hpp>
 #include <simple_enum/basic_fixed_string.hpp>
 
-namespace simple_enum::inline v0_7
+namespace simple_enum::inline v0_8
   {
 
 /**
@@ -115,4 +115,4 @@ auto generic_error_category<ErrorEnum>::make_error_code(ErrorEnum e) noexcept ->
   {
   return {static_cast<int>(e), generic_error_category<ErrorEnum>::instance()};
   }
-  }  // namespace simple_enum::inline v0_7
+  }  // namespace simple_enum::inline v0_8

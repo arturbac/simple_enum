@@ -8,7 +8,7 @@
 
 #include "detail/static_call_operator_prolog.h"
 
-namespace simple_enum::inline v0_7
+namespace simple_enum::inline v0_8
   {
 using cxx23::bad_expected_access;
 using cxx23::expected;
@@ -81,6 +81,6 @@ consteval auto consteval_enum_index() -> std::size_t
   return enum_index(value).or_else([](auto &&) { throw; });
   }
 
-  }  // namespace simple_enum::inline v0_7
+  }  // namespace simple_enum::inline v0_8
 
 #include "detail/static_call_operator_epilog.h"

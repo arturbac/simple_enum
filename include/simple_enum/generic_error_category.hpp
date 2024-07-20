@@ -8,7 +8,7 @@
 #include <system_error>
 #include <string_view>
 
-namespace simple_enum::inline v0_7
+namespace simple_enum::inline v0_8
   {
 namespace detail
   {
@@ -112,7 +112,7 @@ inline auto make_unexpected_ec(ErrorEnum e) -> unexpected_ec
   return unexpected_ec{make_error_code(e)};
   }
 
-  }  // namespace simple_enum::inline v0_7
+  }  // namespace simple_enum::inline v0_8
 
 /**
  * @brief Partial specialization of std::is_error_code_enum for enumeration types providing ADL function.

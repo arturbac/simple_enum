@@ -6,7 +6,7 @@
 
 #include "static_call_operator_prolog.h"
 
-namespace simple_enum::inline v0_7::detail
+namespace simple_enum::inline v0_8::detail
   {
 
 // This is inplace copy of part of my other library https://github.com/arturbac/stralgo
@@ -41,6 +41,6 @@ struct to_upper_t
 
 inline constexpr to_upper_t to_upper;
 
-  }  // namespace simple_enum::inline v0_7::detail
+  }  // namespace simple_enum::inline v0_8::detail
 
 #include "static_call_operator_epilog.h"

@@ -14,7 +14,7 @@
 
 #include "detail/static_call_operator_prolog.h"
 
-namespace simple_enum::inline v0_7
+namespace simple_enum::inline v0_8
   {
 namespace detail
   {
@@ -73,7 +73,7 @@ namespace detail
       return typename msvc_meta_info_wrapper<enumeration>::type{};
     }
   }  // namespace detail
-  }  // namespace simple_enum::inline v0_7
+  }  // namespace simple_enum::inline v0_8
 
 // this namespace is for reducing time crunching source location and .text data
 namespace se
@@ -149,7 +149,7 @@ static_assert(verify_offset());
 #endif
   }  // namespace se
 
-namespace simple_enum::inline v0_7
+namespace simple_enum::inline v0_8
   {
 namespace detail
   {
@@ -430,7 +430,7 @@ namespace limits
   template<bounded_enum enumeration>
   inline constexpr detail::max_t<enumeration> max{};
   }  // namespace limits
-  }  // namespace simple_enum::inline v0_7
+  }  // namespace simple_enum::inline v0_8
 
 #include "detail/static_call_operator_epilog.h"
 

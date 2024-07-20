@@ -22,7 +22,7 @@
 #endif
 #include <concepts>
 
-namespace simple_enum::inline v0_7
+namespace simple_enum::inline v0_8
   {
 namespace detail
   {
@@ -116,14 +116,14 @@ namespace detail
 #endif
 
   }  // namespace detail
-  }  // namespace simple_enum::inline v0_7
+  }  // namespace simple_enum::inline v0_8
 
-namespace simple_enum::inline v0_7::concepts
+namespace simple_enum::inline v0_8::concepts
   {
 using glz::read_json_supported;
 using glz::write_json_supported;
 
-  }  // namespace simple_enum::inline v0_7::concepts
+  }  // namespace simple_enum::inline v0_8::concepts
 
 namespace glz
   {
