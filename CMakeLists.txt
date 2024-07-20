@@ -9,6 +9,20 @@ project(simple_enum
 include(cmake/CPM.cmake)
 CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.11.2")
 
+option(SIMPLE_ENUM_USE_GLAZE_3_1 "Use Glaze version 3.1" ON)
+option(SIMPLE_ENUM_USE_GLAZE_2 "Use Glaze version 2" OFF)
+option(SIMPLE_ENUM_USE_GLAZE_3_2 "Use Glaze version 3.2" OFF)
+
+if(SIMPLE_ENUM_USE_GLAZE_3_1)
+    set(GLAZE_GIT_TAG "v3.1.1")
+elseif(SIMPLE_ENUM_USE_GLAZE_2)
+    set(GLAZE_GIT_TAG "v2.9.5")
+elseif(SIMPLE_ENUM_USE_GLAZE_3_2)
+    message(FATAL_ERROR "Future, unimplemented")
+else()
+    message(FATAL_ERROR "Please select a Glaze version by setting USE_GLAZE_2, USE_GLAZE_3_1, or USE_GLAZE_3_2")
+endif()
+
 if(PROJECT_IS_TOP_LEVEL)
   message(STATUS "simple_enum version v${SIMPLE_ENUM_VERSION}")
 
@@ -16,7 +30,6 @@ if(PROJECT_IS_TOP_LEVEL)
   set(CMAKE_CXX_STANDARD 20)
   set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-  
   #----------------------------------------------------------------
   # boost-ext/ut
   #----------------------------------------------------------------
@@ -49,7 +62,6 @@ if(PROJECT_IS_TOP_LEVEL)
     add_library(reflect::reflect ALIAS reflect)
     find_package(reflect REQUIRED)
   endif()
-  
 
   #----------------------------------------------------------------
   # glaze
@@ -57,7 +69,7 @@ if(PROJECT_IS_TOP_LEVEL)
   CPMAddPackage(
     glaze
     GITHUB_REPOSITORY stephenberry/glaze
-    GIT_TAG        v2.8.0
+    GIT_TAG        ${GLAZE_GIT_TAG}
     GIT_SHALLOW TRUE
     )
 endif()
@@ -66,6 +78,14 @@ endif()
 
 # Header-only library target
 add_library(simple_enum INTERFACE)
+if(SIMPLE_ENUM_USE_GLAZE_3_1)
+    target_compile_definitions( simple_enum INTERFACE SIMPLE_ENUM_GLZ_3_1_x)
+elseif(SIMPLE_ENUM_USE_GLAZE_2)
+    target_compile_definitions( simple_enum INTERFACE SIMPLE_ENUM_GLZ_2_X)
+else()
+    message(FATAL_ERROR "Future, unimplemented")
+endif()
+
 if(PROJECT_IS_TOP_LEVEL)
   add_library(simple_enum::simple_enum ALIAS simple_enum )
 endif()

@@ -87,11 +87,28 @@
       "name": "clang-release-test-asan",
       "description": "Configure for release build with address sanitizer",
       "inherits": [ "cfg-clang", "cfg-libc++" ],
-      "binaryDir": "${sourceDir}/build/${presetName}",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_CXX_FLAGS": "-ggdb -fvisibility=default -fno-omit-frame-pointer -fsanitize=address -fsanitize-address-use-after-scope -fsanitize=undefined",
         "CMAKE_EXE_LINKER_FLAGS": "-fsanitize=address -fsanitize=undefined"
+      }
+    },
+    {
+      "name": "clang-release-test-asan-glaze_2",
+      "inherits": [ "clang-release-test-asan" ],
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "SIMPLE_ENUM_USE_GLAZE_2": "ON",
+        "SIMPLE_ENUM_USE_GLAZE_3_1" : "OFF"
+      }
+    },
+    {
+      "name": "clang-release-test-asan-glaze_3",
+      "inherits": [ "clang-release-test-asan" ],
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "SIMPLE_ENUM_USE_GLAZE_2": "OFF",
+        "SIMPLE_ENUM_USE_GLAZE_3_1" : "ON"
       }
     }
   ],
@@ -109,14 +126,25 @@
       "configurePreset": "ReleaseWithDeb"
     },
     {
-      "name": "clang-release-test-asan",
-      "configurePreset": "clang-release-test-asan"
+      "name": "clang-release-test-asan-glaze_2",
+      "configurePreset": "clang-release-test-asan-glaze_2"
+    },
+    {
+      "name": "clang-release-test-asan-glaze_3",
+      "configurePreset": "clang-release-test-asan-glaze_3"
     }
   ],
   "testPresets": [
     {
-      "name": "clang-release-test-asan",
-      "configurePreset": "clang-release-test-asan",
+      "name": "clang-release-test-asan-glaze_2",
+      "configurePreset": "clang-release-test-asan-glaze_2",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "clang-release-test-asan-glaze_3",
+      "configurePreset": "clang-release-test-asan-glaze_3",
       "output": {
         "outputOnFailure": true
       }
@@ -124,20 +152,38 @@
   ],
   "workflowPresets": [
     {
-      "name": "clang-release-test-asan",
+      "name": "clang-release-test-asan-glaze_2",
       "steps": [
         {
           "type": "configure",
-          "name": "clang-release-test-asan"
+          "name": "clang-release-test-asan-glaze_2"
         },
         {
           "type": "build",
-          "name": "clang-release-test-asan"
+          "name": "clang-release-test-asan-glaze_2"
         },
         {
           "type": "test",
-          "name": "clang-release-test-asan"
+          "name": "clang-release-test-asan-glaze_2"
         }
       ]
-  }]
+    },
+    {
+      "name": "clang-release-test-asan-glaze_3",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "clang-release-test-asan-glaze_3"
+        },
+        {
+          "type": "build",
+          "name": "clang-release-test-asan-glaze_3"
+        },
+        {
+          "type": "test",
+          "name": "clang-release-test-asan-glaze_3"
+        }
+      ]
+    }
+  ]
 }
