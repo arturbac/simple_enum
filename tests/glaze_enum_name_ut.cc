@@ -69,8 +69,20 @@ struct complex_response_t
   std::string name;
   };
 
+struct string_view_test
+  {
+  std::string_view value;
+  Color color;
+  };
+
 int main()
   {
+  "write_file_json test"_test = []
+  {
+    string_view_test data{""};
+    auto reserr{glz::write_file_json<pretty>(data, std::string{"string_view_test"}, std::string{})};
+    expect(reserr.ec == glz::error_code::none);
+  };
   "write_file_json test"_test = []
   {
     constexpr test_data_t data{.enum_field = test_enum_e::baz};

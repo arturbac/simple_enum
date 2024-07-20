@@ -58,6 +58,18 @@ struct adl_info
   {
   enumeration first;
   enumeration last;
+  bool error_code_enum = false;
+
+  constexpr adl_info() noexcept = default;
+
+  constexpr adl_info(enumeration f, enumeration l) noexcept : first{f}, last{l}, error_code_enum{false} {}
+
+  constexpr adl_info(enumeration f, enumeration l, bool is_error_code_enum) noexcept :
+      first{f},
+      last{l},
+      error_code_enum{is_error_code_enum}
+    {
+    }
   };
 
 template<enum_concept enumeration>

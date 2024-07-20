@@ -20,16 +20,25 @@ enum class function_error
   unhandled_exaption
   };
 
+// There are 3 ways to declare enum as error_code
+#define USE_ADL_WAY_TO_DECL_ERROR_CODE 1
+
+#if USE_ADL_WAY_TO_DECL_ERROR_CODE == 1
+// as part of adl_enum_bounds passing true as last constructor argument
+consteval auto adl_enum_bounds(function_error)
+  {
+  using enum function_error;
+  return simple_enum::adl_info{failed_other_reason, unhandled_exaption, true};
+  }
+
+#elif USE_ADL_WAY_TO_DECL_ERROR_CODE == 2
+// old way of adl_decl_error_code separated from adl_enum_bounds
 consteval auto adl_enum_bounds(function_error)
   {
   using enum function_error;
   return simple_enum::adl_info{failed_other_reason, unhandled_exaption};
   }
 
-// There are 2 ways to declare enum as error_code
-#define USE_ADL_WAY_TO_DECL_ERROR_CODE 1
-
-#if USE_ADL_WAY_TO_DECL_ERROR_CODE
 // using provided by simple_enum partial specialization of std::is_error_code_enum
 consteval auto adl_decl_error_code(function_error) -> bool { return true; }
 #endif
