@@ -11,7 +11,7 @@
       "generator": "Ninja",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "clang++",
+        "CMAKE_CXX_COMPILER": "clang++-18",
         "SIMPLE_ENUM_OPT_IN_STATIC_ASSERTS" : "ON"
       }
     },
@@ -20,16 +20,43 @@
       "generator": "Ninja",
       "hidden": true,
       "cacheVariables": {
-        "CMAKE_CXX_COMPILER": "g++"
+        "CMAKE_CXX_COMPILER": "g++-14"
       }
     },
     {
     "name": "cfg-libc++",
     "hidden": true,
-    "generator": "Ninja",
       "cacheVariables": {
         "CMAKE_CXX_FLAGS" : "-stdlib=libc++"
       }
+    },
+    {
+    "name": "cfg-release",
+    "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+    "name": "cfg-glaze-2",
+    "hidden": true,
+      "cacheVariables": {
+        "SIMPLE_ENUM_USE_GLAZE_2": "ON",
+        "SIMPLE_ENUM_USE_GLAZE_3_1" : "OFF"
+      }
+    },
+    {
+    "name": "cfg-glaze-3",
+    "hidden": true,
+      "cacheVariables": {
+        "SIMPLE_ENUM_USE_GLAZE_2": "OFF",
+        "SIMPLE_ENUM_USE_GLAZE_3_1" : "ON"
+      }
+    },
+    {
+    "name": "cfg-build-dir",
+    "hidden": true,
+    "binaryDir": "${sourceDir}/build/${presetName}"
     },
     {
       "name": "msvc-debug",
@@ -74,18 +101,8 @@
       }
     },
     {
-      "name": "ReleaseWithDeb",
-      "description": "Configure for release build with Debian package generation",
-      "inherits": [ "cfg-clang" ],
-      "binaryDir": "${sourceDir}/build/release-with-deb",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "CPACK_GENERATOR": "DEB"
-      }
-    },
-    {
       "name": "clang-release-test-asan",
-      "description": "Configure for release build with address sanitizer",
+      "hidden": true,
       "inherits": [ "cfg-clang", "cfg-libc++" ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
@@ -95,24 +112,64 @@
     },
     {
       "name": "clang-release-test-asan-glaze_2",
-      "inherits": [ "clang-release-test-asan" ],
-      "binaryDir": "${sourceDir}/build/${presetName}",
-      "cacheVariables": {
-        "SIMPLE_ENUM_USE_GLAZE_2": "ON",
-        "SIMPLE_ENUM_USE_GLAZE_3_1" : "OFF"
-      }
+      "description": "Configure for release build with address sanitizer with glaze 2 support",
+      "inherits": [ "clang-release-test-asan", "cfg-build-dir", "cfg-glaze-2" ]
     },
     {
       "name": "clang-release-test-asan-glaze_3",
-      "inherits": [ "clang-release-test-asan" ],
-      "binaryDir": "${sourceDir}/build/${presetName}",
-      "cacheVariables": {
-        "SIMPLE_ENUM_USE_GLAZE_2": "OFF",
-        "SIMPLE_ENUM_USE_GLAZE_3_1" : "ON"
-      }
+      "description": "Configure for release build with address sanitizer with glaze 3 support",
+      "inherits": [ "clang-release-test-asan", "cfg-build-dir", "cfg-glaze-3" ]
+    },
+    {
+      "name": "ci-clang-libstdc++-glaze3",
+      "inherits": [ "cfg-clang", "cfg-build-dir", "cfg-glaze-3" ]
+    },
+    {
+      "name": "ci-clang-libstdc++-glaze2",
+      "inherits": [ "cfg-clang", "cfg-build-dir", "cfg-glaze-2" ]
+    },
+    {
+      "name": "ci-clang-libc++-glaze3",
+      "inherits": [ "cfg-clang", "cfg-libc++", "cfg-build-dir", "cfg-glaze-3" ]
+    },
+    {
+      "name": "ci-clang-libc++-glaze2",
+      "inherits": [ "cfg-clang", "cfg-libc++", "cfg-build-dir", "cfg-glaze-2" ]
+    },
+    {
+      "name": "ci-gcc-glaze3",
+      "inherits": [ "cfg-gcc", "cfg-build-dir", "cfg-glaze-3" ]
+    },
+    {
+      "name": "ci-gcc-glaze2",
+      "inherits": [ "cfg-gcc", "cfg-build-dir", "cfg-glaze-2" ]
     }
   ],
   "buildPresets": [
+    {
+      "name": "ci-clang-libstdc++-glaze3",
+      "configurePreset": "ci-clang-libstdc++-glaze3"
+    },
+    {
+      "name": "ci-clang-libstdc++-glaze2",
+      "configurePreset": "ci-clang-libstdc++-glaze2"
+    },
+    {
+      "name": "ci-clang-libc++-glaze3",
+      "configurePreset": "ci-clang-libc++-glaze3"
+    },
+    {
+      "name": "ci-clang-libc++-glaze2",
+      "configurePreset": "ci-clang-libc++-glaze2"
+    },
+    {
+      "name": "ci-gcc-glaze3",
+      "configurePreset": "ci-gcc-glaze3"
+    },
+    {
+      "name": "ci-gcc-glaze2",
+      "configurePreset": "ci-gcc-glaze2"
+    },
     {
       "name": "clnag-debug",
       "configurePreset": "clnag-debug"
@@ -120,10 +177,6 @@
     {
       "name": "release-time-trace",
       "configurePreset": "release-time-trace"
-    },
-    {
-      "name": "ReleaseWithDeb",
-      "configurePreset": "ReleaseWithDeb"
     },
     {
       "name": "clang-release-test-asan-glaze_2",
@@ -135,6 +188,48 @@
     }
   ],
   "testPresets": [
+    {
+      "name": "ci-clang-libstdc++-glaze3",
+      "configurePreset": "ci-clang-libstdc++-glaze3",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "ci-clang-libstdc++-glaze2",
+      "configurePreset": "ci-clang-libstdc++-glaze2",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "ci-clang-libc++-glaze3",
+      "configurePreset": "ci-clang-libc++-glaze3",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "ci-clang-libc++-glaze2",
+      "configurePreset": "ci-clang-libc++-glaze2",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "ci-gcc-glaze3",
+      "configurePreset": "ci-gcc-glaze3",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "ci-gcc-glaze2",
+      "configurePreset": "ci-gcc-glaze2",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
     {
       "name": "clang-release-test-asan-glaze_2",
       "configurePreset": "clang-release-test-asan-glaze_2",
@@ -151,6 +246,108 @@
     }
   ],
   "workflowPresets": [
+    {
+      "name": "ci-clang-libstdc++-glaze3",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-clang-libstdc++-glaze3"
+        },
+        {
+          "type": "build",
+          "name": "ci-clang-libstdc++-glaze3"
+        },
+        {
+          "type": "test",
+          "name": "ci-clang-libstdc++-glaze3"
+        }
+      ]
+    },
+    {
+      "name": "ci-clang-libstdc++-glaze2",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-clang-libstdc++-glaze2"
+        },
+        {
+          "type": "build",
+          "name": "ci-clang-libstdc++-glaze2"
+        },
+        {
+          "type": "test",
+          "name": "ci-clang-libstdc++-glaze2"
+        }
+      ]
+    },
+    {
+      "name": "ci-clang-libc++-glaze3",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-clang-libc++-glaze3"
+        },
+        {
+          "type": "build",
+          "name": "ci-clang-libc++-glaze3"
+        },
+        {
+          "type": "test",
+          "name": "ci-clang-libc++-glaze3"
+        }
+      ]
+    },
+    {
+      "name": "ci-clang-libc++-glaze2",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-clang-libc++-glaze2"
+        },
+        {
+          "type": "build",
+          "name": "ci-clang-libc++-glaze2"
+        },
+        {
+          "type": "test",
+          "name": "ci-clang-libc++-glaze2"
+        }
+      ]
+    },
+    {
+      "name": "ci-gcc-glaze3",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-gcc-glaze3"
+        },
+        {
+          "type": "build",
+          "name": "ci-gcc-glaze3"
+        },
+        {
+          "type": "test",
+          "name": "ci-gcc-glaze3"
+        }
+      ]
+    },
+    {
+      "name": "ci-gcc-glaze2",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-gcc-glaze2"
+        },
+        {
+          "type": "build",
+          "name": "ci-gcc-glaze2"
+        },
+        {
+          "type": "test",
+          "name": "ci-gcc-glaze2"
+        }
+      ]
+    },
     {
       "name": "clang-release-test-asan-glaze_2",
       "steps": [
