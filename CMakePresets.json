@@ -7,6 +7,16 @@
   },
   "configurePresets": [
     {
+      "name": "cfg-c++23",
+      "hidden": true,
+      "cacheVariables": { "CMAKE_CXX_STANDARD": "23" }
+    },
+    {
+      "name": "cfg-c++26",
+      "hidden": true,
+      "cacheVariables": { "CMAKE_CXX_STANDARD": "26" }
+    },
+    {
       "name": "cfg-clang",
       "generator": "Ninja",
       "hidden": true,
@@ -61,6 +71,7 @@
     {
       "name": "msvc-debug",
       "description": "Configure for clang debug build",
+      "inherits": [ "cfg-c++23" ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
@@ -68,7 +79,15 @@
     {
       "name": "clnag-debug",
       "description": "Configure for clang debug build",
-      "inherits": [ "cfg-clang" ],
+      "inherits": [ "cfg-clang", "cfg-c++23" ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "clnag-debug-c++26",
+      "description": "Configure for clang debug build",
+      "inherits": [ "cfg-clang", "cfg-c++26" ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
@@ -76,7 +95,15 @@
     {
       "name": "clnag-debug-libstdc++",
       "description": "Configure for clang debug build",
-      "inherits": [ "cfg-clang", "cfg-libc++" ],
+      "inherits": [ "cfg-clang", "cfg-libc++", "cfg-c++23" ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "clnag-debug-libstdc++-c++26",
+      "description": "Configure for clang debug build",
+      "inherits": [ "cfg-clang", "cfg-libc++", "cfg-c++26" ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
@@ -84,7 +111,15 @@
     {
       "name": "gcc-debug",
       "description": "Configure for gcc debug build",
-      "inherits": [ "cfg-gcc" ],
+      "inherits": [ "cfg-gcc", "cfg-c++23" ],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+      "name": "gcc-debug-c++26",
+      "description": "Configure for gcc debug build",
+      "inherits": [ "cfg-gcc", "cfg-c++26" ],
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug"
       }
@@ -92,7 +127,7 @@
     {
       "name": "release-time-trace",
       "description": "Configure for release build",
-      "inherits": [ "cfg-clang" ],
+      "inherits": [ "cfg-clang", "cfg-c++23" ],
       "binaryDir": "${sourceDir}/build/release-time-trace",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
@@ -113,39 +148,65 @@
     {
       "name": "clang-release-test-asan-glaze_2",
       "description": "Configure for release build with address sanitizer with glaze 2 support",
-      "inherits": [ "clang-release-test-asan", "cfg-build-dir", "cfg-glaze-2" ]
+      "inherits": [ "clang-release-test-asan", "cfg-build-dir", "cfg-glaze-2", "cfg-c++23" ]
     },
     {
       "name": "clang-release-test-asan-glaze_3",
       "description": "Configure for release build with address sanitizer with glaze 3 support",
-      "inherits": [ "clang-release-test-asan", "cfg-build-dir", "cfg-glaze-3" ]
+      "inherits": [ "clang-release-test-asan", "cfg-build-dir", "cfg-glaze-3", "cfg-c++23" ]
     },
     {
       "name": "ci-clang-libstdc++-glaze3",
-      "inherits": [ "cfg-clang", "cfg-build-dir", "cfg-glaze-3" ]
+      "inherits": [ "cfg-clang", "cfg-build-dir", "cfg-glaze-3", "cfg-c++23" ]
     },
     {
       "name": "ci-clang-libstdc++-glaze2",
-      "inherits": [ "cfg-clang", "cfg-build-dir", "cfg-glaze-2" ]
+      "inherits": [ "cfg-clang", "cfg-build-dir", "cfg-glaze-2", "cfg-c++23" ]
     },
     {
       "name": "ci-clang-libc++-glaze3",
-      "inherits": [ "cfg-clang", "cfg-libc++", "cfg-build-dir", "cfg-glaze-3" ]
+      "inherits": [ "cfg-clang", "cfg-libc++", "cfg-build-dir", "cfg-glaze-3", "cfg-c++23" ]
     },
     {
       "name": "ci-clang-libc++-glaze2",
-      "inherits": [ "cfg-clang", "cfg-libc++", "cfg-build-dir", "cfg-glaze-2" ]
+      "inherits": [ "cfg-clang", "cfg-libc++", "cfg-build-dir", "cfg-glaze-2", "cfg-c++23" ]
     },
     {
       "name": "ci-gcc-glaze3",
-      "inherits": [ "cfg-gcc", "cfg-build-dir", "cfg-glaze-3" ]
+      "inherits": [ "cfg-gcc", "cfg-build-dir", "cfg-glaze-3", "cfg-c++23" ]
     },
     {
       "name": "ci-gcc-glaze2",
-      "inherits": [ "cfg-gcc", "cfg-build-dir", "cfg-glaze-2" ]
+      "inherits": [ "cfg-gcc", "cfg-build-dir", "cfg-glaze-2", "cfg-c++23" ]
+    },
+    
+    {
+      "name": "ci-clang-libstdc++-glaze3-c++26",
+      "inherits": [ "cfg-clang", "cfg-build-dir", "cfg-glaze-3", "cfg-c++26" ]
+    },
+    {
+      "name": "ci-clang-libc++-glaze3-c++26",
+      "inherits": [ "cfg-clang", "cfg-libc++", "cfg-build-dir", "cfg-glaze-3", "cfg-c++26" ]
+    },
+    {
+      "name": "ci-gcc-glaze3-c++26",
+      "inherits": [ "cfg-gcc", "cfg-build-dir", "cfg-glaze-3", "cfg-c++26" ]
     }
   ],
   "buildPresets": [
+    {
+      "name": "ci-clang-libstdc++-glaze3-c++26",
+      "configurePreset": "ci-clang-libstdc++-glaze3-c++26"
+    },
+    {
+      "name": "ci-clang-libc++-glaze3-c++26",
+      "configurePreset": "ci-clang-libc++-glaze3-c++26"
+    },
+    {
+      "name": "ci-gcc-glaze3-c++26",
+      "configurePreset": "ci-gcc-glaze3-c++26"
+    },
+    
     {
       "name": "ci-clang-libstdc++-glaze3",
       "configurePreset": "ci-clang-libstdc++-glaze3"
@@ -188,6 +249,28 @@
     }
   ],
   "testPresets": [
+    {
+      "name": "ci-clang-libstdc++-glaze3-c++26",
+      "configurePreset": "ci-clang-libstdc++-glaze3-c++26",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "ci-clang-libc++-glaze3-c++26",
+      "configurePreset": "ci-clang-libc++-glaze3-c++26",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "ci-gcc-glaze3-c++26",
+      "configurePreset": "ci-gcc-glaze3-c++26",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    
     {
       "name": "ci-clang-libstdc++-glaze3",
       "configurePreset": "ci-clang-libstdc++-glaze3",
@@ -246,6 +329,58 @@
     }
   ],
   "workflowPresets": [
+    {
+      "name": "ci-clang-libstdc++-glaze3-c++26",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-clang-libstdc++-glaze3-c++26"
+        },
+        {
+          "type": "build",
+          "name": "ci-clang-libstdc++-glaze3-c++26"
+        },
+        {
+          "type": "test",
+          "name": "ci-clang-libstdc++-glaze3-c++26"
+        }
+      ]
+    },
+    {
+      "name": "ci-clang-libc++-glaze3-c++26",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-clang-libc++-glaze3-c++26"
+        },
+        {
+          "type": "build",
+          "name": "ci-clang-libc++-glaze3-c++26"
+        },
+        {
+          "type": "test",
+          "name": "ci-clang-libc++-glaze3-c++26"
+        }
+      ]
+    },
+    {
+      "name": "ci-gcc-glaze3-c++26",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-gcc-glaze3-c++26"
+        },
+        {
+          "type": "build",
+          "name": "ci-gcc-glaze3-c++26"
+        },
+        {
+          "type": "test",
+          "name": "ci-gcc-glaze3-c++26"
+        }
+      ]
+    },
+    
     {
       "name": "ci-clang-libstdc++-glaze3",
       "steps": [

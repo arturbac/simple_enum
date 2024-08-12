@@ -5,6 +5,17 @@ project(simple_enum
    VERSION ${SIMPLE_ENUM_VERSION}
    LANGUAGES CXX
    )
+   
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 23)
+endif()
+if(CMAKE_CXX_STANDARD LESS 23)
+  message(FATAL_ERROR "Minimum required standard is C++23")
+endif()
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+message(STATUS "simple_enum version v${SIMPLE_ENUM_VERSION}")
 
 include(cmake/CPM.cmake)
 CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.11.2")
@@ -12,6 +23,7 @@ CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.11.2")
 option(SIMPLE_ENUM_USE_GLAZE_3_1 "Use Glaze version 3.1" ON)
 option(SIMPLE_ENUM_USE_GLAZE_2 "Use Glaze version 2" OFF)
 option(SIMPLE_ENUM_USE_GLAZE_3_2 "Use Glaze version 3.2" OFF)
+option(SIMPLE_ENUM_ENABLE_TESTS "Enable unit tests" ON )
 
 if(SIMPLE_ENUM_USE_GLAZE_3_1)
     set(GLAZE_GIT_TAG "v3.1.1")
@@ -23,13 +35,7 @@ else()
     message(FATAL_ERROR "Please select a Glaze version by setting USE_GLAZE_2, USE_GLAZE_3_1, or USE_GLAZE_3_2")
 endif()
 
-if(PROJECT_IS_TOP_LEVEL)
-  message(STATUS "simple_enum version v${SIMPLE_ENUM_VERSION}")
-
-  # Specify the C++ standard
-  set(CMAKE_CXX_STANDARD 20)
-  set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
+if(PROJECT_IS_TOP_LEVEL AND SIMPLE_ENUM_ENABLE_TESTS)
   #----------------------------------------------------------------
   # boost-ext/ut
   #----------------------------------------------------------------
@@ -78,6 +84,10 @@ endif()
 
 # Header-only library target
 add_library(simple_enum INTERFACE)
+if(PROJECT_IS_TOP_LEVEL)
+  add_library(simple_enum::simple_enum ALIAS simple_enum )
+endif()
+
 if(SIMPLE_ENUM_USE_GLAZE_3_1)
     target_compile_definitions( simple_enum INTERFACE SIMPLE_ENUM_GLZ_3_1_x)
 elseif(SIMPLE_ENUM_USE_GLAZE_2)
@@ -86,12 +96,10 @@ else()
     message(FATAL_ERROR "Future, unimplemented")
 endif()
 
-if(PROJECT_IS_TOP_LEVEL)
-  add_library(simple_enum::simple_enum ALIAS simple_enum )
-endif()
 if(SIMPLE_ENUM_OPT_IN_STATIC_ASSERTS)
   target_compile_definitions( simple_enum INTERFACE SIMPLE_ENUM_OPT_IN_STATIC_ASSERTS=1)
 endif()
+
 target_include_directories(simple_enum 
     INTERFACE   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                 $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>
@@ -126,7 +134,7 @@ packageProject(
 )
 endif()
 
-if(PROJECT_IS_TOP_LEVEL)
+if(PROJECT_IS_TOP_LEVEL AND SIMPLE_ENUM_ENABLE_TESTS)
   include(cmake/unit_test_integration.cmake)
   # Enable testing and add the tests directory
   enable_testing()

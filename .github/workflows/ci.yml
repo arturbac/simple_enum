@@ -26,6 +26,9 @@ jobs:
     - name: ci-gcc-glaze2
       run: cmake --workflow --preset="ci-gcc-glaze2"
       
+    - name: ci-gcc-glaze3-c++26
+      run: cmake --workflow --preset="ci-gcc-glaze3-c++26"
+
   build-and-test-clang:
     runs-on: ubuntu-24.04
     steps:
@@ -50,6 +53,11 @@ jobs:
     - name: ci-clang-libc++-glaze2
       run: cmake --workflow --preset="ci-clang-libc++-glaze2"
       
+    - name: ci-clang-libstdc++-glaze3-c++26
+      run: cmake --workflow --preset="ci-clang-libstdc++-glaze3-c++26"
+    - name: ci-clang-libc++-glaze3-c++26
+      run: cmake --workflow --preset="ci-clang-libc++-glaze3-c++26"
+
   build-and-test-msvc:
     runs-on: windows-latest
     steps:
