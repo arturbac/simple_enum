@@ -26,7 +26,7 @@ option(SIMPLE_ENUM_USE_GLAZE_3_2 "Use Glaze version 3.2" OFF)
 option(SIMPLE_ENUM_ENABLE_TESTS "Enable unit tests" ON )
 
 if(SIMPLE_ENUM_USE_GLAZE_3_1)
-    set(GLAZE_GIT_TAG "v3.1.1")
+    set(GLAZE_GIT_TAG "v3.4.3")
 elseif(SIMPLE_ENUM_USE_GLAZE_2)
     set(GLAZE_GIT_TAG "v2.9.5")
 elseif(SIMPLE_ENUM_USE_GLAZE_3_2)
