@@ -24,6 +24,7 @@ option(SIMPLE_ENUM_USE_GLAZE_3_1 "Use Glaze version 3.1" ON)
 option(SIMPLE_ENUM_USE_GLAZE_2 "Use Glaze version 2" OFF)
 option(SIMPLE_ENUM_USE_GLAZE_3_2 "Use Glaze version 3.2" OFF)
 option(SIMPLE_ENUM_ENABLE_TESTS "Enable unit tests" ON )
+option(SIMPLE_ENUM_EXPORT_CMAKE_TARGETS "Enable cmake targets" ON)
 
 if(SIMPLE_ENUM_USE_GLAZE_3_1)
     set(GLAZE_GIT_TAG "v3.4.3")
@@ -114,11 +115,14 @@ install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
         DESTINATION include
 )
 
-install(EXPORT simple_enum_targets
-    FILE simple_enumTargets.cmake
-    NAMESPACE simple_enum::
-    DESTINATION lib/cmake/simple_enum
-)
+if(SIMPLE_ENUM_EXPORT_CMAKE_TARGETS)
+  install(EXPORT simple_enum_targets
+      FILE simple_enumTargets.cmake
+      NAMESPACE simple_enum::
+      DESTINATION lib/cmake/simple_enum
+  )
+endif()
+
 if( NOT MSVC)
 packageProject(
     NAME simple_enum
