@@ -48,19 +48,19 @@
       }
     },
     {
-    "name": "cfg-glaze-2",
+    "name": "cfg-glaze-4",
     "hidden": true,
       "cacheVariables": {
-        "SIMPLE_ENUM_USE_GLAZE_2": "ON",
-        "SIMPLE_ENUM_USE_GLAZE_3_1" : "OFF"
+        "SIMPLE_ENUM_USE_GLAZE_3_1" : "OFF",
+        "SIMPLE_ENUM_USE_GLAZE_4_0" : "ON"
       }
     },
     {
     "name": "cfg-glaze-3",
     "hidden": true,
       "cacheVariables": {
-        "SIMPLE_ENUM_USE_GLAZE_2": "OFF",
-        "SIMPLE_ENUM_USE_GLAZE_3_1" : "ON"
+        "SIMPLE_ENUM_USE_GLAZE_3_1" : "ON",
+        "SIMPLE_ENUM_USE_GLAZE_4_0" : "OFF"
       }
     },
     {
@@ -77,7 +77,7 @@
       }
     },
     {
-      "name": "clnag-debug",
+      "name": "clang-debug",
       "description": "Configure for clang debug build",
       "inherits": [ "cfg-clang", "cfg-c++23" ],
       "cacheVariables": {
@@ -85,7 +85,7 @@
       }
     },
     {
-      "name": "clnag-debug-c++26",
+      "name": "clang-debug-c++26",
       "description": "Configure for clang debug build",
       "inherits": [ "cfg-clang", "cfg-c++26" ],
       "cacheVariables": {
@@ -93,7 +93,7 @@
       }
     },
     {
-      "name": "clnag-debug-libstdc++",
+      "name": "clang-debug-libstdc++",
       "description": "Configure for clang debug build",
       "inherits": [ "cfg-clang", "cfg-libc++", "cfg-c++23" ],
       "cacheVariables": {
@@ -101,7 +101,7 @@
       }
     },
     {
-      "name": "clnag-debug-libstdc++-c++26",
+      "name": "clang-debug-libstdc++-c++26",
       "description": "Configure for clang debug build",
       "inherits": [ "cfg-clang", "cfg-libc++", "cfg-c++26" ],
       "cacheVariables": {
@@ -146,183 +146,119 @@
       }
     },
     {
-      "name": "clang-release-test-asan-glaze_2",
-      "description": "Configure for release build with address sanitizer with glaze 2 support",
-      "inherits": [ "clang-release-test-asan", "cfg-build-dir", "cfg-glaze-2", "cfg-c++23" ]
+      "name": "clang-release-test-asan-glaze_4",
+      "description": "Configure for release build with address sanitizer with glaze 4 support",
+      "inherits": [ "clang-release-test-asan", "cfg-build-dir", "cfg-glaze-4", "cfg-c++23" ]
     },
     {
-      "name": "clang-release-test-asan-glaze_3",
-      "description": "Configure for release build with address sanitizer with glaze 3 support",
-      "inherits": [ "clang-release-test-asan", "cfg-build-dir", "cfg-glaze-3", "cfg-c++23" ]
+      "name": "ci-clang-libstdc++-glaze4",
+      "inherits": [ "cfg-clang", "cfg-build-dir", "cfg-glaze-4", "cfg-c++23" ]
     },
     {
-      "name": "ci-clang-libstdc++-glaze3",
-      "inherits": [ "cfg-clang", "cfg-build-dir", "cfg-glaze-3", "cfg-c++23" ]
+      "name": "ci-clang-libc++-glaze4",
+      "inherits": [ "cfg-clang", "cfg-libc++", "cfg-build-dir", "cfg-glaze-4", "cfg-c++23" ]
     },
     {
-      "name": "ci-clang-libstdc++-glaze2",
-      "inherits": [ "cfg-clang", "cfg-build-dir", "cfg-glaze-2", "cfg-c++23" ]
+      "name": "ci-gcc-glaze4",
+      "inherits": [ "cfg-gcc", "cfg-build-dir", "cfg-glaze-4", "cfg-c++23" ]
     },
     {
-      "name": "ci-clang-libc++-glaze3",
-      "inherits": [ "cfg-clang", "cfg-libc++", "cfg-build-dir", "cfg-glaze-3", "cfg-c++23" ]
+      "name": "ci-clang-libstdc++-glaze4-c++26",
+      "inherits": [ "cfg-clang", "cfg-build-dir", "cfg-glaze-4", "cfg-c++26" ]
     },
     {
-      "name": "ci-clang-libc++-glaze2",
-      "inherits": [ "cfg-clang", "cfg-libc++", "cfg-build-dir", "cfg-glaze-2", "cfg-c++23" ]
+      "name": "ci-clang-libc++-glaze4-c++26",
+      "inherits": [ "cfg-clang", "cfg-libc++", "cfg-build-dir", "cfg-glaze-4", "cfg-c++26" ]
     },
     {
-      "name": "ci-gcc-glaze3",
-      "inherits": [ "cfg-gcc", "cfg-build-dir", "cfg-glaze-3", "cfg-c++23" ]
-    },
-    {
-      "name": "ci-gcc-glaze2",
-      "inherits": [ "cfg-gcc", "cfg-build-dir", "cfg-glaze-2", "cfg-c++23" ]
-    },
-    
-    {
-      "name": "ci-clang-libstdc++-glaze3-c++26",
-      "inherits": [ "cfg-clang", "cfg-build-dir", "cfg-glaze-3", "cfg-c++26" ]
-    },
-    {
-      "name": "ci-clang-libc++-glaze3-c++26",
-      "inherits": [ "cfg-clang", "cfg-libc++", "cfg-build-dir", "cfg-glaze-3", "cfg-c++26" ]
-    },
-    {
-      "name": "ci-gcc-glaze3-c++26",
-      "inherits": [ "cfg-gcc", "cfg-build-dir", "cfg-glaze-3", "cfg-c++26" ]
+      "name": "ci-gcc-glaze4-c++26",
+      "inherits": [ "cfg-gcc", "cfg-build-dir", "cfg-glaze-4", "cfg-c++26" ]
     }
   ],
   "buildPresets": [
     {
-      "name": "ci-clang-libstdc++-glaze3-c++26",
-      "configurePreset": "ci-clang-libstdc++-glaze3-c++26"
+      "name": "ci-clang-libstdc++-glaze4-c++26",
+      "configurePreset": "ci-clang-libstdc++-glaze4-c++26"
     },
     {
-      "name": "ci-clang-libc++-glaze3-c++26",
-      "configurePreset": "ci-clang-libc++-glaze3-c++26"
+      "name": "ci-clang-libc++-glaze4-c++26",
+      "configurePreset": "ci-clang-libc++-glaze4-c++26"
     },
     {
-      "name": "ci-gcc-glaze3-c++26",
-      "configurePreset": "ci-gcc-glaze3-c++26"
-    },
-    
-    {
-      "name": "ci-clang-libstdc++-glaze3",
-      "configurePreset": "ci-clang-libstdc++-glaze3"
+      "name": "ci-gcc-glaze4-c++26",
+      "configurePreset": "ci-gcc-glaze4-c++26"
     },
     {
-      "name": "ci-clang-libstdc++-glaze2",
-      "configurePreset": "ci-clang-libstdc++-glaze2"
+      "name": "ci-clang-libstdc++-glaze4",
+      "configurePreset": "ci-clang-libstdc++-glaze4"
     },
     {
-      "name": "ci-clang-libc++-glaze3",
-      "configurePreset": "ci-clang-libc++-glaze3"
+      "name": "ci-clang-libc++-glaze4",
+      "configurePreset": "ci-clang-libc++-glaze4"
     },
     {
-      "name": "ci-clang-libc++-glaze2",
-      "configurePreset": "ci-clang-libc++-glaze2"
+      "name": "ci-gcc-glaze4",
+      "configurePreset": "ci-gcc-glaze4"
     },
     {
-      "name": "ci-gcc-glaze3",
-      "configurePreset": "ci-gcc-glaze3"
-    },
-    {
-      "name": "ci-gcc-glaze2",
-      "configurePreset": "ci-gcc-glaze2"
-    },
-    {
-      "name": "clnag-debug",
-      "configurePreset": "clnag-debug"
+      "name": "clang-debug",
+      "configurePreset": "clang-debug"
     },
     {
       "name": "release-time-trace",
       "configurePreset": "release-time-trace"
     },
     {
-      "name": "clang-release-test-asan-glaze_2",
-      "configurePreset": "clang-release-test-asan-glaze_2"
-    },
-    {
-      "name": "clang-release-test-asan-glaze_3",
-      "configurePreset": "clang-release-test-asan-glaze_3"
+      "name": "clang-release-test-asan-glaze_4",
+      "configurePreset": "clang-release-test-asan-glaze_4"
     }
   ],
   "testPresets": [
     {
-      "name": "ci-clang-libstdc++-glaze3-c++26",
-      "configurePreset": "ci-clang-libstdc++-glaze3-c++26",
+      "name": "ci-clang-libstdc++-glaze4-c++26",
+      "configurePreset": "ci-clang-libstdc++-glaze4-c++26",
       "output": {
         "outputOnFailure": true
       }
     },
     {
-      "name": "ci-clang-libc++-glaze3-c++26",
-      "configurePreset": "ci-clang-libc++-glaze3-c++26",
+      "name": "ci-clang-libc++-glaze4-c++26",
+      "configurePreset": "ci-clang-libc++-glaze4-c++26",
       "output": {
         "outputOnFailure": true
       }
     },
     {
-      "name": "ci-gcc-glaze3-c++26",
-      "configurePreset": "ci-gcc-glaze3-c++26",
-      "output": {
-        "outputOnFailure": true
-      }
-    },
-    
-    {
-      "name": "ci-clang-libstdc++-glaze3",
-      "configurePreset": "ci-clang-libstdc++-glaze3",
+      "name": "ci-gcc-glaze4-c++26",
+      "configurePreset": "ci-gcc-glaze4-c++26",
       "output": {
         "outputOnFailure": true
       }
     },
     {
-      "name": "ci-clang-libstdc++-glaze2",
-      "configurePreset": "ci-clang-libstdc++-glaze2",
+      "name": "ci-clang-libstdc++-glaze4",
+      "configurePreset": "ci-clang-libstdc++-glaze4",
       "output": {
         "outputOnFailure": true
       }
     },
     {
-      "name": "ci-clang-libc++-glaze3",
-      "configurePreset": "ci-clang-libc++-glaze3",
+      "name": "ci-clang-libc++-glaze4",
+      "configurePreset": "ci-clang-libc++-glaze4",
       "output": {
         "outputOnFailure": true
       }
     },
     {
-      "name": "ci-clang-libc++-glaze2",
-      "configurePreset": "ci-clang-libc++-glaze2",
+      "name": "ci-gcc-glaze4",
+      "configurePreset": "ci-gcc-glaze4",
       "output": {
         "outputOnFailure": true
       }
     },
     {
-      "name": "ci-gcc-glaze3",
-      "configurePreset": "ci-gcc-glaze3",
-      "output": {
-        "outputOnFailure": true
-      }
-    },
-    {
-      "name": "ci-gcc-glaze2",
-      "configurePreset": "ci-gcc-glaze2",
-      "output": {
-        "outputOnFailure": true
-      }
-    },
-    {
-      "name": "clang-release-test-asan-glaze_2",
-      "configurePreset": "clang-release-test-asan-glaze_2",
-      "output": {
-        "outputOnFailure": true
-      }
-    },
-    {
-      "name": "clang-release-test-asan-glaze_3",
-      "configurePreset": "clang-release-test-asan-glaze_3",
+      "name": "clang-release-test-asan-glaze_4",
+      "configurePreset": "clang-release-test-asan-glaze_4",
       "output": {
         "outputOnFailure": true
       }
@@ -330,190 +266,121 @@
   ],
   "workflowPresets": [
     {
-      "name": "ci-clang-libstdc++-glaze3-c++26",
+      "name": "ci-clang-libstdc++-glaze4-c++26",
       "steps": [
         {
           "type": "configure",
-          "name": "ci-clang-libstdc++-glaze3-c++26"
+          "name": "ci-clang-libstdc++-glaze4-c++26"
         },
         {
           "type": "build",
-          "name": "ci-clang-libstdc++-glaze3-c++26"
+          "name": "ci-clang-libstdc++-glaze4-c++26"
         },
         {
           "type": "test",
-          "name": "ci-clang-libstdc++-glaze3-c++26"
+          "name": "ci-clang-libstdc++-glaze4-c++26"
         }
       ]
     },
     {
-      "name": "ci-clang-libc++-glaze3-c++26",
+      "name": "ci-clang-libc++-glaze4-c++26",
       "steps": [
         {
           "type": "configure",
-          "name": "ci-clang-libc++-glaze3-c++26"
+          "name": "ci-clang-libc++-glaze4-c++26"
         },
         {
           "type": "build",
-          "name": "ci-clang-libc++-glaze3-c++26"
+          "name": "ci-clang-libc++-glaze4-c++26"
         },
         {
           "type": "test",
-          "name": "ci-clang-libc++-glaze3-c++26"
+          "name": "ci-clang-libc++-glaze4-c++26"
         }
       ]
     },
     {
-      "name": "ci-gcc-glaze3-c++26",
+      "name": "ci-gcc-glaze4-c++26",
       "steps": [
         {
           "type": "configure",
-          "name": "ci-gcc-glaze3-c++26"
+          "name": "ci-gcc-glaze4-c++26"
         },
         {
           "type": "build",
-          "name": "ci-gcc-glaze3-c++26"
+          "name": "ci-gcc-glaze4-c++26"
         },
         {
           "type": "test",
-          "name": "ci-gcc-glaze3-c++26"
-        }
-      ]
-    },
-    
-    {
-      "name": "ci-clang-libstdc++-glaze3",
-      "steps": [
-        {
-          "type": "configure",
-          "name": "ci-clang-libstdc++-glaze3"
-        },
-        {
-          "type": "build",
-          "name": "ci-clang-libstdc++-glaze3"
-        },
-        {
-          "type": "test",
-          "name": "ci-clang-libstdc++-glaze3"
+          "name": "ci-gcc-glaze4-c++26"
         }
       ]
     },
     {
-      "name": "ci-clang-libstdc++-glaze2",
+      "name": "ci-clang-libstdc++-glaze4",
       "steps": [
         {
           "type": "configure",
-          "name": "ci-clang-libstdc++-glaze2"
+          "name": "ci-clang-libstdc++-glaze4"
         },
         {
           "type": "build",
-          "name": "ci-clang-libstdc++-glaze2"
+          "name": "ci-clang-libstdc++-glaze4"
         },
         {
           "type": "test",
-          "name": "ci-clang-libstdc++-glaze2"
+          "name": "ci-clang-libstdc++-glaze4"
         }
       ]
     },
     {
-      "name": "ci-clang-libc++-glaze3",
+      "name": "ci-clang-libc++-glaze4",
       "steps": [
         {
           "type": "configure",
-          "name": "ci-clang-libc++-glaze3"
+          "name": "ci-clang-libc++-glaze4"
         },
         {
           "type": "build",
-          "name": "ci-clang-libc++-glaze3"
+          "name": "ci-clang-libc++-glaze4"
         },
         {
           "type": "test",
-          "name": "ci-clang-libc++-glaze3"
+          "name": "ci-clang-libc++-glaze4"
         }
       ]
     },
     {
-      "name": "ci-clang-libc++-glaze2",
+      "name": "ci-gcc-glaze4",
       "steps": [
         {
           "type": "configure",
-          "name": "ci-clang-libc++-glaze2"
+          "name": "ci-gcc-glaze4"
         },
         {
           "type": "build",
-          "name": "ci-clang-libc++-glaze2"
+          "name": "ci-gcc-glaze4"
         },
         {
           "type": "test",
-          "name": "ci-clang-libc++-glaze2"
+          "name": "ci-gcc-glaze4"
         }
       ]
     },
     {
-      "name": "ci-gcc-glaze3",
+      "name": "clang-release-test-asan-glaze_4",
       "steps": [
         {
           "type": "configure",
-          "name": "ci-gcc-glaze3"
+          "name": "clang-release-test-asan-glaze_4"
         },
         {
           "type": "build",
-          "name": "ci-gcc-glaze3"
+          "name": "clang-release-test-asan-glaze_4"
         },
         {
           "type": "test",
-          "name": "ci-gcc-glaze3"
-        }
-      ]
-    },
-    {
-      "name": "ci-gcc-glaze2",
-      "steps": [
-        {
-          "type": "configure",
-          "name": "ci-gcc-glaze2"
-        },
-        {
-          "type": "build",
-          "name": "ci-gcc-glaze2"
-        },
-        {
-          "type": "test",
-          "name": "ci-gcc-glaze2"
-        }
-      ]
-    },
-    {
-      "name": "clang-release-test-asan-glaze_2",
-      "steps": [
-        {
-          "type": "configure",
-          "name": "clang-release-test-asan-glaze_2"
-        },
-        {
-          "type": "build",
-          "name": "clang-release-test-asan-glaze_2"
-        },
-        {
-          "type": "test",
-          "name": "clang-release-test-asan-glaze_2"
-        }
-      ]
-    },
-    {
-      "name": "clang-release-test-asan-glaze_3",
-      "steps": [
-        {
-          "type": "configure",
-          "name": "clang-release-test-asan-glaze_3"
-        },
-        {
-          "type": "build",
-          "name": "clang-release-test-asan-glaze_3"
-        },
-        {
-          "type": "test",
-          "name": "clang-release-test-asan-glaze_3"
+          "name": "clang-release-test-asan-glaze_4"
         }
       ]
     }

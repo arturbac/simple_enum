@@ -17,23 +17,20 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 message(STATUS "simple_enum version v${SIMPLE_ENUM_VERSION}")
 
-include(cmake/CPM.cmake)
+include(cmake/get_cpm.cmake)
 CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.11.2")
 
-option(SIMPLE_ENUM_USE_GLAZE_3_1 "Use Glaze version 3.1" ON)
-option(SIMPLE_ENUM_USE_GLAZE_2 "Use Glaze version 2" OFF)
-option(SIMPLE_ENUM_USE_GLAZE_3_2 "Use Glaze version 3.2" OFF)
+option(SIMPLE_ENUM_USE_GLAZE_3_1 "Use Glaze version 3.1" OFF)
+option(SIMPLE_ENUM_USE_GLAZE_4_0 "Use Glaze version 4.0" ON)
 option(SIMPLE_ENUM_ENABLE_TESTS "Enable unit tests" ON )
 option(SIMPLE_ENUM_EXPORT_CMAKE_TARGETS "Enable cmake targets" ON)
 
 if(SIMPLE_ENUM_USE_GLAZE_3_1)
     set(GLAZE_GIT_TAG "v3.4.3")
-elseif(SIMPLE_ENUM_USE_GLAZE_2)
-    set(GLAZE_GIT_TAG "v2.9.5")
-elseif(SIMPLE_ENUM_USE_GLAZE_3_2)
-    message(FATAL_ERROR "Future, unimplemented")
+elseif(SIMPLE_ENUM_USE_GLAZE_4_0)
+    set(GLAZE_GIT_TAG "v4.0.1")
 else()
-    message(FATAL_ERROR "Please select a Glaze version by setting USE_GLAZE_2, USE_GLAZE_3_1, or USE_GLAZE_3_2")
+    message(FATAL_ERROR "Please select a Glaze version by setting USE_GLAZE_3_1, or SIMPLE_ENUM_USE_GLAZE_4_0")
 endif()
 
 if(PROJECT_IS_TOP_LEVEL AND SIMPLE_ENUM_ENABLE_TESTS)
@@ -43,7 +40,7 @@ if(PROJECT_IS_TOP_LEVEL AND SIMPLE_ENUM_ENABLE_TESTS)
   CPMAddPackage(
     ut
     GITHUB_REPOSITORY arturbac/ut-ext
-    GIT_TAG        v2.0.1_5
+    GIT_TAG        v2.0.1_7
   )
   find_package(ut-ext REQUIRED)
   if( SIMPLE_ENUM_ENABLE_TIME_TRACE AND (CMAKE_CXX_COMPILER_ID MATCHES "Clang" OR CMAKE_CXX_COMPILER_ID MATCHES "AppleClang"))
@@ -91,8 +88,8 @@ endif()
 
 if(SIMPLE_ENUM_USE_GLAZE_3_1)
     target_compile_definitions( simple_enum INTERFACE SIMPLE_ENUM_GLZ_3_1_x)
-elseif(SIMPLE_ENUM_USE_GLAZE_2)
-    target_compile_definitions( simple_enum INTERFACE SIMPLE_ENUM_GLZ_2_X)
+elseif(SIMPLE_ENUM_USE_GLAZE_4_0)
+    target_compile_definitions( simple_enum INTERFACE SIMPLE_ENUM_GLZ_3_1_x)
 else()
     message(FATAL_ERROR "Future, unimplemented")
 endif()

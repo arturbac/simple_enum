@@ -73,30 +73,6 @@ namespace detail
     };
     }
 
-#if defined(SIMPLE_ENUM_GLZ_2_X)
-  template<typename enumeration_type>
-  constexpr auto make_glz_enum_tuple(std::string_view string_value, enumeration_type enumeration)
-    -> glz::tuplet::tuple<std::string_view, enumeration_type>
-    {
-    return glz::tuplet::tuple<std::string_view, enumeration_type>{string_value, enumeration};
-    }
-
-  template<typename enumeration_type, std::size_t... ix>
-  constexpr auto glaze_tuple_pairs(std::index_sequence<ix...>)
-    {
-    return std::make_tuple(make_glz_enum_tuple(
-      detail::enum_name_at_index<enumeration_type>(ix), detail::enum_value_at_index<enumeration_type>(ix)
-    )...);
-    }
-
-  template<typename enumeration_type>
-  constexpr auto make_glaze_tuple()
-    {
-    constexpr auto size = detail::enum_base_info_t<enumeration_type>::size();
-    return convert_to_glz_enum(glaze_tuple_pairs<enumeration_type>(std::make_index_sequence<size>{}));
-    }
-#elif defined(SIMPLE_ENUM_GLZ_3_1_x)
-
   template<typename enumeration_type, std::size_t... ix>
   constexpr auto glaze_tuple_pairs(std::index_sequence<ix...>)
     {
@@ -111,9 +87,6 @@ namespace detail
     constexpr auto size = detail::enum_base_info_t<enumeration_type>::size();
     return convert_to_glz_enum(glaze_tuple_pairs<enumeration_type>(std::make_index_sequence<size>{}));
     }
-#else
-#error "Unimplemented support for glaze other than 2.x and 3.1.x"
-#endif
 
   }  // namespace detail
   }  // namespace simple_enum::inline v0_8
@@ -143,15 +116,22 @@ namespace glz::detail
   {
 
 template<simple_enum::bounded_enum enumeration_type>
+#ifdef glaze_v3_5_0_to_from
+struct from<glz::JSON, enumeration_type>
+#else
 struct from_json<enumeration_type>
+#endif
   {
-  template<auto Opts>
+  template<auto Opts, typename... Args>
     requires simple_enum::bounded_enum<enumeration_type>
-  static void op(enumeration_type & arg, is_context auto && ctx, auto &&... args)
+  static void op(enumeration_type & arg, is_context auto && ctx, Args &&... args)
     {
     std::string_view value;
-    read<json>::op<Opts>(value, ctx, args...);
-
+#ifdef glaze_v3_5_0_to_from
+    read<glz::JSON>::op<Opts>(value, ctx, args...);
+#else
+    read<glz::json>::op<Opts>(value, ctx, args...);
+#endif
     if(bool(ctx.error)) [[unlikely]]
       return;
 
@@ -167,14 +147,22 @@ struct from_json<enumeration_type>
   };
 
 template<simple_enum::bounded_enum enumeration_type>
+#ifdef glaze_v3_5_0_to_from
+struct to<glz::JSON, enumeration_type>
+#else
 struct to_json<enumeration_type>
+#endif
   {
   template<auto Opts>
     requires simple_enum::bounded_enum<enumeration_type>
   static void op(enumeration_type const & arg, auto &&... args) noexcept
     {
     std::string_view value{simple_enum::enum_name(arg)};
-    write<json>::op<Opts>(value, args...);
+#ifdef glaze_v3_5_0_to_from
+    write<glz::JSON>::op<Opts>(value, args...);
+#else
+    write<glz::json>::op<Opts>(value, args...);
+#endif
     }
   };
   }  // namespace glz::detail

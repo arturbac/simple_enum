@@ -21,13 +21,11 @@ jobs:
       run: |
         sudo apt-get update && sudo apt-get install -y cmake ninja-build gcc-14 g++-14
 
-    - name: ci-gcc-glaze3
-      run: cmake --workflow --preset="ci-gcc-glaze3"
-    - name: ci-gcc-glaze2
-      run: cmake --workflow --preset="ci-gcc-glaze2"
+    - name: ci-gcc-glaze4
+      run: cmake --workflow --preset="ci-gcc-glaze4"
       
-    - name: ci-gcc-glaze3-c++26
-      run: cmake --workflow --preset="ci-gcc-glaze3-c++26"
+    - name: ci-gcc-glaze4-c++26
+      run: cmake --workflow --preset="ci-gcc-glaze4-c++26"
 
   build-and-test-clang:
     runs-on: ubuntu-24.04
@@ -37,36 +35,32 @@ jobs:
       run: |
         wget https://apt.llvm.org/llvm.sh
         chmod +x llvm.sh
-        sudo ./llvm.sh 18
+        sudo ./llvm.sh 19
         
     - name: Install dependencies
       run: |
            sudo apt-get update
-           sudo apt-get install -y cmake g++-14 ninja-build clang-18 libfmt-dev libc++-18-dev libc++abi-18-dev
+           sudo apt-get install -y cmake g++-14 ninja-build clang-19 libfmt-dev libc++-19-dev libc++abi-19-dev
 
-    - name: ci-clang-libstdc++-glaze3
-      run: cmake --workflow --preset="ci-clang-libstdc++-glaze3"
-    - name: ci-clang-libstdc++-glaze2
-      run: cmake --workflow --preset="ci-clang-libstdc++-glaze2"
-    - name: ci-clang-libc++-glaze3
-      run: cmake --workflow --preset="ci-clang-libc++-glaze3"
-    - name: ci-clang-libc++-glaze2
-      run: cmake --workflow --preset="ci-clang-libc++-glaze2"
+    - name: ci-clang-libstdc++-glaze4
+      run: cmake --workflow --preset="ci-clang-libstdc++-glaze4"
+    - name: ci-clang-libc++-glaze4
+      run: cmake --workflow --preset="ci-clang-libc++-glaze4"
       
-    - name: ci-clang-libstdc++-glaze3-c++26
-      run: cmake --workflow --preset="ci-clang-libstdc++-glaze3-c++26"
-    - name: ci-clang-libc++-glaze3-c++26
-      run: cmake --workflow --preset="ci-clang-libc++-glaze3-c++26"
+    - name: ci-clang-libstdc++-glaze4-c++26
+      run: cmake --workflow --preset="ci-clang-libstdc++-glaze4-c++26"
+    - name: ci-clang-libc++-glaze4-c++26
+      run: cmake --workflow --preset="ci-clang-libc++-glaze4-c++26"
 
   build-and-test-msvc:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Configure MSVC with glaze 3.1 support
-      run: cmake -B ${{github.workspace}}/build/msvc -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_COMPILER=clang++-18 -DSIMPLE_ENUM_USE_GLAZE_2=OFF -DSIMPLE_ENUM_USE_GLAZE_3_1=ON
-    - name: Build MSVC with glaze 3.1 support
+    - name: Configure MSVC with glaze 4.x support
+      run: cmake -B ${{github.workspace}}/build/msvc -DCMAKE_BUILD_TYPE=Debug -DSIMPLE_ENUM_USE_GLAZE_3_1=OFF -DSIMPLE_ENUM_USE_GLAZE_4_0=ON
+    - name: Build MSVC with glaze 4.x support
       run: cmake --build ${{github.workspace}}/build/msvc
-    - name: Test MSVC with glaze 3.1 support
+    - name: Test MSVC with glaze 4.x support
       working-directory: ${{github.workspace}}/build/msvc
       run: ctest -C Debug
 
