@@ -33,7 +33,7 @@ struct test_data_t
   test_enum_e enum_field;
   };
 
-inline constexpr glz::opts pretty{.prettify = true};
+inline constexpr glz::opts pretty{.format = glz::JSON, .null_terminated = true, .prettify = true};
 enum class Color : int8_t
   {
   Green,
@@ -79,7 +79,7 @@ int main()
   {
   "write_file_json test"_test = []
   {
-    string_view_test data{""};
+    string_view_test data{"", {}};
     auto reserr{glz::write_file_json<pretty>(data, std::string{"string_view_test"}, std::string{})};
     expect(reserr.ec == glz::error_code::none);
   };
@@ -169,14 +169,16 @@ int main()
       {
         expect(eq(params.color, Color::Green));
         expect(eq(params.color2, ColorUnbounded::Green));
-        return complex_response_t{.color = Color::Red, .color2 = ColorUnbounded::Red, .value = 13};
+        return complex_response_t{
+          .color = Color::Red, .color2 = ColorUnbounded::Red, .enum_field = {}, .value = 13, .name = {}
+        };
       }
     );
 
     std::string uuid{"42"};
     auto [request_str, inserted] = client.request<"foo">(
       uuid,
-      complex_request_t{.color = Color::Green, .color2 = ColorUnbounded::Green},
+      complex_request_t{.color = Color::Green, .color2 = ColorUnbounded::Green, .value = {}},
       [](glz::expected<complex_response_t, glz::rpc::error> value, glz::rpc::id_t /*id*/) -> void
       {
         expect(eq(value->color, Color::Red));
