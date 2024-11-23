@@ -57,7 +57,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Configure MSVC with glaze 4.x support
-      run: cmake -B ${{github.workspace}}/build/msvc -DCMAKE_CXX_COMPILER=clang++-18 -DCMAKE_BUILD_TYPE=Debug -DSIMPLE_ENUM_USE_GLAZE_3_1=OFF -DSIMPLE_ENUM_USE_GLAZE_4_0=ON
+      run: cmake -B ${{github.workspace}}/build/msvc -DCMAKE_BUILD_TYPE=Debug -DSIMPLE_ENUM_USE_GLAZE_3_1=OFF -DSIMPLE_ENUM_USE_GLAZE_4_0=ON
     - name: Build MSVC with glaze 4.x support
       run: cmake --build ${{github.workspace}}/build/msvc
     - name: Test MSVC with glaze 4.x support

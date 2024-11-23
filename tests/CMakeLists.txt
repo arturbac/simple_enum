@@ -31,7 +31,10 @@ add_ut_test(fmtlib_format_ut.cc)
 target_link_libraries(fmtlib_format_ut PRIVATE fmt::fmt)
 
 add_ut_test(glaze_enum_name_ut.cc)
-
+if(MSVC)
+  # glaze causes objects to grow over 4GB on msvc
+  target_compile_options(glaze_enum_name_ut PRIVATE /bigobj)
+endif()
 target_link_libraries(glaze_enum_name_ut PRIVATE glaze::glaze)
 
 add_executable(diagnostics EXCLUDE_FROM_ALL)
