@@ -36,7 +36,6 @@ if(MSVC)
   target_compile_options(glaze_enum_name_ut PRIVATE 
     "/bigobj"
     "/Zm500"  # Increased memory allocation
-    "/Z7"     # Generate smaller debug info
     "/Os"     # Favor small code size
     )
   target_link_options(glaze_enum_name_ut PRIVATE "/LARGEADDRESSAWARE")
