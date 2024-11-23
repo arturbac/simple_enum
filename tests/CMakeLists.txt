@@ -30,9 +30,18 @@ CPMAddPackage(
 add_ut_test(fmtlib_format_ut.cc)
 target_link_libraries(fmtlib_format_ut PRIVATE fmt::fmt)
 
-add_ut_test(glaze_enum_name_ut.cc)
-
-target_link_libraries(glaze_enum_name_ut PRIVATE glaze::glaze)
+if(NOT MSVC)
+  add_ut_test(glaze_enum_name_ut.cc)
+  target_link_libraries(glaze_enum_name_ut PRIVATE glaze::glaze)
+  # glaze causes objects to grow over 4GB on msvc
+  # https://developercommunity.visualstudio.com/t/Memory-Explosion:-compiler-limit:-objec/10795558
+  # target_compile_options(glaze_enum_name_ut PRIVATE 
+  #   "/bigobj"
+  #   "/Zm500"  # Increased memory allocation
+  #   "/Os"     # Favor small code size
+  #   )
+  # target_link_options(glaze_enum_name_ut PRIVATE "/LARGEADDRESSAWARE")
+endif()
 
 add_executable(diagnostics EXCLUDE_FROM_ALL)
 target_sources( diagnostics PRIVATE diagnostics.cc)
