@@ -24,6 +24,18 @@ suite basic_fixed_string_tests = []
     constexpr basic_fixed_string my_string{"Test"};
     expect(4_u == my_string.size()) << "String size is incorrect";
   };
+
+  "basic_fixed_string operator == test"_test = []
+  {
+    constexpr basic_fixed_string my_string{"Test"};
+    constexpr basic_fixed_string my_string2{"Test"};
+    constexpr basic_fixed_string my_string3{"Tes3"};
+    expect(my_string == my_string2);
+    expect(my_string2 == my_string2);
+    expect(my_string2 == my_string);
+    expect(my_string2 != my_string3);
+    expect(my_string != my_string3);
+  };
 };
 
 static constexpr basic_fixed_string my_error_str{"ErrorCategoryName"};

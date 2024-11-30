@@ -7,6 +7,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wctad-maybe-unsupported"
 #pragma clang diagnostic ignored "-Wreserved-identifier"
+#pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
 #pragma clang diagnostic ignored "-Wundef"
 #endif
 
