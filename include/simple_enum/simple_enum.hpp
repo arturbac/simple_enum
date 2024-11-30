@@ -173,14 +173,23 @@ namespace detail
 
   constexpr char const * find_sentinel(char const * str)
     {
+#ifdef __clang__
+#pragma clang unsafe_buffer_usage begin
+#endif
     while(*str != ':' && *str != ')')
       ++str;
+#ifdef __clang__
+#pragma clang unsafe_buffer_usage end
+#endif
     return str;
     }
 
   template<char end_of_enum = ']'>
   constexpr void parse_enumeration_name(char const * str, meta_name & result) noexcept
     {
+#ifdef __clang__
+#pragma clang unsafe_buffer_usage begin
+#endif
     if(*str == '(')
       ++str;
     char const * prev_colon = str;
@@ -236,6 +245,9 @@ namespace detail
 #endif
     else if(prev_colon[0] == ')' && prev_colon[1] == ':')
       prev_colon += 3;
+#ifdef __clang__
+#pragma clang unsafe_buffer_usage end
+#endif
     // Calculate the size and set the result
     result.data = prev_colon;
     result.size = size_t(current_colon - prev_colon);
@@ -246,13 +258,22 @@ namespace detail
     {
     char const * const func{se::f<enumeration{}>()};
     meta_name result;
+#ifdef __clang__
+#pragma clang unsafe_buffer_usage begin
+#endif
     parse_enumeration_name<se::end_of_enumeration_name>(func + se::initial_offset + 1, result);
+#ifdef __clang__
+#pragma clang unsafe_buffer_usage end
+#endif
     return result;
     }
 
   template<auto enumeration>
   constexpr auto first_pass(meta_name & res) noexcept
     {
+#ifdef __clang__
+#pragma clang unsafe_buffer_usage begin
+#endif
     char const * const func{se::f<enumeration>()};
     char const * end_of_name{func + se::initial_offset};
     char const * last_colon{end_of_name};
@@ -275,6 +296,9 @@ namespace detail
 
     res.data = last_colon + 1;
     res.size = size_t(end_of_name - res.data);
+#ifdef __clang__
+#pragma clang unsafe_buffer_usage end
+#endif
 #ifdef _MSC_VER
     return size_t(last_colon - func) + 1 - was_undefined;
 #else
@@ -285,12 +309,17 @@ namespace detail
   template<auto enumeration>
   constexpr void cont_pass(meta_name & res, std::size_t enum_beg) noexcept
     {
+#ifdef __clang__
+#pragma clang unsafe_buffer_usage begin
+#endif
     char const * const func{se::f<enumeration>()};
     char const * end_of_name{func + enum_beg};
     char const * enumeration_name{end_of_name};
     while(*end_of_name != se::end_of_enumeration_name)
       ++end_of_name;  // for other enumerations we only need to find end of string
-
+#ifdef __clang__
+#pragma clang unsafe_buffer_usage end
+#endif
     res.data = enumeration_name;
     res.size = size_t(end_of_name - res.data);
     }
@@ -344,8 +373,8 @@ namespace detail
 struct enum_name_t
   {
   template<enum_concept enum_type>
-  static_call_operator constexpr auto operator()(enum_type value
-  ) static_call_operator_const noexcept -> std::string_view
+  static_call_operator constexpr auto operator()(enum_type value) static_call_operator_const noexcept
+    -> std::string_view
     {
     using enum_meta_info = detail::enum_meta_info_t<enum_type>;
     auto const requested_index{simple_enum::detail::to_underlying(value)};

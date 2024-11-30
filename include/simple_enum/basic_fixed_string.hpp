@@ -35,7 +35,10 @@ struct basic_fixed_string
 
   static constexpr std::size_t size() noexcept { return N; }
 
-  constexpr auto operator==(basic_fixed_string const & rh) const noexcept -> bool = default;
+  constexpr auto operator==(basic_fixed_string const & rh) const noexcept -> bool
+    {
+    return std::equal(data(), std::next(data(), N), rh.data());
+    }
   };
 
 template<typename T, std::size_t N>
@@ -82,7 +85,13 @@ consteval auto as_basic_fixed_string(char const * input) -> basic_fixed_string<C
   {
   basic_fixed_string<CharT, N> result{};
   for(std::size_t i = 0; i < N; ++i)
+#ifdef __clang__
+#pragma clang unsafe_buffer_usage begin
+#endif
     result.str[i] = input[i];
+#ifdef __clang__
+#pragma clang unsafe_buffer_usage end
+#endif
   return result;
   }
 
@@ -93,7 +102,13 @@ consteval auto to_camel_case(basic_fixed_string<CharT, N> const & input) -> basi
 
   detail::camel_case_character_t camel_case_character;
   for(std::size_t i = 0; i < N; ++i)
+#ifdef __clang__
+#pragma clang unsafe_buffer_usage begin
+#endif
     result.str[i] = camel_case_character(input.str[i]);
+#ifdef __clang__
+#pragma clang unsafe_buffer_usage end
+#endif
 
   return result;
   }

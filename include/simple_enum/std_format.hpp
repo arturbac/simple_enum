@@ -6,8 +6,8 @@
 #include <simple_enum/simple_enum.hpp>
 #include <type_traits>
 
-#if(defined(__cpp_lib_format) && !(defined(__clang__) && __GLIBCXX__ < 202103L)) \
-  || ((_LIBCPP_VERSION >= 1800 || __GLIBCXX__ >= 202103L) && __cplusplus >= 202002L)
+#if (defined(__cpp_lib_format) && !(defined(__clang__) && defined(__GLIBCXX__) && __GLIBCXX__ < 202103L)) \
+  || ((defined(_LIBCPP_VERSION) && _LIBCPP_VERSION >= 1800 || __GLIBCXX__ >= 202103L) && __cplusplus >= 202002L)
 #include <format>
 #define SIMPLE_ENUM_STD_FORMAT_ENABLED
 

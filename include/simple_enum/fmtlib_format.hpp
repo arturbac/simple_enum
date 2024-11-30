@@ -6,7 +6,7 @@
 #include <simple_enum/simple_enum.hpp>
 #ifdef __clang__
 #pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdocumentation-unknown-command"
+#pragma clang diagnostic ignored "-Weverything"
 #endif
 #include <fmt/format.h>
 #ifdef __clang__
