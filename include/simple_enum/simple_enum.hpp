@@ -57,8 +57,9 @@ namespace detail
   template<typename enumeration>
   struct msvc_meta_info_wrapper
     {
-    static constexpr meta_info_bounds_traits
-      traits{.lower_bound = lower_bounded_enum<enumeration>, .upper_bound = upper_bounded_enum<enumeration>};
+    static constexpr meta_info_bounds_traits traits{
+      .lower_bound = lower_bounded_enum<enumeration>, .upper_bound = upper_bounded_enum<enumeration>
+    };
     using type = meta_info<enumeration, traits>;
     };
 
@@ -157,6 +158,8 @@ namespace detail
     {
     char const * data;
     size_t size;
+
+    constexpr operator std::string_view() const noexcept { return std::string_view{data, size}; }
 
     constexpr auto as_view() const noexcept -> std::string_view { return std::string_view{data, size}; }
 
@@ -329,11 +332,11 @@ namespace detail
     {
     // unpack and call cont_pass for each index, using fold expression
     using utype = std::underlying_type_t<enum_type>;
-    (..., (cont_pass<static_cast<enum_type>(first + utype(indices))>(meta[indices + 1], enum_beg)));
+    (..., cont_pass<static_cast<enum_type>(first + utype(indices))>(meta[indices + 1], enum_beg));
     }
 
   template<enum_concept enum_type, std::integral auto first_index, std::integral auto last_index>
-  constexpr auto prepare_enum_meta_info() noexcept -> std::array<detail::meta_name, last_index - first_index + 1>
+  consteval auto prepare_enum_meta_info() noexcept -> std::array<detail::meta_name, last_index - first_index + 1>
     {
     constexpr std::size_t size_{last_index - first_index + 1};
     std::array<detail::meta_name, size_> meta;
@@ -364,8 +367,8 @@ namespace detail
     {
     using base = enum_base_info_t<enum_type>;
 
-    static constexpr auto meta_data{detail::prepare_enum_meta_info<enum_type, base::first_index(), base::last_index()>()
-    };
+    static constexpr auto meta_data{detail::prepare_enum_meta_info<enum_type, base::first_index(), base::last_index()>(
+    )};
     };
 
   }  // namespace detail
@@ -410,8 +413,7 @@ namespace detail
   template<concepts::strong_enum enum_type>
   struct enumeration_name_t
     {
-    static constexpr detail::meta_name name_{detail::parse_enumeration_name<enum_type>()};
-    static constexpr std::string_view value{name_.data, name_.size};
+    static constexpr std::string_view value{detail::parse_enumeration_name<enum_type>()};
     };
   }  // namespace detail
 

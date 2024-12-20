@@ -1,0 +1,115 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "include": [
+    "preset-test.json"
+  ],
+ "workflowPresets": [
+    {
+      "name": "ci-clang-libstdc++-c++26",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-clang-libstdc++-c++26"
+        },
+        {
+          "type": "build",
+          "name": "ci-clang-libstdc++-c++26"
+        },
+        {
+          "type": "test",
+          "name": "ci-clang-libstdc++-c++26"
+        }
+      ]
+    },
+    {
+      "name": "ci-clang-libc++-c++26",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-clang-libc++-c++26"
+        },
+        {
+          "type": "build",
+          "name": "ci-clang-libc++-c++26"
+        },
+        {
+          "type": "test",
+          "name": "ci-clang-libc++-c++26"
+        }
+      ]
+    },
+    {
+      "name": "ci-gcc-c++26",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-gcc-c++26"
+        },
+        {
+          "type": "build",
+          "name": "ci-gcc-c++26"
+        },
+        {
+          "type": "test",
+          "name": "ci-gcc-c++26"
+        }
+      ]
+    },
+    {
+      "name": "ci-clang-libstdc++",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-clang-libstdc++"
+        },
+        {
+          "type": "build",
+          "name": "ci-clang-libstdc++"
+        },
+        {
+          "type": "test",
+          "name": "ci-clang-libstdc++"
+        }
+      ]
+    },
+    {
+      "name": "ci-clang-libc++",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-clang-libc++"
+        },
+        {
+          "type": "build",
+          "name": "ci-clang-libc++"
+        },
+        {
+          "type": "test",
+          "name": "ci-clang-libc++"
+        }
+      ]
+    },
+    {
+      "name": "ci-gcc",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "ci-gcc"
+        },
+        {
+          "type": "build",
+          "name": "ci-gcc"
+        },
+        {
+          "type": "test",
+          "name": "ci-gcc"
+        }
+      ]
+    }
+  ]
+}

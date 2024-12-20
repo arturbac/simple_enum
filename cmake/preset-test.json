@@ -1,0 +1,55 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "include": [
+    "preset-build.json"
+  ],
+  "testPresets": [
+    {
+      "name": "ci-clang-libstdc++-c++26",
+      "configurePreset": "ci-clang-libstdc++-c++26",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "ci-clang-libc++-c++26",
+      "configurePreset": "ci-clang-libc++-c++26",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "ci-gcc-c++26",
+      "configurePreset": "ci-gcc-c++26",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "ci-clang-libstdc++",
+      "configurePreset": "ci-clang-libstdc++",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "ci-clang-libc++",
+      "configurePreset": "ci-clang-libc++",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "ci-gcc",
+      "configurePreset": "ci-gcc",
+      "output": {
+        "outputOnFailure": true
+      }
+    }
+  ]
+}

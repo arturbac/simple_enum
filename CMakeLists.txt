@@ -1,4 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
+cmake_policy(SET CMP0167 NEW)
+cmake_policy(SET CMP0175 NEW)
 
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/extract_version.cmake)
 project(simple_enum
@@ -21,14 +23,14 @@ include(cmake/get_cpm.cmake)
 CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.11.2")
 
 option(SIMPLE_ENUM_USE_GLAZE_3_1 "Use Glaze version 3.1" OFF)
-option(SIMPLE_ENUM_USE_GLAZE_4_0 "Use Glaze version 4.0" ON)
+option(SIMPLE_ENUM_USE_GLAZE_4_0 "Use Glaze version 4.2" ON)
 option(SIMPLE_ENUM_ENABLE_TESTS "Enable unit tests" ON )
 option(SIMPLE_ENUM_EXPORT_CMAKE_TARGETS "Enable cmake targets" ON)
 
 if(SIMPLE_ENUM_USE_GLAZE_3_1)
     set(GLAZE_GIT_TAG "v3.4.3")
 elseif(SIMPLE_ENUM_USE_GLAZE_4_0)
-    set(GLAZE_GIT_TAG "v4.0.1")
+    set(GLAZE_GIT_TAG "v4.2.2")
 else()
     message(FATAL_ERROR "Please select a Glaze version by setting USE_GLAZE_3_1, or SIMPLE_ENUM_USE_GLAZE_4_0")
 endif()
@@ -80,7 +82,6 @@ endif()
 
 
 
-# Header-only library target
 add_library(simple_enum INTERFACE)
 if(PROJECT_IS_TOP_LEVEL)
   add_library(simple_enum::simple_enum ALIAS simple_enum )
@@ -102,14 +103,16 @@ target_include_directories(simple_enum
     INTERFACE   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                 $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>
   )
-  
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
 install(TARGETS simple_enum
     EXPORT simple_enum_targets
-    INCLUDES DESTINATION include
+    INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/
-        DESTINATION include
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
 if(SIMPLE_ENUM_EXPORT_CMAKE_TARGETS)
@@ -120,20 +123,19 @@ if(SIMPLE_ENUM_EXPORT_CMAKE_TARGETS)
   )
 endif()
 
-if( NOT MSVC)
-packageProject(
-    NAME simple_enum
-    VERSION ${SIMPLE_ENUM_VERSION}
-    NAMESPACE simple_enum
-    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
-    INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include
-    INCLUDE_DESTINATION include
-    VERSION_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/include/simple_enum/core.hpp"
-    COMPATIBILITY SameMinorVersion
-    DEPENDENCIES ""
-    DISABLE_VERSION_SUFFIX YES
-)
-endif()
+
+configure_package_config_file(
+  cmake/simple_enumConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/simple_enumConfig.cmake
+  INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/simple_enum)
+
+write_basic_package_version_file(
+  ${CMAKE_CURRENT_BINARY_DIR}/presetsConfigVersion.cmake
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMajorVersion)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/simple_enumConfig.cmake
+              ${CMAKE_CURRENT_BINARY_DIR}/simple_enumConfigVersion.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/simple_enum)
 
 if(PROJECT_IS_TOP_LEVEL AND SIMPLE_ENUM_ENABLE_TESTS)
   include(cmake/unit_test_integration.cmake)

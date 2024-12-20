@@ -1,0 +1,73 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "include": [
+    "preset-options.json"
+  ],
+"configurePresets": [
+    {
+      "name": "msvc-debug",
+      "inherits": [ "cfg-c++23", "cfg-debug", "cfg-build-dir" ]
+    },
+    {
+      "name": "clang-debug",
+      "inherits": [ "cfg-clang", "cfg-c++23", "cfg-debug" ]
+    },
+    {
+      "name": "clang-debug-c++26",
+      "inherits": [ "cfg-clang", "cfg-c++26", "cfg-debug" ]
+    },
+    {
+      "name": "clang-debug-libstdc++",
+      "inherits": [ "cfg-clang", "cfg-libc++", "cfg-c++23", "cfg-debug" ]
+    },
+    {
+      "name": "clang-debug-libstdc++-c++26",
+      "inherits": [ "cfg-clang", "cfg-libc++", "cfg-c++26", "cfg-debug" ]
+    },
+    {
+      "name": "gcc-debug",
+      "inherits": [ "cfg-gcc", "cfg-c++23", "cfg-debug" ]
+    },
+    {
+      "name": "gcc-debug-c++26",
+      "inherits": [ "cfg-gcc", "cfg-c++26", "cfg-debug" ]
+    },
+    {
+      "name": "clang-release-time-trace",
+      "inherits": [ "cfg-clang", "cfg-c++23", "cfg-release", "cfg-build-dir", "cfg-time-trace" ]
+    },
+    {
+      "name": "clang-release-test-asan",
+      "inherits": [ "cfg-clang", "cfg-libc++", "cfg-release", "cfg-asan", "cfg-build-dir" ]
+    },
+    {
+      "name": "ci-clang-libstdc++",
+      "inherits": [ "cfg-clang", "cfg-build-dir", "cfg-glaze", "cfg-c++23" ]
+    },
+    {
+      "name": "ci-clang-libc++",
+      "inherits": [ "cfg-clang", "cfg-libc++", "cfg-build-dir", "cfg-glaze", "cfg-c++23" ]
+    },
+    {
+      "name": "ci-gcc",
+      "inherits": [ "cfg-gcc", "cfg-build-dir", "cfg-glaze", "cfg-c++23" ]
+    },
+    {
+      "name": "ci-clang-libstdc++-c++26",
+      "inherits": [ "cfg-clang", "cfg-build-dir", "cfg-glaze", "cfg-c++26" ]
+    },
+    {
+      "name": "ci-clang-libc++-c++26",
+      "inherits": [ "cfg-clang", "cfg-libc++", "cfg-build-dir", "cfg-glaze", "cfg-c++26" ]
+    },
+    {
+      "name": "ci-gcc-c++26",
+      "inherits": [ "cfg-gcc", "cfg-build-dir", "cfg-glaze", "cfg-c++26" ]
+    }
+  ]
+}
