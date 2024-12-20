@@ -1,0 +1,37 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+  "include": [
+    "preset-configure.json"
+  ],
+  "buildPresets": [
+    {
+      "name": "ci-clang-libstdc++-c++26",
+      "configurePreset": "ci-clang-libstdc++-c++26"
+    },
+    {
+      "name": "ci-clang-libc++-c++26",
+      "configurePreset": "ci-clang-libc++-c++26"
+    },
+    {
+      "name": "ci-gcc-c++26",
+      "configurePreset": "ci-gcc-c++26"
+    },
+    {
+      "name": "ci-clang-libstdc++",
+      "configurePreset": "ci-clang-libstdc++"
+    },
+    {
+      "name": "ci-clang-libc++",
+      "configurePreset": "ci-clang-libc++"
+    },
+    {
+      "name": "ci-gcc",
+      "configurePreset": "ci-gcc"
+    }
+  ]
+}

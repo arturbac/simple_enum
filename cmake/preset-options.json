@@ -1,0 +1,87 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 21,
+    "patch": 0
+  },
+"configurePresets": [
+    {
+      "name": "cfg-c++23",
+      "hidden": true,
+      "cacheVariables": { "CMAKE_CXX_STANDARD": "23" }
+    },
+    {
+      "name": "cfg-c++26",
+      "hidden": true,
+      "cacheVariables": { "CMAKE_CXX_STANDARD": "26" }
+    },
+    {
+      "name": "cfg-clang",
+      "generator": "Ninja",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "clang++",
+        "SIMPLE_ENUM_OPT_IN_STATIC_ASSERTS" : "ON"
+      }
+    },
+    {
+      "name": "cfg-gcc",
+      "generator": "Ninja",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "g++"
+      }
+    },
+    {
+    "name": "cfg-libc++",
+    "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS" : "-stdlib=libc++"
+      }
+    },
+    {
+    "name": "cfg-release",
+    "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release"
+      }
+    },
+    {
+    "name": "cfg-debug",
+    "hidden": true,
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      }
+    },
+    {
+    "name": "cfg-time-trace",
+    "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS": "-ftime-trace -fno-omit-frame-pointer",
+        "SIMPLE_ENUM_ENABLE_TIME_TRACE": "ON"
+      }
+    },
+    {
+    "name": "cfg-asan",
+    "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_FLAGS": "-ggdb -fvisibility=default -fno-omit-frame-pointer -fsanitize=address -fsanitize-address-use-after-scope -fsanitize=undefined",
+        "CMAKE_EXE_LINKER_FLAGS": "-fsanitize=address -fsanitize=undefined"
+      }
+    },
+    {
+    "name": "cfg-glaze",
+    "hidden": true,
+      "cacheVariables": {
+        "SIMPLE_ENUM_USE_GLAZE_3_1" : "OFF",
+        "SIMPLE_ENUM_USE_GLAZE_4_0" : "ON"
+      }
+    },
+    {
+    "name": "cfg-build-dir",
+    "hidden": true,
+    "binaryDir": "${sourceDir}/build/${presetName}"
+    }
+  ]
+}
