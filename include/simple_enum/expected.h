@@ -8,7 +8,7 @@
 #define SMALL_VECTORS_EXPECTED
 #include <version>
 
-#if defined(__cpp_lib_expected) && __cpp_lib_expected >= 202211L
+#if !defined(SMALL_VECTORS_ENABLE_CUSTOM_EXCPECTED) && defined(__cpp_lib_expected) && __cpp_lib_expected >= 202211L
 #include <expected>
 
 namespace cxx23
@@ -110,7 +110,7 @@ namespace detail
   }
 
 template<typename E>
-class unexpected
+class [[clang::trivial_abi]] unexpected
   {
 public:
   static_assert(concepts::unexpected_constraint<E>, "not a valid type for unexpected error type");
@@ -304,8 +304,11 @@ namespace concepts
   };
   }  // namespace concepts
 
+// https://clang.llvm.org/docs/AttributeReference.html#trivial-abi
+// Attribute trivial_abi has no effect when the class has a non-static data member whose type is non-trivial for the
+// purposes of calls
 template<typename T, typename E>
-class expected
+class [[nodiscard, clang::trivial_abi]] expected
   {
 public:
   static_assert(concepts::unexpected_constraint<E>, "not a valid type for expected error type");
@@ -388,9 +391,11 @@ public:
       requires std::is_constructible_v<E, G const &>;
       requires concepts::expected_conv_constr<T, E, U, G>;
     }
-  constexpr explicit(!std::is_convertible_v<std::add_lvalue_reference_t<U const>, T> || !std::is_convertible_v<G const &, E>) expected(
-    expected<U, G> const & rh
-  ) noexcept(std::is_nothrow_constructible_v<value_type, decltype(std::forward<std::add_lvalue_reference_t<U const>>(rh.value()))> && std::is_nothrow_constructible_v<error_type, decltype(std::forward<G const &>(rh.error()))>) :
+  constexpr explicit(!std::is_convertible_v<std::add_lvalue_reference_t<U const>, T> || !std::is_convertible_v<G const &, E>) expected(expected<U, G> const & rh) noexcept(
+    std::
+      is_nothrow_constructible_v<value_type, decltype(std::forward<std::add_lvalue_reference_t<U const>>(rh.value()))>
+    && std::is_nothrow_constructible_v<error_type, decltype(std::forward<G const &>(rh.error()))>
+  ) :
       has_value_{rh.has_value()}
     {
     if(has_value_) [[likely]]
@@ -405,8 +410,10 @@ public:
       requires std::is_constructible_v<E, G>;
       requires concepts::expected_conv_constr<T, E, U, G>;
     }
-  constexpr explicit(!std::is_convertible_v<U, T> || !std::is_convertible_v<G, E>) expected(expected<U, G> && rh
-  ) noexcept(std::is_nothrow_constructible_v<value_type, decltype(std::forward<U>(rh.value()))> && std::is_nothrow_constructible_v<error_type, decltype(std::forward<G>(rh.error()))>) :
+  constexpr explicit(!std::is_convertible_v<U, T> || !std::is_convertible_v<G, E>) expected(expected<U, G> && rh) noexcept(
+    std::is_nothrow_constructible_v<value_type, decltype(std::forward<U>(rh.value()))>
+    && std::is_nothrow_constructible_v<error_type, decltype(std::forward<G>(rh.error()))>
+  ) :
       has_value_{rh.has_value()}
     {
     if(has_value_) [[likely]]
@@ -423,8 +430,8 @@ public:
       requires !concepts::is_unexpected<std::remove_cvref_t<U>>;
       requires !std::same_as<bool, T> || !concepts::is_expected<std::remove_cvref_t<U>>;
     }
-  constexpr explicit(!std::is_convertible_v<U, T>)
-    expected(U && v) noexcept(std::is_nothrow_constructible_v<value_type, decltype(std::forward<U>(v))>) :
+  constexpr explicit(!std::is_convertible_v<U, T>
+  ) expected(U && v) noexcept(std::is_nothrow_constructible_v<value_type, decltype(std::forward<U>(v))>) :
       has_value_{true}
     {
     std::construct_at(std::addressof(value_), std::forward<U>(v));
@@ -617,7 +624,8 @@ public:
 
   template<typename U>
   [[nodiscard]]
-  constexpr value_type value_or(U && default_value
+  constexpr value_type value_or(
+    U && default_value
   ) const & noexcept(std::is_nothrow_copy_constructible_v<value_type> && std::is_nothrow_convertible_v<U, value_type>)
     requires value_copy_constructible && std::is_convertible_v<U, value_type>
     {
@@ -626,7 +634,8 @@ public:
 
   template<typename U>
   [[nodiscard]]
-  constexpr value_type value_or(U && default_value
+  constexpr value_type value_or(
+    U && default_value
   ) && noexcept(std::is_nothrow_move_constructible_v<value_type> && std::is_nothrow_convertible_v<U, value_type>)
     requires value_move_constructible && std::is_convertible_v<U, value_type>
     {
@@ -883,7 +892,8 @@ public:
       requires std::is_constructible_v<E, G const &>;
       requires concepts::expected_conv_constr<void, E, U, G>;
     }
-  constexpr explicit(!std::is_convertible_v<G const &, E>) expected(expected<U, G> const & rh
+  constexpr explicit(!std::is_convertible_v<G const &, E>) expected(
+    expected<U, G> const & rh
   ) noexcept(std::is_nothrow_constructible_v<error_type, decltype(std::forward<G const &>(rh.error()))>) :
       has_value_{rh.has_value()}
     {
@@ -897,7 +907,8 @@ public:
       requires std::is_constructible_v<E, G>;
       requires concepts::expected_conv_constr<void, E, U, G>;
     }
-  constexpr explicit(!std::is_convertible_v<G, E>) expected(expected<U, G> && rh
+  constexpr explicit(!std::is_convertible_v<G, E>) expected(
+    expected<U, G> && rh
   ) noexcept(std::is_nothrow_constructible_v<error_type, decltype(std::forward<G>(rh.error()))>) :
       has_value_{rh.has_value()}
     {
@@ -1286,8 +1297,9 @@ namespace detail
   struct swap_expected_t
     {
     template<typename T, typename E>
-    static_call_operator constexpr void operator()(expected<T, E> & l, expected<T, E> & r) static_call_operator_const
-      noexcept(detail::swap_no_throw<T, E>)
+    static_call_operator constexpr void
+      operator()(expected<T, E> & l, expected<T, E> & r) static_call_operator_const noexcept(detail::swap_no_throw<T, E>
+      )
       requires concepts::swap_constraints<T, E>
       {
       if(l.has_value() && r.has_value())
