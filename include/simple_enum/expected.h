@@ -1,11 +1,17 @@
-// SPDX-FileCopyrightText: 2024 Artur Bać
+// SPDX-FileCopyrightText: 2024-2025 Artur Bać
 // SPDX-License-Identifier: BSL-1.0
 // SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
 
 #pragma once
 
+#if defined(SMALL_VECTORS_EXPECTED) && (!defined(SMALL_VECTORS_EXPECTED_API) || SMALL_VECTORS_EXPECTED_API != 2)
+#error "mixing different expected implementations in single TU"
+#endif
+
 #ifndef SMALL_VECTORS_EXPECTED
 #define SMALL_VECTORS_EXPECTED
+#define SMALL_VECTORS_EXPECTED_API 2
+
 #include <version>
 
 #if !defined(SMALL_VECTORS_ENABLE_CUSTOM_EXCPECTED) && defined(__cpp_lib_expected) && __cpp_lib_expected >= 202211L
@@ -21,6 +27,7 @@ using std::unexpect;
 using std::unexpect_t;
 using std::unexpected;
   }  // namespace cxx23
+
 #else
 
 #include <utility>
@@ -29,8 +36,6 @@ using std::unexpected;
 #include <memory>
 #include <cassert>
 #include <functional>
-
-#include <simple_enum/detail/static_call_operator_prolog.h>
 
 namespace cxx23
   {
@@ -107,7 +112,42 @@ namespace detail
   inline constexpr bool swap_no_throw
     = (std::is_nothrow_move_constructible_v<T> || std::is_void_v<T>) && std::is_nothrow_move_constructible_v<E>
       && (std::is_nothrow_swappable_v<T> || std::is_void_v<T>) && std::is_nothrow_swappable_v<E>;
-  }
+
+  template<bool use_noexcept, typename T>
+  struct revert_if_except_t
+    {
+    struct empty_t
+      {
+      };
+
+    T value;
+    std::conditional_t<use_noexcept, empty_t, T *> release_address;
+
+    constexpr explicit revert_if_except_t(T && v, T * release_addr) : value{std::move(v)}
+      {
+      if constexpr(!use_noexcept)
+        release_address = release_addr;
+      }
+
+    constexpr ~revert_if_except_t()
+      requires use_noexcept
+    = default;
+
+    constexpr T && release() noexcept
+      {
+      if constexpr(!use_noexcept)
+        release_address = nullptr;
+      return std::move(value);
+      }
+
+    constexpr ~revert_if_except_t()
+      {
+      if constexpr(!use_noexcept)
+        if(release_address != nullptr)
+          std::construct_at(release_address, std::move(value));
+      }
+    };
+  }  // namespace detail
 
 template<typename E>
 class [[clang::trivial_abi]] unexpected
@@ -147,13 +187,13 @@ public:
     {
     }
 
-  constexpr error_type const & error() const & noexcept { return error_; }
+  constexpr auto error() const & noexcept -> error_type const & { return error_; }
 
-  constexpr error_type & error() & noexcept { return error_; }
+  constexpr auto error() & noexcept -> error_type & { return error_; }
 
-  constexpr error_type const && error() const && noexcept { return std::move(error_); }
+  constexpr auto error() const && noexcept -> error_type const && { return std::move(error_); }
 
-  constexpr error_type && error() && noexcept { return std::move(error_); }
+  constexpr auto error() && noexcept -> error_type && { return std::move(error_); }
 
   constexpr void swap(unexpected & other) noexcept(std::is_nothrow_swappable_v<error_type>)
     requires std::swappable<error_type>
@@ -180,10 +220,7 @@ unexpected(E) -> unexpected<E>;
 
 template<typename E>
 class bad_expected_access;
-#if defined(__clang__)
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wweak-vtables"
-#endif
+
 template<>
 class bad_expected_access<void> : public std::exception
   {
@@ -207,9 +244,6 @@ public:
     }
 #endif
   };
-#if defined(__clang__)
-#pragma clang diagnostic pop
-#endif
 
 template<typename E>
 class bad_expected_access : public bad_expected_access<void>
@@ -222,25 +256,25 @@ public:
   explicit bad_expected_access(E e) : error_{std::move(e)} {}
 
   [[nodiscard]]
-  error_type const & error() const & noexcept
+  auto error() const & noexcept -> error_type const &
     {
     return error_;
     }
 
   [[nodiscard]]
-  error_type & error() & noexcept
+  auto error() & noexcept -> error_type &
     {
     return error_;
     }
 
   [[nodiscard]]
-  error_type const && error() const && noexcept
+  auto error() const && noexcept -> error_type const &&
     {
     return std::move(error_);
     }
 
   [[nodiscard]]
-  error_type && error() && noexcept
+  auto error() && noexcept -> error_type &&
     {
     return std::move(error_);
     }
@@ -323,11 +357,30 @@ public:
 private:
   using bad_access_exception = bad_expected_access<std::decay_t<error_type>>;
 
+  static constexpr bool value_copy_constructible = std::is_copy_constructible_v<value_type>;
+  static constexpr bool value_move_constructible = std::is_move_constructible_v<value_type>;
+  static constexpr bool value_copy_assignable = std::is_copy_assignable_v<value_type>;
+  static constexpr bool value_move_assignable = std::is_move_assignable_v<value_type>;
+
+  static constexpr bool value_nothrow_copy_constructible = std::is_nothrow_copy_constructible_v<value_type>;
+  static constexpr bool value_nothrow_copy_assignable = std::is_nothrow_copy_assignable_v<value_type>;
   static constexpr bool value_nothrow_move_constructible = std::is_nothrow_move_constructible_v<value_type>;
+  static constexpr bool value_nothrow_move_assignable = std::is_nothrow_move_assignable_v<value_type>;
+
+  static constexpr bool error_copy_constructible = std::is_copy_constructible_v<error_type>;
+  static constexpr bool error_copy_assignable = std::is_copy_assignable_v<error_type>;
+  static constexpr bool error_move_constructible = std::is_move_constructible_v<error_type>;
+  static constexpr bool error_move_assignable = std::is_move_assignable_v<error_type>;
+
+  static constexpr bool error_nothrow_copy_assignable = std::is_nothrow_copy_assignable_v<error_type>;
+  static constexpr bool error_nothrow_copy_constructible = std::is_nothrow_copy_constructible_v<error_type>;
+
+  static constexpr bool error_nothrow_move_constructible = std::is_nothrow_move_constructible_v<error_type>;
+  static constexpr bool error_nothrow_move_assignable = std::is_nothrow_move_assignable_v<error_type>;
+
   static constexpr bool value_trivially_copy_constructible = std::is_trivially_copy_constructible_v<value_type>;
 
   static constexpr bool error_trivially_copy_constructible = std::is_trivially_copy_constructible_v<error_type>;
-  static constexpr bool error_nothrow_move_constructible = std::is_nothrow_move_constructible_v<error_type>;
 
   static constexpr bool both_are_nothrow_move_constructible
     = value_nothrow_move_constructible && error_nothrow_move_constructible;
@@ -337,10 +390,6 @@ private:
 
   static constexpr bool both_are_trivially_move_constructible
     = std::is_trivially_move_constructible_v<value_type> && std::is_trivially_move_constructible_v<error_type>;
-  static constexpr bool value_copy_constructible = std::is_copy_constructible_v<value_type>;
-  static constexpr bool value_move_constructible = std::is_move_constructible_v<value_type>;
-  static constexpr bool error_copy_constructible = std::is_copy_constructible_v<error_type>;
-  static constexpr bool error_move_constructible = std::is_move_constructible_v<error_type>;
 
     union {
     T value_;
@@ -500,43 +549,172 @@ public:
       }
     }
 
+private:
+  template<typename ET, typename EU, typename A>
+  static constexpr void
+    reinit_expected(ET * new_value, EU * old_value, A && arg) noexcept(std::is_nothrow_constructible_v<ET, A>)
+    {
+    if constexpr(std::is_nothrow_constructible_v<ET, A>)
+      {
+      std::destroy_at(old_value);
+      std::construct_at(new_value, std::forward<A>(arg));
+      }
+    else if constexpr(std::is_nothrow_move_constructible_v<ET>)
+      {
+      ET tmp(std::forward<A>(arg));
+      std::destroy_at(old_value);
+      std::construct_at(new_value, std::move(tmp));
+      }
+    else
+      {
+      static_assert(std::is_nothrow_move_constructible_v<EU>);
+      detail::revert_if_except_t<false, EU> obj(std::move(*old_value), old_value);
+      std::construct_at(new_value, std::forward<A>(arg));
+      obj.release();
+      }
+    }
+
+  template<typename other_value_type>
+  inline constexpr void
+    assign_value(other_value_type && v) noexcept(std::is_nothrow_constructible_v<value_type, other_value_type>)
+    {
+    if(has_value_)
+      value_ = std::forward<other_value_type>(v);
+    else
+      {
+      reinit_expected(std::addressof(value_), std::addressof(error_), std::forward<other_value_type>(v));
+      has_value_ = true;
+      }
+    }
+
+  template<typename other_error_type>
+  inline constexpr void
+    assign_unexpected(other_error_type && v) noexcept(std::is_nothrow_constructible_v<error_type, other_error_type>)
+    {
+    if(has_value_)
+      {
+      reinit_expected(std::addressof(error_), std::addressof(value_), std::forward<other_error_type>(v));
+      has_value_ = false;
+      }
+    else
+      error_ = std::forward<other_error_type>(v);
+    }
+
+public:
+  constexpr auto operator=(expected const &) -> expected & = delete;
+
+  constexpr expected & operator=(expected const & rh) noexcept(
+    value_nothrow_copy_assignable and value_nothrow_copy_constructible and error_nothrow_copy_assignable
+    and error_nothrow_copy_constructible
+  )
+    requires(
+      value_copy_assignable and value_copy_constructible and error_copy_assignable and error_copy_constructible
+      and (value_nothrow_move_constructible or error_nothrow_move_constructible)
+    )
+    {
+    if(has_value_ and rh.has_value())
+      value_ = rh.value_;
+    else if(has_value_)
+      assign_unexpected(rh.error_);
+    else if(rh.has_value())
+      assign_value(rh.value_);
+    else
+      error_ = rh.error_;
+    return *this;
+    }
+
+  constexpr expected & operator=(expected && rh) noexcept(
+    value_nothrow_move_assignable and value_nothrow_move_constructible and error_nothrow_move_assignable
+    and error_nothrow_move_constructible
+  )
+    requires(
+      value_move_constructible and value_move_assignable and error_move_constructible and error_move_assignable
+      and (value_nothrow_move_constructible or error_nothrow_move_constructible)
+    )
+    {
+    if(has_value_ && rh.has_value())
+      value_ = std::move(rh.value_);
+    else if(has_value_)
+      assign_unexpected(std::move(rh.error_));
+    else if(rh.has_value())
+      assign_value(std::move(rh.value_));
+    else
+      error_ = std::move(rh.error_);
+    return *this;
+    }
+
+  template<typename Up = value_type>
+  constexpr auto operator=(Up && v) -> expected &
+    requires(
+      not std::is_same_v<expected, std::remove_cvref_t<Up>> && not concepts::is_unexpected<std::remove_cvref_t<Up>>
+      and std::is_constructible_v<value_type, Up> && std::is_assignable_v<value_type &, Up>
+      and (std::is_nothrow_constructible_v<value_type, Up> or value_nothrow_move_constructible or error_nothrow_move_constructible)
+    )
+    {
+    if(has_value_)
+      value_ = std::forward<Up>(v);
+    else
+      assign_value(std::forward<Up>(v));
+    return *this;
+    }
+
+  template<typename other_error>
+    requires std::is_constructible_v<error_type, other_error const &>
+             and std::is_assignable_v<error_type &, other_error const &>
+             && (std::is_nothrow_constructible_v<error_type, other_error const &> || value_nothrow_move_constructible || error_nothrow_move_constructible)
+  constexpr auto operator=(unexpected<other_error> const & e) -> expected &
+    {
+    assign_unexpected(e.error());
+    return *this;
+    }
+
+  template<typename other_error>
+    requires std::is_constructible_v<error_type, other_error> && std::is_assignable_v<error_type &, other_error>
+             && (std::is_nothrow_constructible_v<error_type, other_error> || value_nothrow_move_constructible || error_nothrow_move_constructible)
+  constexpr auto operator=(unexpected<other_error> && e) -> expected &
+    {
+    assign_unexpected(std::move(e).error());
+    return *this;
+    }
+
+public:
   [[nodiscard]]
-  constexpr value_type const * operator->() const noexcept
+  constexpr auto operator->() const noexcept -> value_type const *
     {
     assert(has_value_);
     return std::addressof(value_);
     }
 
   [[nodiscard]]
-  constexpr value_type * operator->() noexcept
+  constexpr auto operator->() noexcept -> value_type *
     {
     assert(has_value_);
     return std::addressof(value_);
     }
 
   [[nodiscard]]
-  constexpr value_type const & operator*() const & noexcept
+  constexpr auto operator*() const & noexcept -> value_type const &
     {
     assert(has_value_);
     return value_;
     }
 
   [[nodiscard]]
-  constexpr value_type & operator*() & noexcept
+  constexpr auto operator*() & noexcept -> value_type &
     {
     assert(has_value_);
     return value_;
     }
 
   [[nodiscard]]
-  constexpr value_type const && operator*() const && noexcept
+  constexpr auto operator*() const && noexcept -> value_type const &&
     {
     assert(has_value_);
     return std::move(value_);
     }
 
   [[nodiscard]]
-  constexpr value_type && operator*() && noexcept
+  constexpr auto operator*() && noexcept -> value_type &&
     {
     assert(has_value_);
     return std::move(value_);
@@ -555,7 +733,7 @@ public:
     }
 
   [[nodiscard]]
-  constexpr value_type & value() &
+  constexpr auto value() & -> value_type &
     requires error_copy_constructible
     {
     if(has_value_) [[likely]]
@@ -565,7 +743,7 @@ public:
     }
 
   [[nodiscard]]
-  constexpr value_type const & value() const &
+  constexpr auto value() const & -> value_type const &
     requires error_copy_constructible
     {
     if(has_value_) [[likely]]
@@ -575,7 +753,14 @@ public:
     }
 
   [[nodiscard]]
-  constexpr value_type && value() &&
+  constexpr auto value() && -> value_type && requires(error_copy_constructible || error_move_constructible) {
+    if(has_value_) [[likely]]
+      return std::move(value_);
+    else
+      throw bad_access_exception{std::move(error_)};
+  }
+
+  [[nodiscard]] constexpr auto value() const && -> value_type const &&
     requires(error_copy_constructible || error_move_constructible)
     {
     if(has_value_) [[likely]]
@@ -585,38 +770,28 @@ public:
     }
 
   [[nodiscard]]
-  constexpr value_type const && value() const &&
-    requires(error_copy_constructible || error_move_constructible)
-    {
-    if(has_value_) [[likely]]
-      return std::move(value_);
-    else
-      throw bad_access_exception{std::move(error_)};
-    }
-
-  [[nodiscard]]
-  constexpr error_type const & error() const & noexcept
+  constexpr auto error() const & noexcept -> error_type const &
     {
     assert(!has_value_);
     return error_;
     }
 
   [[nodiscard]]
-  constexpr error_type & error() & noexcept
+  constexpr auto error() & noexcept -> error_type &
     {
     assert(!has_value_);
     return error_;
     }
 
   [[nodiscard]]
-  constexpr error_type const && error() const && noexcept
+  constexpr auto error() const && noexcept -> error_type const &&
     {
     assert(!has_value_);
     return std::move(error_);
     }
 
   [[nodiscard]]
-  constexpr error_type && error() && noexcept
+  constexpr auto error() && noexcept -> error_type &&
     {
     assert(!has_value_);
     return std::move(error_);
@@ -624,9 +799,9 @@ public:
 
   template<typename U>
   [[nodiscard]]
-  constexpr value_type value_or(
-    U && default_value
-  ) const & noexcept(std::is_nothrow_copy_constructible_v<value_type> && std::is_nothrow_convertible_v<U, value_type>)
+  constexpr auto value_or(U && default_value) const & noexcept(
+    std::is_nothrow_copy_constructible_v<value_type> && std::is_nothrow_convertible_v<U, value_type>
+  ) -> value_type
     requires value_copy_constructible && std::is_convertible_v<U, value_type>
     {
     return has_value_ ? value_ : static_cast<value_type>(std::forward<U>(default_value));
@@ -634,9 +809,9 @@ public:
 
   template<typename U>
   [[nodiscard]]
-  constexpr value_type value_or(
-    U && default_value
-  ) && noexcept(std::is_nothrow_move_constructible_v<value_type> && std::is_nothrow_convertible_v<U, value_type>)
+  constexpr auto value_or(U && default_value) && noexcept(
+    std::is_nothrow_move_constructible_v<value_type> && std::is_nothrow_convertible_v<U, value_type>
+  ) -> value_type
     requires value_move_constructible && std::is_convertible_v<U, value_type>
     {
     return has_value_ ? std::move(value_) : static_cast<value_type>(std::forward<U>(default_value));
@@ -835,7 +1010,7 @@ public:
 
 template<typename T, typename E>
   requires std::same_as<void, T>
-class expected<T, E>
+class [[nodiscard, clang::trivial_abi]] expected<T, E>
   {
 public:
   using value_type = void;
@@ -847,11 +1022,17 @@ public:
 
 private:
   using bad_access_exception = bad_expected_access<std::decay_t<error_type>>;
+  static constexpr bool error_nothrow_copy_constructible = std::is_nothrow_copy_constructible_v<error_type>;
   static constexpr bool error_trivially_copy_constructible = std::is_trivially_copy_constructible_v<error_type>;
   static constexpr bool error_nothrow_move_constructible = std::is_nothrow_move_constructible_v<error_type>;
+  static constexpr bool error_nothrow_move_assignable = std::is_nothrow_move_assignable_v<error_type>;
   static constexpr bool error_trivially_move_constructible = std::is_trivially_move_constructible_v<error_type>;
   static constexpr bool error_copy_constructible = std::is_copy_constructible_v<error_type>;
   static constexpr bool error_move_constructible = std::is_move_constructible_v<error_type>;
+
+  static constexpr bool error_nothrow_copy_assignable = std::is_nothrow_copy_assignable_v<error_type>;
+  static constexpr bool error_copy_assignable = std::is_copy_assignable_v<error_type>;
+  static constexpr bool error_move_assignable = std::is_move_assignable_v<error_type>;
 
     union {
     E error_;
@@ -938,7 +1119,8 @@ public:
 
   template<typename G>
     requires std::is_constructible_v<E, G const &>
-  constexpr explicit(!std::is_convertible_v<G const &, error_type>) expected(unexpected<G> const & e) : has_value_{}
+  inline constexpr explicit(!std::is_convertible_v<G const &, error_type>) expected(unexpected<G> const & e) :
+      has_value_{}
     {
     std::construct_at(std::addressof(error_), e.error());
     }
@@ -948,6 +1130,60 @@ public:
   constexpr explicit(!std::is_convertible_v<G, E>) expected(unexpected<G> && e) : has_value_{}
     {
     std::construct_at(std::addressof(error_), std::forward<G>(e.error()));
+    }
+
+private:
+  template<typename other_error_type>
+  inline constexpr void assign_unexpected(other_error_type && v)
+    {
+    if(has_value_)
+      {
+      std::construct_at(std::addressof(error_), std::forward<other_error_type>(v));
+      has_value_ = false;
+      }
+    else
+      error_ = std::forward<other_error_type>(v);
+    }
+
+public:
+  auto operator=(expected const &) -> expected & = delete;
+
+  constexpr auto operator=(expected const & rh
+  ) noexcept(error_nothrow_copy_constructible and error_nothrow_copy_assignable) -> expected &
+    requires error_copy_constructible and error_copy_assignable
+    {
+    if(rh.has_value_)
+      emplace();
+    else
+      assign_unexpected(rh.error_);
+    return *this;
+    }
+
+  constexpr auto operator=(expected && rh) noexcept(error_nothrow_move_constructible and error_nothrow_move_assignable)
+    -> expected &
+    requires error_move_constructible && error_move_assignable
+    {
+    if(rh.has_value_)
+      emplace();
+    else
+      assign_unexpected(std::move(rh.error_));
+    return *this;
+    }
+
+  template<typename G>
+    requires std::is_constructible_v<error_type, G const &> && std::is_assignable_v<error_type &, G const &>
+  constexpr auto operator=(unexpected<G> const & ux) -> expected &
+    {
+    assign_unexpected(ux.error());
+    return *this;
+    }
+
+  template<typename G>
+    requires std::is_constructible_v<error_type, G> && std::is_assignable_v<error_type &, G>
+  constexpr auto operator=(unexpected<G> && ux) -> expected &
+    {
+    assign_unexpected(std::move(ux).error());
+    return *this;
     }
 
   constexpr ~expected()
@@ -990,28 +1226,28 @@ public:
     }
 
   [[nodiscard]]
-  constexpr error_type const & error() const & noexcept
+  constexpr auto error() const & noexcept -> error_type const &
     {
     assert(!has_value_);
     return error_;
     }
 
   [[nodiscard]]
-  constexpr error_type & error() & noexcept
+  constexpr auto error() & noexcept -> error_type &
     {
     assert(!has_value_);
     return error_;
     }
 
   [[nodiscard]]
-  constexpr error_type const && error() const && noexcept
+  constexpr auto error() const && noexcept -> error_type const &&
     {
     assert(!has_value_);
     return std::move(error_);
     }
 
   [[nodiscard]]
-  constexpr error_type && error() && noexcept
+  constexpr auto error() && noexcept -> error_type &&
     {
     assert(!has_value_);
     return std::move(error_);
@@ -1259,47 +1495,10 @@ namespace detail
       }
     }
 
-  template<bool use_noexcept, typename T>
-  struct revert_if_except_t
-    {
-    struct empty_t
-      {
-      };
-
-    T value;
-    std::conditional_t<use_noexcept, empty_t, T *> release_address;
-
-    constexpr explicit revert_if_except_t(T && v, T * release_addr) : value{std::move(v)}
-      {
-      if constexpr(!use_noexcept)
-        release_address = release_addr;
-      }
-
-    constexpr ~revert_if_except_t()
-      requires use_noexcept
-    = default;
-
-    constexpr T && release() noexcept
-      {
-      if constexpr(!use_noexcept)
-        release_address = nullptr;
-      return std::move(value);
-      }
-
-    constexpr ~revert_if_except_t()
-      {
-      if constexpr(!use_noexcept)
-        if(release_address != nullptr)
-          std::construct_at(release_address, std::move(value));
-      }
-    };
-
   struct swap_expected_t
     {
     template<typename T, typename E>
-    static_call_operator constexpr void
-      operator()(expected<T, E> & l, expected<T, E> & r) static_call_operator_const noexcept(detail::swap_no_throw<T, E>
-      )
+    static constexpr void operator()(expected<T, E> & l, expected<T, E> & r) noexcept(detail::swap_no_throw<T, E>)
       requires concepts::swap_constraints<T, E>
       {
       if(l.has_value() && r.has_value())
@@ -1360,7 +1559,5 @@ namespace detail
   }  // namespace detail
 
   }  // namespace cxx23
-
-#include <simple_enum/detail/static_call_operator_epilog.h>
 #endif
 #endif

@@ -1,4 +1,3 @@
-# cmake/your_library_nameConfig.cmake.in
 @PACKAGE_INIT@
 
 include(CMakeFindDependencyMacro)

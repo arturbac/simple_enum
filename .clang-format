@@ -136,3 +136,7 @@ WhitespaceSensitiveMacros:
   - PRAGMA_CLANG_WARNING_PUSH_OFF
   - PRAGMA_GCC_WARNING_PUSH_OFF
   - PRAGMA_GCC_WARNING_OFF
+  - throw_if_fail
+  - throw_on_fail
+  - BOOST_TEST
+  - BOOST_AUTO_TEST_CASE_TEMPLATE
