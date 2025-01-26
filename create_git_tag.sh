@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: BSL-1.0
 # SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
 # Path to the header file
-file_path="include/simple_enum/simple_enum.hpp"
+file_path="include/simple_enum/core.hpp"
 
 # Check if the file exists
 if [ -f "$file_path" ]; then
