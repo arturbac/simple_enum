@@ -62,6 +62,11 @@ static constexpr auto enum_values_array = []()
   return values;
 }();
 
+#ifdef glaze_v4_2_3_tuple
+namespace glz_tuple_ns = glz;
+#else
+namespace glz_tuple_ns = glz::tuplet;
+#endif
 namespace detail
   {
 
@@ -69,16 +74,18 @@ namespace detail
   constexpr auto convert_to_glz_enum(std::tuple<Args...> const & stdTuple)
     {
     return glz::detail::Enum{
-      std::apply([](auto &&... args) { return glz::tuplet::tuple<std::decay_t<Args>...>{args...}; }, stdTuple)
+      std::apply([](auto &&... args) { return glz_tuple_ns::tuple<std::decay_t<Args>...>{args...}; }, stdTuple)
     };
     }
 
   template<typename enumeration_type, std::size_t... ix>
   constexpr auto glaze_tuple_pairs(std::index_sequence<ix...>)
     {
-    return std::tuple_cat(std::make_tuple(
-      detail::enum_name_at_index<enumeration_type>(ix), detail::enum_value_at_index<enumeration_type>(ix)
-    )...);
+    return std::tuple_cat(
+      std::make_tuple(
+        detail::enum_name_at_index<enumeration_type>(ix), detail::enum_value_at_index<enumeration_type>(ix)
+      )...
+    );
     }
 
   template<typename enumeration_type>
@@ -135,8 +142,8 @@ struct from_json<enumeration_type>
     if(bool(ctx.error)) [[unlikely]]
       return;
 
-    cxx23::expected<enumeration_type, simple_enum::enum_cast_error> res{simple_enum::enum_cast<enumeration_type>(value)
-    };
+    cxx23::expected<enumeration_type, simple_enum::enum_cast_error> res{simple_enum::enum_cast<enumeration_type>(value
+    )};
     if(!res.has_value()) [[unlikely]]
       {
       ctx.error = error_code::syntax_error;
