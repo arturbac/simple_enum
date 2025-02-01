@@ -42,15 +42,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 message(STATUS "simple_enum version v${SIMPLE_ENUM_VERSION}")
 
 include(cmake/get_cpm.cmake)
-
-option(
-  SIMPLE_ENUM_USE_GLAZE_3_1
-  "Use Glaze version 3.1"
-  OFF)
-option(
-  SIMPLE_ENUM_USE_GLAZE_4_0
-  "Use Glaze version 4.2"
-  ON)
 option(
   SIMPLE_ENUM_ENABLE_TESTS
   "Enable unit tests"
@@ -60,23 +51,8 @@ option(
   "Enable cmake targets"
   ON)
 
-if(SIMPLE_ENUM_USE_GLAZE_3_1)
-  set(GLAZE_GIT_TAG "v3.4.3")
-elseif(SIMPLE_ENUM_USE_GLAZE_4_0)
-  set(GLAZE_GIT_TAG "v4.2.2")
-else()
-  message(FATAL_ERROR "Please select a Glaze version by setting USE_GLAZE_3_1, or SIMPLE_ENUM_USE_GLAZE_4_0")
-endif()
-
 add_library(simple_enum INTERFACE)
 
-if(SIMPLE_ENUM_USE_GLAZE_3_1)
-  target_compile_definitions(simple_enum INTERFACE SIMPLE_ENUM_GLZ_3_1_x)
-elseif(SIMPLE_ENUM_USE_GLAZE_4_0)
-  target_compile_definitions(simple_enum INTERFACE SIMPLE_ENUM_GLZ_3_1_x)
-else()
-  message(FATAL_ERROR "Future, unimplemented")
-endif()
 target_compile_features(simple_enum INTERFACE cxx_std_23)
 
 if(SIMPLE_ENUM_OPT_IN_STATIC_ASSERTS)
@@ -89,7 +65,7 @@ target_sources(
             HEADERS
             BASE_DIRS
             $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-            $<INSTALL_INTERFACE:${INCLUDE_INSTALL_DIR}>)
+            $<INSTALL_INTERFACE:include>)
 
 install(
   TARGETS simple_enum
