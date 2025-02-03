@@ -1,8 +1,10 @@
 // SPDX-FileCopyrightText: 2024 Artur Bać
 // SPDX-License-Identifier: BSL-1.0
 // SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
+#ifndef SIMPLE_ENUM_CXX_MODULE
 #include <simple_enum/generic_error_category_impl.hpp>
 #include <simple_enum/basic_fixed_string.hpp>
+#endif
 #include "simple_enum_tests.hpp"
 
 using namespace boost::ut;
@@ -106,8 +108,9 @@ static_assert(to_camel_case(basic_fixed_string{"a "}) == basic_fixed_string{"A "
 static_assert(
   to_camel_case(basic_fixed_string{"hello world"}) != basic_fixed_string{"hello world"}, "Incorrect CamelCase equality"
 );
+#ifndef SIMPLE_ENUM_CXX_MODULE
 static_assert(!simple_enum::detail::error_category_name_specialized<test_error>);
-
+#endif
 enum class test_error_class_spec
   {
   success = 0,
@@ -126,9 +129,9 @@ struct std::is_error_code_enum<test_error_class_spec> : true_type
   {
   static constexpr std::string_view category_name = "My Custom Error Category Name";
   };
-
+#ifndef SIMPLE_ENUM_CXX_MODULE
 static_assert(simple_enum::detail::error_category_name_specialized<test_error_class_spec>);
-
+#endif
 namespace test_adl_decl_error_code
   {
 enum class test_adl_decl_error_code
@@ -148,7 +151,9 @@ consteval auto adl_decl_error_code(test_adl_decl_error_code) -> bool { return tr
 
 static_assert(simple_enum::concepts::declared_error_code<test_adl_decl_error_code>);
 static_assert(std::is_error_code_enum<test_adl_decl_error_code>::value);
+#ifndef SIMPLE_ENUM_CXX_MODULE
 static_assert(!simple_enum::detail::error_category_name_specialized<test_adl_decl_error_code>);
+#endif
   }  // namespace test_adl_decl_error_code
 
 namespace test_non_adl_decl_error_code
@@ -165,8 +170,9 @@ consteval auto adl_enum_bounds(test_non_adl_decl_error_code)
   using enum test_non_adl_decl_error_code;
   return simple_enum::adl_info{success, unknown};
   }
-
+#ifndef SIMPLE_ENUM_CXX_MODULE
 static_assert(!simple_enum::detail::error_category_name_specialized<test_non_adl_decl_error_code>);
+#endif
 static_assert(!std::is_error_code_enum<test_non_adl_decl_error_code>::value);
 
 namespace test_adl_enum_bounds_error_code
@@ -186,9 +192,11 @@ namespace test_adl_enum_bounds_error_code
     }
 
   static_assert(adl_enum_bounds(strong_typed_as_error{}).error_code_enum);
+#ifndef SIMPLE_ENUM_CXX_MODULE
   static_assert(simple_enum::detail::has_valid_adl_enum_bounds<strong_typed_as_error>);
 
   static_assert(simple_enum::detail::adl_info_error_declared_enum<strong_typed_as_error>);
+#endif
   static_assert(simple_enum::concepts::declared_error_code<strong_typed_as_error>);
   static_assert(std::is_error_code_enum<strong_typed_as_error>::value);
   }  // namespace test_adl_enum_bounds_error_code

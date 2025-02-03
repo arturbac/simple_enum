@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: 2024 Artur Bać
 // SPDX-License-Identifier: BSL-1.0
 // SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
+#ifndef SIMPLE_ENUM_CXX_MODULE
 #include <simple_enum/ranges_views.hpp>
+#endif
 #include "simple_enum_tests.hpp"
 #include <ranges>
 

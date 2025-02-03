@@ -17,6 +17,7 @@
       "name": "clang-debug",
       "inherits": [ "cfg-clang", "cfg-c++23", "cfg-debug" ]
     },
+
     {
       "name": "clang-debug-c++26",
       "inherits": [ "cfg-clang", "cfg-c++26", "cfg-debug" ]
@@ -45,29 +46,56 @@
       "name": "clang-release-test-asan",
       "inherits": [ "cfg-clang", "cfg-libc++", "cfg-release", "cfg-asan", "cfg-build-dir" ]
     },
+    
+    {
+      "name": "module-clang-debug",
+      "inherits": [ "clang-debug", "cfg-module" ]
+    },
+    {
+      "name": "module-clang-debug-libstdc++",
+      "inherits": [ "clang-debug-libstdc++", "cfg-module" ]
+    },
+    {
+      "name": "module-gcc-debug",
+      "inherits": [ "gcc-debug", "cfg-module" ]
+    },
+    
     {
       "name": "ci-clang-libstdc++",
-      "inherits": [ "cfg-clang", "cfg-build-dir", "cfg-glaze", "cfg-c++23" ]
+      "inherits": [ "cfg-clang", "cfg-build-dir",  "cfg-c++23" ]
     },
     {
       "name": "ci-clang-libc++",
-      "inherits": [ "cfg-clang", "cfg-libc++", "cfg-build-dir", "cfg-glaze", "cfg-c++23" ]
+      "inherits": [ "cfg-clang", "cfg-libc++", "cfg-build-dir",  "cfg-c++23" ]
     },
     {
       "name": "ci-gcc",
-      "inherits": [ "cfg-gcc", "cfg-build-dir", "cfg-glaze", "cfg-c++23" ]
+      "inherits": [ "cfg-gcc", "cfg-build-dir",  "cfg-c++23" ]
     },
     {
       "name": "ci-clang-libstdc++-c++26",
-      "inherits": [ "cfg-clang", "cfg-build-dir", "cfg-glaze", "cfg-c++26" ]
+      "inherits": [ "cfg-clang", "cfg-build-dir",  "cfg-c++26" ]
     },
     {
       "name": "ci-clang-libc++-c++26",
-      "inherits": [ "cfg-clang", "cfg-libc++", "cfg-build-dir", "cfg-glaze", "cfg-c++26" ]
+      "inherits": [ "cfg-clang", "cfg-libc++", "cfg-build-dir",  "cfg-c++26" ]
     },
     {
       "name": "ci-gcc-c++26",
-      "inherits": [ "cfg-gcc", "cfg-build-dir", "cfg-glaze", "cfg-c++26" ]
+      "inherits": [ "cfg-gcc", "cfg-build-dir",  "cfg-c++26" ]
+    },
+    
+    {
+      "name": "ci-module-clang-libstdc++",
+      "inherits": [ "ci-clang-libstdc++", "cfg-module" ]
+    },
+    {
+      "name": "ci-module-clang-libc++",
+      "inherits": [ "ci-clang-libc++", "cfg-module" ]
+    },
+    {
+      "name": "ci-module-gcc",
+      "inherits": [ "ci-gcc", "cfg-module" ]
     }
   ]
 }

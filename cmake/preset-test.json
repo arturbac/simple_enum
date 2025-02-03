@@ -50,6 +50,28 @@
       "output": {
         "outputOnFailure": true
       }
+    },
+    
+    {
+      "name": "ci-module-clang-libstdc++",
+      "configurePreset": "ci-module-clang-libstdc++",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "ci-module-clang-libc++",
+      "configurePreset": "ci-module-clang-libc++",
+      "output": {
+        "outputOnFailure": true
+      }
+    },
+    {
+      "name": "ci-module-gcc",
+      "configurePreset": "ci-module-gcc",
+      "output": {
+        "outputOnFailure": true
+      }
     }
   ]
 }

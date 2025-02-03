@@ -5,11 +5,7 @@
 
 #include <simple_enum/simple_enum.hpp>
 #include <type_traits>
-
-#if (defined(__cpp_lib_format) && !(defined(__clang__) && defined(__GLIBCXX__) && __GLIBCXX__ < 202103L)) \
-  || ((defined(_LIBCPP_VERSION) && _LIBCPP_VERSION >= 1800 || __GLIBCXX__ >= 202103L) && __cplusplus >= 202002L)
 #include <format>
-#define SIMPLE_ENUM_STD_FORMAT_ENABLED
 
 template<simple_enum::enum_concept enumeration>
 struct std::formatter<enumeration>
@@ -26,6 +22,4 @@ struct std::formatter<enumeration>
     return std::format_to(ctx.out(), "{}", simple_enum::enum_name(e));
     }
   };
-
-#endif  // __cpp_lib_format or C++20
 

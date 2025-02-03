@@ -1,7 +1,9 @@
 // SPDX-FileCopyrightText: 2024 Artur Bać
 // SPDX-License-Identifier: BSL-1.0
 // SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
+#ifndef SIMPLE_ENUM_CXX_MODULE
 #include <simple_enum/enum_cast.hpp>
+#endif
 #include "simple_enum_tests.hpp"
 #include <utility>
 
@@ -9,6 +11,7 @@ namespace simple_enum
   {
 static void enum_cast_test()
   {
+#ifndef SIMPLE_ENUM_CXX_MODULE
   "bl_lower_bound"_test = []
   {
     using simple_enum::detail::bound_leaning_lower_bound;
@@ -43,6 +46,7 @@ static void enum_cast_test()
       expect(it == std::lower_bound(data.begin(), data.end(), 70, std::less<int>{}));
       }
   };
+#endif
   "enum_cast success"_test = []
   {
     using enum lorem_ipsum_long;

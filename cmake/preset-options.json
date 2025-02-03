@@ -7,6 +7,11 @@
   },
 "configurePresets": [
     {
+      "name": "cfg-module",
+      "hidden": true,
+      "cacheVariables": { "SIMPLE_ENUM_ENABLE_MODULE": "ON" }
+    },
+    {
       "name": "cfg-c++23",
       "hidden": true,
       "cacheVariables": { "CMAKE_CXX_STANDARD": "23" }
@@ -68,14 +73,6 @@
       "cacheVariables": {
         "CMAKE_CXX_FLAGS": "-ggdb -fvisibility=default -fno-omit-frame-pointer -fsanitize=address -fsanitize-address-use-after-scope -fsanitize=undefined",
         "CMAKE_EXE_LINKER_FLAGS": "-fsanitize=address -fsanitize=undefined"
-      }
-    },
-    {
-    "name": "cfg-glaze",
-    "hidden": true,
-      "cacheVariables": {
-        "SIMPLE_ENUM_USE_GLAZE_3_1" : "OFF",
-        "SIMPLE_ENUM_USE_GLAZE_4_0" : "ON"
       }
     },
     {

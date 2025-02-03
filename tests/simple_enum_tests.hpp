@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: BSL-1.0
 // SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
 #pragma once
-#include "simple_enum/simple_enum.hpp"
+
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wctad-maybe-unsupported"
@@ -15,7 +15,6 @@
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
-#include "enum_definitions.h"
 
 namespace ut = boost::ut;
 using ut::eq;
@@ -30,6 +29,13 @@ using namespace std::string_view_literals;
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
+#ifdef SIMPLE_ENUM_CXX_MODULE
+import simple_enum;
+#else
+#include "simple_enum/simple_enum.hpp"
+#endif
+#include "enum_definitions.h"
+
 std::ostream & operator<<(std::ostream & os, simple_enum::enum_concept auto const & value)
   {
   os << simple_enum::enum_name(value);

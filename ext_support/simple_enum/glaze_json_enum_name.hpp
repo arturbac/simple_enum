@@ -3,8 +3,14 @@
 // SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
 
 #pragma once
+
+#ifdef SIMPLE_ENUM_CXX_MODULE
+import simple_enum;
+#else
 #include <simple_enum/simple_enum.hpp>
 #include <simple_enum/enum_cast.hpp>
+#include <simple_enum/indexed_access.hpp>
+#endif
 
 #ifdef __clang__
 #pragma clang diagnostic push
@@ -24,41 +30,24 @@
 
 namespace simple_enum::inline v0_8
   {
-namespace detail
-  {
-  template<bounded_enum enumeration_type>
-  constexpr auto enum_value_at_index(size_t ix) -> enumeration_type
-    {
-    using underlying_type = std::underlying_type_t<enumeration_type>;
-    return static_cast<enumeration_type>(
-      detail::enum_base_info_t<enumeration_type>::first_index() + underlying_type(ix)
-    );
-    }
-
-  template<bounded_enum enumeration_type>
-  constexpr auto enum_name_at_index(size_t ix) -> std::string_view
-    {
-    return detail::enum_meta_info_t<enumeration_type>::meta_data[ix].as_view();
-    }
-  }  // namespace detail
 
 template<bounded_enum enumeration_type>
 static constexpr auto enum_names_array = []()
 {
-  constexpr auto size = detail::enum_base_info_t<enumeration_type>::size();
+  constexpr auto size = enum_size<enumeration_type>();
   std::array<std::string_view, size> names;
   for(uint16_t ix{}; size != ix; ++ix)
-    names[ix] = detail::enum_name_at_index<enumeration_type>(ix);
+    names[ix] = enum_name_at_index<enumeration_type>(ix);
   return names;
 }();
 
 template<bounded_enum enumeration_type>
 static constexpr auto enum_values_array = []()
 {
-  constexpr auto size = detail::enum_base_info_t<enumeration_type>::size();
+  constexpr auto size = enum_size<enumeration_type>();
   std::array<enumeration_type, size> values;
   for(size_t ix{}; size != ix; ++ix)
-    values[ix] = detail::enum_value_at_index<enumeration_type>(ix);
+    values[ix] = enum_value_at_index<enumeration_type>(ix);
   return values;
 }();
 
@@ -83,7 +72,7 @@ namespace detail
     {
     return std::tuple_cat(
       std::make_tuple(
-        detail::enum_name_at_index<enumeration_type>(ix), detail::enum_value_at_index<enumeration_type>(ix)
+        enum_name_at_index<enumeration_type>(ix), enum_value_at_index<enumeration_type>(ix)
       )...
     );
     }
@@ -91,7 +80,7 @@ namespace detail
   template<typename enumeration_type>
   constexpr auto make_glaze_tuple()
     {
-    constexpr auto size = detail::enum_base_info_t<enumeration_type>::size();
+    constexpr auto size = enum_size<enumeration_type>();
     return convert_to_glz_enum(glaze_tuple_pairs<enumeration_type>(std::make_index_sequence<size>{}));
     }
 
@@ -142,7 +131,7 @@ struct from_json<enumeration_type>
     if(bool(ctx.error)) [[unlikely]]
       return;
 
-    cxx23::expected<enumeration_type, simple_enum::enum_cast_error> res{simple_enum::enum_cast<enumeration_type>(value
+    simple_enum::expected<enumeration_type, simple_enum::enum_cast_error> res{simple_enum::enum_cast<enumeration_type>(value
     )};
     if(!res.has_value()) [[unlikely]]
       {

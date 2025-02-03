@@ -60,13 +60,22 @@ jobs:
         
         clang++ --version
         g++ --version
+        
     - name: ci-clang-libstdc++
       run: cmake --workflow --preset="ci-clang-libstdc++"
+      
+    - name: ci-module-clang-libstdc++
+      run: cmake --workflow --preset="ci-module-clang-libstdc++"
+      
     - name: ci-clang-libc++
       run: cmake --workflow --preset="ci-clang-libc++"
       
+    - name: ci-module-clang-libc++
+      run: cmake --workflow --preset="ci-module-clang-libc++"
+      
     - name: ci-clang-libstdc++-c++26
       run: cmake --workflow --preset="ci-clang-libstdc++-c++26"
+      
     - name: ci-clang-libc++-c++26
       run: cmake --workflow --preset="ci-clang-libc++-c++26"
 
@@ -74,11 +83,11 @@ jobs:
     runs-on: windows-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Configure MSVC with glaze 4.x support
-      run: cmake -B ${{github.workspace}}/build/msvc -DCMAKE_BUILD_TYPE=Release -DSIMPLE_ENUM_USE_GLAZE_3_1=OFF -DSIMPLE_ENUM_USE_GLAZE_4_0=ON
-    - name: Build MSVC with glaze 4.x support
+    - name: Configure MSVC
+      run: cmake -B ${{github.workspace}}/build/msvc -DCMAKE_BUILD_TYPE=Release
+    - name: Build MSVC
       run: cmake --build ${{github.workspace}}/build/msvc
-    - name: Test MSVC with glaze 4.x support
+    - name: Test MSVC
       working-directory: ${{github.workspace}}/build/msvc
       run: ctest -C Debug
 

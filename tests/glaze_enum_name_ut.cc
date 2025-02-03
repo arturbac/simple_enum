@@ -1,14 +1,18 @@
 // SPDX-FileCopyrightText: 2024 Artur Bać
 // SPDX-License-Identifier: BSL-1.0
 // SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
-#include <simple_enum/glaze_json_enum_name.hpp>
+
 #include <glaze/ext/jsonrpc.hpp>
-#include <simple_enum/ranges_views.hpp>
-#include "simple_enum_tests.hpp"
+
 #include <tuple>
 #include <ranges>
 #include <utility>
 #include <algorithm>
+#include "simple_enum_tests.hpp"
+#include <simple_enum/glaze_json_enum_name.hpp>
+#ifndef SIMPLE_ENUM_CXX_MODULE
+#include <simple_enum/ranges_views.hpp>
+#endif
 
 namespace views = std::views;
 namespace ranges = std::ranges;

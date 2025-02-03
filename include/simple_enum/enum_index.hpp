@@ -6,8 +6,6 @@
 #include <simple_enum/simple_enum.hpp>
 #include <simple_enum/expected.h>
 
-#include "detail/static_call_operator_prolog.h"
-
 namespace simple_enum::inline v0_8
   {
 using cxx23::bad_expected_access;
@@ -23,19 +21,17 @@ enum struct enum_index_error
   out_of_range
   };
 
-template<>
-struct info<enum_index_error>
+consteval auto adl_enum_bounds(enum_index_error)
   {
-  static constexpr auto first = enum_index_error::out_of_range;
-  static constexpr auto last = enum_index_error::out_of_range;
-  };
+  using enum enum_index_error;
+  return simple_enum::adl_info{out_of_range, out_of_range};
+  }
 
 struct enum_index_t
   {
   template<enum_concept enum_type>
   [[nodiscard]]
-  static_call_operator constexpr auto operator()(enum_type value
-  ) static_call_operator_const noexcept -> cxx23::expected<std::size_t, enum_index_error>
+  static constexpr auto operator()(enum_type value) noexcept -> cxx23::expected<std::size_t, enum_index_error>
     {
     using enum_meta_info = detail::enum_meta_info_t<enum_type>;
     auto const requested_index{simple_enum::detail::to_underlying(value)};
@@ -82,5 +78,3 @@ consteval auto consteval_enum_index() -> std::size_t
   }
 
   }  // namespace simple_enum::inline v0_8
-
-#include "detail/static_call_operator_epilog.h"

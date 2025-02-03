@@ -3,7 +3,11 @@
 // SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
 #pragma once
 
+#ifdef SIMPLE_ENUM_CXX_MODULE
+import simple_enum;
+#else
 #include <simple_enum/simple_enum.hpp>
+#endif
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Weverything"
