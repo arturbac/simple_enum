@@ -45,15 +45,18 @@ jobs:
     - name: Install dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y cmake g++-14 ninja-build clang-19 libfmt-dev libc++-19-dev libc++abi-19-dev
+        sudo apt-get install -y cmake g++-14 ninja-build clang-19 libfmt-dev libc++-19-dev libc++abi-19-dev clang-tools-extra
+        
         sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-19 190
         sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-19 190
+        sudo update-alternatives --install /usr/bin/clang-scan-deps clang-scan-deps /usr/bin/clang-scan-deps-19 190
          
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 140
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 140
          
         sudo update-alternatives --set clang /usr/bin/clang-19
         sudo update-alternatives --set clang++ /usr/bin/clang++-19
+        sudo update-alternatives --set clang-scan-deps /usr/bin/clang-scan-deps-19
          
         sudo update-alternatives --set gcc /usr/bin/gcc-14
         sudo update-alternatives --set g++ /usr/bin/g++-14
