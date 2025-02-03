@@ -32,6 +32,19 @@
     {
       "name": "ci-gcc",
       "configurePreset": "ci-gcc"
+    },
+    
+    {
+      "name": "ci-module-clang-libstdc++",
+      "configurePreset": "ci-module-clang-libstdc++"
+    },
+    {
+      "name": "ci-module-clang-libc++",
+      "configurePreset": "ci-module-clang-libc++"
+    },
+    {
+      "name": "ci-module-gcc",
+      "configurePreset": "ci-module-gcc"
     }
   ]
 }

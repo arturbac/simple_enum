@@ -6,10 +6,11 @@
 #include <concepts>
 #include <type_traits>
 
-#define SIMPLE_ENUM_NAME_VERSION "0.8.10"
+#define SIMPLE_ENUM_NAME_VERSION "0.8.11"
 
 namespace simple_enum::inline v0_8
   {
+inline constexpr auto simple_enum_name_version{SIMPLE_ENUM_NAME_VERSION};
 
 #ifndef SIMPLE_ENUM_CUSTOM_UNBOUNDED_RANGE
 #define SIMPLE_ENUM_CUSTOM_UNBOUNDED_RANGE

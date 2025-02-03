@@ -13,45 +13,6 @@ cpmaddpackage(
   GIT_TAG
   v2.0.1_7)
 find_package(ut-ext REQUIRED)
-if(SIMPLE_ENUM_ENABLE_TIME_TRACE
-   AND (CMAKE_CXX_COMPILER_ID
-        MATCHES
-        "Clang"
-        OR CMAKE_CXX_COMPILER_ID
-           MATCHES
-           "AppleClang"
-       ))
-  # external dependencies only for comparison benchmarking
-  cpmaddpackage(
-    NAME
-    magic_enum
-    GITHUB_REPOSITORY
-    Neargye/magic_enum
-    GIT_TAG
-    v0.9.5
-    GIT_SHALLOW
-    TRUE)
-  find_package(magic_enum REQUIRED)
-
-  cpmaddpackage(
-    Name
-    reflect
-    GITHUB_REPOSITORY
-    boost-ext/reflect
-    GIT_TAG
-    main
-    GIT_SHALLOW
-    TRUE)
-
-  add_library(reflect INTERFACE)
-  target_include_directories(reflect SYSTEM INTERFACE ${reflect_SOURCE_DIR})
-  target_compile_definitions(reflect INTERFACE REFLECT_DISABLE_STATIC_ASSERT_TESTS)
-  add_library(
-    reflect::reflect
-    ALIAS
-    reflect)
-  find_package(reflect REQUIRED)
-endif()
 
 # ----------------------------------------------------------------
 # glaze

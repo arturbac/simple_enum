@@ -1,9 +1,9 @@
 // SPDX-FileCopyrightText: 2024 Artur Bać
 // SPDX-License-Identifier: BSL-1.0
 // SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
-
+#ifndef SIMPLE_ENUM_CXX_MODULE
 #define SIMPLE_ENNUM_ENABLE_PEN_TEST
-
+#endif
 #include "simple_enum_tests.hpp"
 
 // TODO chck impact of clang-18 attribute
@@ -26,8 +26,10 @@ enum struct enum_bounded
 
 consteval auto adl_enum_bounds(enum_bounded) { return simple_enum::adl_info{enum_bounded::v1, enum_bounded::v3}; }
 
+#ifndef SIMPLE_ENUM_CXX_MODULE
 static_assert(simple_enum::detail::enum_meta_info_t<enum_bounded>::first() == enum_bounded::v1);
 static_assert(simple_enum::detail::enum_meta_info_t<enum_bounded>::last() == enum_bounded::v3);
+#endif
 
 static_assert(simple_enum::limits::min<enum_bounded>() == enum_bounded::v1);
 static_assert(simple_enum::limits::max<enum_bounded>() == enum_bounded::v3);
@@ -39,8 +41,10 @@ enum struct enum_upper_bounded
   v3,
   last = v3
   };
+#ifndef SIMPLE_ENUM_CXX_MODULE
 static_assert(simple_enum::detail::enum_meta_info_t<enum_upper_bounded>::first() == static_cast<enum_upper_bounded>(0));
 static_assert(simple_enum::detail::enum_meta_info_t<enum_upper_bounded>::last() == enum_upper_bounded::last);
+#endif
 
 enum struct enum_lower_bounded
   {
@@ -49,11 +53,13 @@ enum struct enum_lower_bounded
   first = v1
   };
 
+#ifndef SIMPLE_ENUM_CXX_MODULE
 static_assert(simple_enum::detail::enum_meta_info_t<enum_lower_bounded>::first() == enum_lower_bounded::v1);
 static_assert(
   simple_enum::detail::enum_meta_info_t<enum_lower_bounded>::last()
   == static_cast<enum_lower_bounded>(simple_enum::default_unbounded_upper_range)
 );
+#endif
 
 enum struct enum_unbounded
   {
@@ -70,6 +76,7 @@ enum struct enum_unbounded_sparse
   v1 = 9,
   v2
   };
+#ifndef SIMPLE_ENUM_CXX_MODULE
 static_assert(
   simple_enum::detail::enum_meta_info_t<enum_unbounded_sparse>::first() == static_cast<enum_unbounded_sparse>(0)
 );
@@ -77,7 +84,7 @@ static_assert(
   simple_enum::detail::enum_meta_info_t<enum_unbounded_sparse>::last()
   == static_cast<enum_unbounded_sparse>(simple_enum::default_unbounded_upper_range)
 );
-
+#endif
 enum weak_global_untyped_e
   {
   v1 = 1,
@@ -107,10 +114,10 @@ struct simple_enum::info<global_untyped_externaly_e>
   static constexpr auto first = global_untyped_externaly_e::v1;
   static constexpr auto last = global_untyped_externaly_e::v3;
   };
-
+#ifndef SIMPLE_ENUM_CXX_MODULE
 static_assert(simple_enum::detail::enum_meta_info_t<global_untyped_externaly_e>::first_index() == 1);
 static_assert(simple_enum::detail::enum_meta_info_t<global_untyped_externaly_e>::last_index() == 3);
-
+#endif
 namespace simple_enum
   {
 
@@ -264,7 +271,7 @@ enum struct sparse_offseted_untyped
   first = unknown,  // simulate counting below the range
   last = v3
   };
-
+#ifndef SIMPLE_ENUM_CXX_MODULE
 using detail::cont_pass;
 using detail::first_pass;
 using detail::meta_name;
@@ -278,6 +285,7 @@ constexpr auto se_view() noexcept -> std::string_view
   cont_pass<enumeration>(value, beg);
   return std::string_view{value.data, value.size};
   }
+#endif
 // " (strong_typed)0]"
 // " strong_typed::v1]"
 // " strong_typed::v1]"
@@ -292,7 +300,7 @@ enum struct test_enumeration_name
   v2,
   last_en
   };
-
+#ifndef SIMPLE_ENUM_CXX_MODULE
 static ut::suite<"msv tests"> msvc_tests = []
 {
   "test auto __cdecl se::f<(enum strong_typed)0x0>(void) noexcept"_test = []
@@ -388,6 +396,7 @@ static ut::suite<"msv tests"> msvc_tests = []
     expect(eq(std::string_view{result.data, result.size}, "example_5_e"sv));
   };
 };
+
 static ut::suite<"enumeratioN_name"> enumeratioN_name = []
 {
   using namespace ut;
@@ -434,7 +443,7 @@ static ut::suite<"enumeratioN_name"> enumeratioN_name = []
     expect(eq(std::string_view{result.data, result.size}, "strong_typed"sv));
   };
 };
-
+#endif
 enum class ScopedEnum
   {
   SE_Value1,
@@ -451,10 +460,12 @@ enum class MultiValuedEnum
   Value2,
   Value3
   };
+
 static ut::suite<"enumeration_name_tests"> enumeration_name_tests = []
 {
   "ScopedEnum_name"_test = []
   {
+#ifndef SIMPLE_ENUM_CXX_MODULE
     char const * const func{se::f<ScopedEnum{}>()};
     meta_name result;
 #ifdef __clang__
@@ -465,11 +476,13 @@ static ut::suite<"enumeration_name_tests"> enumeration_name_tests = []
 #pragma clang unsafe_buffer_usage end
 #endif
     expect(eq(result.as_view(), "ScopedEnum"sv));
+#endif
     expect(eq(enumeration_name_v<ScopedEnum>, "ScopedEnum"sv));
   };
 
   "EmptyEnum_name"_test = []
   {
+#ifndef SIMPLE_ENUM_CXX_MODULE
     char const * const func{se::f<EmptyEnum{}>()};
     meta_name result;
 #ifdef __clang__
@@ -480,11 +493,13 @@ static ut::suite<"enumeration_name_tests"> enumeration_name_tests = []
 #pragma clang unsafe_buffer_usage end
 #endif
     expect(eq(result.as_view(), "EmptyEnum"sv)) << func;
+#endif
     expect(eq(enumeration_name_v<EmptyEnum>, "EmptyEnum"sv));
   };
 
   "MultiValuedEnum_name"_test = []
   {
+#ifndef SIMPLE_ENUM_CXX_MODULE
     char const * const func{se::f<MultiValuedEnum{}>()};
     meta_name result;
 #ifdef __clang__
@@ -495,12 +510,14 @@ static ut::suite<"enumeration_name_tests"> enumeration_name_tests = []
 #pragma clang unsafe_buffer_usage end
 #endif
     expect(eq(result.as_view(), "MultiValuedEnum"sv)) << func;
+#endif
     expect(eq(enumeration_name_v<MultiValuedEnum>, "MultiValuedEnum"sv));
   };
 };
 static ut::suite<"simple_enum"> _ = []
 {
   using namespace ut;
+#ifndef SIMPLE_ENUM_CXX_MODULE
   "test enum_unbounded_sparse offseting"_test = []
   {
     constexpr auto v{static_cast<enum_unbounded_sparse>(0)};
@@ -510,7 +527,7 @@ static ut::suite<"simple_enum"> _ = []
     cont_pass<enum_unbounded_sparse::v1>(value, offset);
     cont_pass<enum_unbounded_sparse::v2>(value, offset);
   };
-
+#endif
   "test unbounded"_test = []
   {
     ut::expect(enum_name(enum_unbounded::v1) == "v1");
@@ -531,7 +548,7 @@ static ut::suite<"simple_enum"> _ = []
     // TESTING UB dosabled
     // ut::expect(enum_name(static_cast<sparse_offseted_untyped>(0)) == "0");
   };
-
+#ifndef SIMPLE_ENUM_CXX_MODULE
   "test se meta name cut"_test = []
   {
     // ut::expect(se_view<weak_global_untyped_e::v1>() == "v1");
@@ -576,6 +593,7 @@ static ut::suite<"simple_enum"> _ = []
     ut::expect(se_view<test::subnamespace::weak_typed_5_e::v2>() == "v2");
     ut::expect(se_view<test::subnamespace::weak_typed_5_e::v3>() == "v3");
   };
+#endif
   "test enum name"_test = []
   {
     ut::expect(enum_name(weak_global_untyped_e::v1) == "v1");
@@ -619,4 +637,9 @@ static ut::suite<"simple_enum"> _ = []
 
   }  // namespace simple_enum
 
-int main() { se::verify_offset(); }
+int main()
+  {
+#ifndef SIMPLE_ENUM_CXX_MODULE
+  se::verify_offset();
+#endif
+  }

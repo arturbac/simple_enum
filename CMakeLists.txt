@@ -1,12 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
-cmake_policy(
-  SET
-  CMP0167
-  NEW)
-cmake_policy(
-  SET
-  CMP0175
-  NEW)
+cmake_minimum_required(VERSION 3.28..3.31)
 
 include(${CMAKE_CURRENT_LIST_DIR}/cmake/extract_version.cmake)
 
@@ -51,30 +43,80 @@ option(
   "Enable cmake targets"
   ON)
 
-add_library(simple_enum INTERFACE)
+option(
+  SIMPLE_ENUM_ENABLE_MODULE
+  "Build C++23 module instead of INTERFACE library"
+  OFF)
 
-target_compile_features(simple_enum INTERFACE cxx_std_23)
+if(SIMPLE_ENUM_ENABLE_MODULE)
+  set(CMAKE_CXX_SCAN_FOR_MODULES ON)
+
+  add_library(simple_enum STATIC)
+  target_compile_definitions(simple_enum PUBLIC SIMPLE_ENUM_CXX_MODULE)
+  target_sources(
+    simple_enum
+    PRIVATE FILE_SET
+            HEADERS
+            BASE_DIRS
+            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    PUBLIC FILE_SET
+           ext_support
+           TYPE
+           HEADERS
+           BASE_DIRS
+           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ext_support>
+           $<INSTALL_INTERFACE:include>
+    PUBLIC FILE_SET
+           CXX_MODULES
+           FILES
+           $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/module/simple_enum.cxx>
+           $<INSTALL_INTERFACE:include>)
+
+else()
+  set(CMAKE_CXX_SCAN_FOR_MODULES OFF)
+  add_library(simple_enum INTERFACE)
+  target_sources(
+    simple_enum
+    INTERFACE FILE_SET
+              HEADERS
+              BASE_DIRS
+              $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+              $<INSTALL_INTERFACE:include>
+    INTERFACE FILE_SET
+              ext_support
+              TYPE
+              HEADERS
+              BASE_DIRS
+              $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ext_support>
+              $<INSTALL_INTERFACE:include>)
+endif()
+
+set_target_properties(
+  simple_enum
+  PROPERTIES CXX_STANDARD 23
+             CXX_STANDARD_REQUIRED YES
+             CXX_EXTENSIONS OFF
+             CXX_SCAN_FOR_MODULES ${SIMPLE_ENUM_ENABLE_MODULE})
 
 if(SIMPLE_ENUM_OPT_IN_STATIC_ASSERTS)
   target_compile_definitions(simple_enum INTERFACE SIMPLE_ENUM_OPT_IN_STATIC_ASSERTS=1)
 endif()
-
-target_sources(
-  simple_enum
-  INTERFACE FILE_SET
-            HEADERS
-            BASE_DIRS
-            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-            $<INSTALL_INTERFACE:include>)
 
 install(
   TARGETS simple_enum
   EXPORT simple_enum_targets
   INCLUDES
   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
-  FILE_SET HEADERS)
+  FILE_SET
+  HEADERS
+  FILE_SET
+  ext_support
+  FILE_SET
+  CXX_MODULES
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/modules)
 
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/ext_support/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
 configure_package_config_file(cmake/simple_enumConfig.cmake.in ${CMAKE_CURRENT_BINARY_DIR}/simple_enumConfig.cmake
                               INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/simple_enum)

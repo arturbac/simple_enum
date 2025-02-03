@@ -11,7 +11,6 @@
 #include <source_location>
 #endif
 #include <array>
-
 #include "detail/static_call_operator_prolog.h"
 
 namespace simple_enum::inline v0_8
@@ -461,6 +460,7 @@ namespace limits
   template<bounded_enum enumeration>
   inline constexpr detail::max_t<enumeration> max{};
   }  // namespace limits
+
   }  // namespace simple_enum::inline v0_8
 
 #include "detail/static_call_operator_epilog.h"

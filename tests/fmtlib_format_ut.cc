@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2024 Artur Bać
 // SPDX-License-Identifier: BSL-1.0
 // SPDX-PackageHomePage: https://github.com/arturbac/simple_enum
-#include <simple_enum/fmtlib_format.hpp>
 #include "simple_enum_tests.hpp"
+#include <simple_enum/fmtlib_format.hpp>
 
 #ifdef __clang__
 #pragma clang diagnostic push
