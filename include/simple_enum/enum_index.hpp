@@ -5,6 +5,7 @@
 
 #include <simple_enum/simple_enum.hpp>
 #include <simple_enum/expected.h>
+#include "detail/static_call_operator_prolog.h"
 
 namespace simple_enum::inline v0_8
   {
@@ -31,7 +32,8 @@ struct enum_index_t
   {
   template<enum_concept enum_type>
   [[nodiscard]]
-  static constexpr auto operator()(enum_type value) noexcept -> cxx23::expected<std::size_t, enum_index_error>
+  static_call_operator constexpr auto operator()(enum_type value) static_call_operator_const noexcept
+    -> cxx23::expected<std::size_t, enum_index_error>
     {
     using enum_meta_info = detail::enum_meta_info_t<enum_type>;
     auto const requested_index{simple_enum::detail::to_underlying(value)};
@@ -78,3 +80,5 @@ consteval auto consteval_enum_index() -> std::size_t
   }
 
   }  // namespace simple_enum::inline v0_8
+
+#include "detail/static_call_operator_epilog.h"

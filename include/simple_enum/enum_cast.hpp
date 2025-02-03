@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <iterator>
 #include <simple_enum/expected.h>
+#include "detail/static_call_operator_prolog.h"
 
 namespace simple_enum::inline v0_8
   {
@@ -124,7 +125,8 @@ template<enum_concept enum_type>
 struct enum_cast_t
   {
   [[nodiscard]]
-  static constexpr auto operator()(std::string_view value) noexcept -> cxx23::expected<enum_type, enum_cast_error>
+  static_call_operator constexpr auto operator()(std::string_view value) static_call_operator_const noexcept
+    -> cxx23::expected<enum_type, enum_cast_error>
     {
     using enum_meta_info = detail::enum_meta_info_t<enum_type>;
     using underlying_type = std::underlying_type_t<enum_type>;
@@ -174,3 +176,4 @@ inline constexpr enum_cast_t<enum_type> enum_cast{};
 
   }  // namespace simple_enum::inline v0_8
 
+#include "detail/static_call_operator_epilog.h"
