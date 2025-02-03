@@ -31,8 +31,58 @@ jobs:
       
     - name: ci-gcc-c++26
       run: cmake --workflow --preset="ci-gcc-c++26"
-
-  build-and-test-clang:
+      
+  build-and-test-clang-20:
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v3
+    - name: Add LLVM Repository
+      run: |
+        wget https://apt.llvm.org/llvm.sh
+        chmod +x llvm.sh
+        sudo ./llvm.sh 20
+        
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake g++-14 ninja-build clang-20 libfmt-dev libc++-20-dev libc++abi-20-dev clang-tools-20
+        
+        sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-20 200
+        sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-20 200
+        sudo update-alternatives --install /usr/bin/clang-scan-deps clang-scan-deps /usr/bin/clang-scan-deps-20 200
+         
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 140
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 140
+         
+        sudo update-alternatives --set clang /usr/bin/clang-20
+        sudo update-alternatives --set clang++ /usr/bin/clang++-20
+        sudo update-alternatives --set clang-scan-deps /usr/bin/clang-scan-deps-20
+         
+        sudo update-alternatives --set gcc /usr/bin/gcc-14
+        sudo update-alternatives --set g++ /usr/bin/g++-14
+        
+        clang++ --version
+        g++ --version
+        
+    - name: ci-clang-libstdc++
+      run: cmake --workflow --preset="ci-clang-libstdc++"
+      
+    - name: ci-module-clang-libstdc++
+      run: cmake --workflow --preset="ci-module-clang-libstdc++"
+      
+    - name: ci-clang-libc++
+      run: cmake --workflow --preset="ci-clang-libc++"
+      
+    - name: ci-module-clang-libc++
+      run: cmake --workflow --preset="ci-module-clang-libc++"
+      
+    - name: ci-clang-libstdc++-c++26
+      run: cmake --workflow --preset="ci-clang-libstdc++-c++26"
+      
+    - name: ci-clang-libc++-c++26
+      run: cmake --workflow --preset="ci-clang-libc++-c++26"
+      
+  build-and-test-clang-19:
     runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v3
@@ -66,21 +116,12 @@ jobs:
         
     - name: ci-clang-libstdc++
       run: cmake --workflow --preset="ci-clang-libstdc++"
-      
-    - name: ci-module-clang-libstdc++
-      run: cmake --workflow --preset="ci-module-clang-libstdc++"
-      
+
     - name: ci-clang-libc++
       run: cmake --workflow --preset="ci-clang-libc++"
       
     - name: ci-module-clang-libc++
       run: cmake --workflow --preset="ci-module-clang-libc++"
-      
-    - name: ci-clang-libstdc++-c++26
-      run: cmake --workflow --preset="ci-clang-libstdc++-c++26"
-      
-    - name: ci-clang-libc++-c++26
-      run: cmake --workflow --preset="ci-clang-libc++-c++26"
 
   build-and-test-msvc:
     runs-on: windows-latest
