@@ -375,7 +375,7 @@ namespace detail
 struct enum_name_t
   {
   template<enum_concept enum_type>
-  static_call_operator constexpr auto operator()(enum_type value) noexcept static_call_operator_const  //
+  static_call_operator constexpr auto operator()(enum_type value) static_call_operator_const noexcept
     -> std::string_view
     {
     using enum_meta_info = detail::enum_meta_info_t<enum_type>;
