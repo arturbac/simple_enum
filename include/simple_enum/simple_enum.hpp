@@ -375,7 +375,8 @@ namespace detail
 struct enum_name_t
   {
   template<enum_concept enum_type>
-  static_call_operator constexpr auto operator()(enum_type value) noexcept static_call_operator_const->std::string_view
+  static_call_operator constexpr auto operator()(enum_type value) noexcept static_call_operator_const  //
+    -> std::string_view
     {
     using enum_meta_info = detail::enum_meta_info_t<enum_type>;
     auto const requested_index{simple_enum::detail::to_underlying(value)};
@@ -463,3 +464,4 @@ namespace limits
   }  // namespace simple_enum::inline v0_8
 
 #include "detail/static_call_operator_epilog.h"
+
