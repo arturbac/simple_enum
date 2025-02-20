@@ -71,9 +71,7 @@ namespace detail
   constexpr auto glaze_tuple_pairs(std::index_sequence<ix...>)
     {
     return std::tuple_cat(
-      std::make_tuple(
-        enum_name_at_index<enumeration_type>(ix), enum_value_at_index<enumeration_type>(ix)
-      )...
+      std::make_tuple(enum_name_at_index<enumeration_type>(ix), enum_value_at_index<enumeration_type>(ix))...
     );
     }
 
@@ -86,13 +84,6 @@ namespace detail
 
   }  // namespace detail
   }  // namespace simple_enum::inline v0_8
-
-namespace simple_enum::inline v0_8::concepts
-  {
-using glz::read_json_supported;
-using glz::write_json_supported;
-
-  }  // namespace simple_enum::inline v0_8::concepts
 
 namespace glz
   {
@@ -131,8 +122,9 @@ struct from_json<enumeration_type>
     if(bool(ctx.error)) [[unlikely]]
       return;
 
-    simple_enum::expected<enumeration_type, simple_enum::enum_cast_error> res{simple_enum::enum_cast<enumeration_type>(value
-    )};
+    simple_enum::expected<enumeration_type, simple_enum::enum_cast_error> res{
+      simple_enum::enum_cast<enumeration_type>(value)
+    };
     if(!res.has_value()) [[unlikely]]
       {
       ctx.error = error_code::syntax_error;
