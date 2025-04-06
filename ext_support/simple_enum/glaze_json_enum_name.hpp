@@ -98,13 +98,15 @@ struct meta<enumeration_type>
   };
 
   }  // namespace glz
-
-namespace glz::detail
-  {
+#ifdef glaze_v5_0_0
+namespace glz_spec_namespace = glz;
+#else
+namespace glz_spec_namespace = glz::detail;
+#endif
 
 template<simple_enum::bounded_enum enumeration_type>
 #ifdef glaze_v3_5_0_to_from
-struct from<glz::JSON, enumeration_type>
+struct glz_spec_namespace::from<glz::JSON, enumeration_type>
 #else
 struct from_json<enumeration_type>
 #endif
@@ -115,7 +117,11 @@ struct from_json<enumeration_type>
     {
     std::string_view value;
 #ifdef glaze_v3_5_0_to_from
+#ifdef glaze_v5_0_0_generic_supported
+    glz::from<glz::JSON, std::string_view>::op<Opts>(value, ctx, args...);
+#else
     read<glz::JSON>::op<Opts>(value, ctx, args...);
+#endif
 #else
     read<glz::json>::op<Opts>(value, ctx, args...);
 #endif
@@ -136,7 +142,7 @@ struct from_json<enumeration_type>
 
 template<simple_enum::bounded_enum enumeration_type>
 #ifdef glaze_v3_5_0_to_from
-struct to<glz::JSON, enumeration_type>
+struct glz_spec_namespace::to<glz::JSON, enumeration_type>
 #else
 struct to_json<enumeration_type>
 #endif
@@ -147,11 +153,14 @@ struct to_json<enumeration_type>
     {
     std::string_view value{simple_enum::enum_name(arg)};
 #ifdef glaze_v3_5_0_to_from
+#ifdef glaze_v5_0_0_generic_supported
+    glz::to<glz::JSON, std::string_view>::op<Opts>(value, args...);
+#else
     write<glz::JSON>::op<Opts>(value, args...);
+#endif
 #else
     write<glz::json>::op<Opts>(value, args...);
 #endif
     }
   };
-  }  // namespace glz::detail
 
