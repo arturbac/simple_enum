@@ -85,10 +85,8 @@ namespace detail
   }  // namespace detail
   }  // namespace simple_enum::inline v0_8
 
-namespace glz
-  {
 template<simple_enum::bounded_enum enumeration_type>
-struct meta<enumeration_type>
+struct glz::meta<enumeration_type>
   {
   static constexpr bool custom_write = true;
   static constexpr bool custom_read = true;
@@ -97,16 +95,15 @@ struct meta<enumeration_type>
   static constexpr auto value = simple_enum::detail::make_glaze_tuple<enumeration_type>();
   };
 
-  }  // namespace glz
 #ifdef glaze_v5_0_0
-namespace glz_spec_namespace = glz;
+namespace glz_to_from_ns = glz;
 #else
-namespace glz_spec_namespace = glz::detail;
+namespace glz_to_from_ns = glz::detail;
 #endif
 
 template<simple_enum::bounded_enum enumeration_type>
 #ifdef glaze_v3_5_0_to_from
-struct glz_spec_namespace::from<glz::JSON, enumeration_type>
+struct glz_to_from_ns::from<glz::JSON, enumeration_type>
 #else
 struct from_json<enumeration_type>
 #endif
@@ -142,7 +139,7 @@ struct from_json<enumeration_type>
 
 template<simple_enum::bounded_enum enumeration_type>
 #ifdef glaze_v3_5_0_to_from
-struct glz_spec_namespace::to<glz::JSON, enumeration_type>
+struct glz_to_from_ns::to<glz::JSON, enumeration_type>
 #else
 struct to_json<enumeration_type>
 #endif
