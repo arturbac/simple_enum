@@ -6,7 +6,8 @@
 #include <concepts>
 #include <type_traits>
 
-#define SIMPLE_ENUM_NAME_VERSION "0.8.12"
+
+#define SIMPLE_ENUM_NAME_VERSION "0.8.13"
 
 namespace simple_enum::inline v0_8
   {
@@ -74,7 +75,7 @@ struct adl_info
   };
 
 template<enum_concept enumeration>
-adl_info(enumeration const &, enumeration const &) -> adl_info<enumeration>;
+adl_info(enumeration const &) -> adl_info<enumeration>;
 
 /**
  * @brief Function intended for ADL (Argument-Dependent Lookup) to provide custom enumeration bounds.
@@ -98,7 +99,7 @@ adl_info(enumeration const &, enumeration const &) -> adl_info<enumeration>;
  * with enumeration types that meet the `enum_concept` criteria:
  * @code
  * template<typename enumeration>
- * adl_info(enumeration const &, enumeration const &) -> adl_info<enumeration>;
+ * adl_info(enumeration const &) -> adl_info<enumeration>;
  * @endcode
  *
  * @note Specializations of this function must ensure that first <= last.
