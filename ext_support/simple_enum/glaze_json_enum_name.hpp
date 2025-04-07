@@ -85,6 +85,7 @@ namespace detail
   }  // namespace detail
   }  // namespace simple_enum::inline v0_8
 
+
 template<simple_enum::bounded_enum enumeration_type>
 struct glz::meta<enumeration_type>
   {
