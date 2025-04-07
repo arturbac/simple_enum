@@ -115,7 +115,7 @@ struct from_json<enumeration_type>
     std::string_view value;
 #ifdef glaze_v3_5_0_to_from
 #ifdef glaze_v5_0_0_generic_supported
-    glz::from<glz::JSON, std::string_view>::op<Opts>(value, ctx, args...);
+    parse<glz::JSON>::op<Opts>(value, ctx, args...);
 #else
     read<glz::JSON>::op<Opts>(value, ctx, args...);
 #endif
@@ -151,7 +151,7 @@ struct to_json<enumeration_type>
     std::string_view value{simple_enum::enum_name(arg)};
 #ifdef glaze_v3_5_0_to_from
 #ifdef glaze_v5_0_0_generic_supported
-    glz::to<glz::JSON, std::string_view>::op<Opts>(value, args...);
+    serialize<glz::JSON>::op<Opts>(value, args...);
 #else
     write<glz::JSON>::op<Opts>(value, args...);
 #endif
