@@ -28,7 +28,10 @@ consteval auto adl_enum_bounds(test_enum_e)
   using enum test_enum_e;
   return simple_enum::adl_info{foo, baz};
   }
-#ifdef glaze_v5_0_0_generic_supported
+#ifdef glaze_v5_1_0_supported_swap
+static_assert(glz::read_supported<test_enum_e, glz::JSON>);
+static_assert(glz::write_supported<test_enum_e, glz::JSON>);
+#elif glaze_v5_0_0_generic_supported
 static_assert(glz::read_supported<glz::JSON, test_enum_e>);
 static_assert(glz::write_supported<glz::JSON, test_enum_e>);
 #else
