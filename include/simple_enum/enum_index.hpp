@@ -7,7 +7,7 @@
 #include <simple_enum/expected.h>
 #include "detail/static_call_operator_prolog.h"
 
-namespace simple_enum::inline v0_8
+namespace simple_enum::inline v0_9
   {
 using cxx23::bad_expected_access;
 using cxx23::expected;
@@ -90,6 +90,6 @@ struct enum_size_t
 template<enum_concept enum_type>
 inline constexpr std::size_t enum_size_v = enum_size_t<enum_type>::value;
 
-  }  // namespace simple_enum::inline v0_8
+  }  // namespace simple_enum::inline v0_9
 
 #include "detail/static_call_operator_epilog.h"

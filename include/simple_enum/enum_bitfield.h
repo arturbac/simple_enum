@@ -6,7 +6,7 @@
 #include <simple_enum/enum_index.hpp>
 #include "detail/static_call_operator_prolog.h"
 
-namespace simple_enum::inline v0_8
+namespace simple_enum::inline v0_9
   {
 template<enum_concept enum_type_t>
 struct enum_bitfield_t;
@@ -112,7 +112,7 @@ struct enum_bitfield_t
     detail::bit_proxy_t{*this, arg} = true;
     }
   };
-  }  // namespace simple_enum::inline v0_8
+  }  // namespace simple_enum::inline v0_9
 
 #include "detail/static_call_operator_epilog.h"
 
