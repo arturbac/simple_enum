@@ -4,7 +4,7 @@
 #pragma once
 #include <simple_enum/simple_enum.hpp>
 
-namespace simple_enum::inline v0_8
+namespace simple_enum::inline v0_9
   {
 
 template<bounded_enum enumeration_type>
@@ -25,4 +25,4 @@ constexpr auto enum_name_at_index(size_t ix) -> std::string_view
   {
   return detail::enum_meta_info_t<enumeration_type>::meta_data[ix].as_view();
   }
-  }  // namespace simple_enum::inline v0_8
+  }  // namespace simple_enum::inline v0_9

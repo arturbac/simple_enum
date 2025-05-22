@@ -4,7 +4,8 @@
 - definig enum [bounds](enum_bounds.md)
 - [`limits::min and limits::max`](simple_enum_limits_documentation.md)
 - [`enum_cast`](enum_cast.md) conversion from `std::string_view` to enum values
-- [`enum_index`](enum_index.md) and `consteval_enum_index`
+- [`enum_index`](enum_index.md) and `consteval_enum_index`, `enum_size_v`
+- [`enum_bitfiled`](enum_bitfiled.md) enumeration indexed bitfields
 - [`enum_name`](enum_name.md) convert enumeration values to their string literals
 - [`enumeration_name_v`](enumeration_name.md) compile-time name of an enumeration type
 - [`enum_view`](enum_view.md) range view over an enumeration

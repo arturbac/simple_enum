@@ -12,7 +12,7 @@
 #include <simple_enum/expected.h>
 #include "detail/static_call_operator_prolog.h"
 
-namespace simple_enum::inline v0_8
+namespace simple_enum::inline v0_9
   {
 using cxx23::bad_expected_access;
 using cxx23::expected;
@@ -174,6 +174,6 @@ struct enum_cast_t
 template<enum_concept enum_type>
 inline constexpr enum_cast_t<enum_type> enum_cast{};
 
-  }  // namespace simple_enum::inline v0_8
+  }  // namespace simple_enum::inline v0_9
 
 #include "detail/static_call_operator_epilog.h"

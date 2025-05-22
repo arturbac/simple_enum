@@ -7,7 +7,7 @@
 #include <simple_enum/expected.h>
 #include "detail/static_call_operator_prolog.h"
 
-namespace simple_enum::inline v0_8
+namespace simple_enum::inline v0_9
   {
 using cxx23::bad_expected_access;
 using cxx23::expected;
@@ -79,6 +79,17 @@ consteval auto consteval_enum_index() -> std::size_t
   return enum_index(value).or_else([](auto &&) { throw; });
   }
 
-  }  // namespace simple_enum::inline v0_8
+/// @brief Provides compile time information of length of enumeration (including holes).
+template<enum_concept enum_type>
+struct enum_size_t
+  {
+  using enum_meta_info = detail::enum_meta_info_t<enum_type>;
+  static constexpr std::size_t value{enum_meta_info::last_index() + 1 - enum_meta_info::first_index()};
+  };
+
+template<enum_concept enum_type>
+inline constexpr std::size_t enum_size_v = enum_size_t<enum_type>::value;
+
+  }  // namespace simple_enum::inline v0_9
 
 #include "detail/static_call_operator_epilog.h"

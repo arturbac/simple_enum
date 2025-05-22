@@ -6,9 +6,9 @@
 #include <concepts>
 #include <type_traits>
 
-#define SIMPLE_ENUM_NAME_VERSION "0.8.14"
+#define SIMPLE_ENUM_NAME_VERSION "0.9.0"
 
-namespace simple_enum::inline v0_8
+namespace simple_enum::inline v0_9
   {
 inline constexpr auto simple_enum_name_version{SIMPLE_ENUM_NAME_VERSION};
 
@@ -152,4 +152,4 @@ namespace detail
 template<typename enumeration>
 concept bounded_enum = detail::has_valid_adl_enum_bounds<enumeration> || detail::has_info_specialization<enumeration>
                        || detail::internaly_bounded_enum<enumeration>;
-  }  // namespace simple_enum::inline v0_8
+  }  // namespace simple_enum::inline v0_9

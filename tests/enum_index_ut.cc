@@ -8,6 +8,32 @@
 
 using simple_enum::enum_index;
 using simple_enum::enum_index_error;
+using simple_enum::enum_size_v;
+
+enum struct E1 : uint8_t
+  {
+  _1,
+  _2,
+  _3,
+  _4,
+  _5,
+  first = _1,
+  last = _5
+  };
+enum struct E2 : uint8_t
+  {
+  _1 = 10,
+  _2,
+  _3,
+  _4,
+  _5,
+  first = _1,
+  last = _5
+  };
+static_assert(enum_size_v<E> == 16);
+static_assert(enum_size_v<strong_typed> == 3);
+static_assert(enum_size_v<E1> == 5);
+static_assert(enum_size_v<E2> == 5);
 
 int main()
   {

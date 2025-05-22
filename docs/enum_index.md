@@ -1,4 +1,4 @@
-# `enum_index` and `consteval_enum_index`
+# `enum_index` and `consteval_enum_index` and enum_size_v
 
 ## Overview
 
@@ -20,10 +20,22 @@ struct enum_index_t
 };
 inline constexpr enum_index_t enum_index;
 ```
-
-
-
 - **Usage**: Converts an enumeration value to its index. Returns a `expected<std::size_t, enum_index_error>` indicating success or failure (`out_of_range` error).
+
+## `enum_size_v` Interface
+
+- **Usage**: give compile time size of enumeration (including holes in enumeration )
+
+```cpp
+enum struct E1 : uint8_t
+  { 
+  _1 = 1, _2, _4 = 4,
+  first = _1,
+  last = _4
+  };
+  
+static_assert(enum_size_v<E1> == 4 );
+```
 
 ## `consteval_enum_index` Function
 

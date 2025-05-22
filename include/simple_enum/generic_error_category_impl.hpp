@@ -7,7 +7,7 @@
 #include <simple_enum/generic_error_category.hpp>
 #include <simple_enum/basic_fixed_string.hpp>
 
-namespace simple_enum::inline v0_8
+namespace simple_enum::inline v0_9
   {
 
 /**
@@ -80,7 +80,8 @@ namespace detail
     else
       {
       using meta = cxx20_generic_error_category_name<ErrorEnum>;
-      return to_camel_case(as_basic_fixed_string<char, meta::error_category_name_len>(meta::error_category_name.data())
+      return to_camel_case(
+        as_basic_fixed_string<char, meta::error_category_name_len>(meta::error_category_name.data())
       );
       }
     }
@@ -115,4 +116,4 @@ auto generic_error_category<ErrorEnum>::make_error_code(ErrorEnum e) noexcept ->
   {
   return {static_cast<int>(e), generic_error_category<ErrorEnum>::instance()};
   }
-  }  // namespace simple_enum::inline v0_8
+  }  // namespace simple_enum::inline v0_9

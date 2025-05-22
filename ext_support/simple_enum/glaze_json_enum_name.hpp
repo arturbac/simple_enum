@@ -28,7 +28,7 @@ import simple_enum;
 #endif
 #include <concepts>
 
-namespace simple_enum::inline v0_8
+namespace simple_enum::inline v0_9
   {
 
 template<bounded_enum enumeration_type>
@@ -83,8 +83,7 @@ namespace detail
     }
 
   }  // namespace detail
-  }  // namespace simple_enum::inline v0_8
-
+  }  // namespace simple_enum::inline v0_9
 
 template<simple_enum::bounded_enum enumeration_type>
 struct glz::meta<enumeration_type>
