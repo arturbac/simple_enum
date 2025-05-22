@@ -8,6 +8,7 @@ module;
 #include <simple_enum/indexed_access.hpp>
 #include <simple_enum/std_format.hpp>
 #include <simple_enum/basic_fixed_string.hpp>
+#include <simple_enum/enum_bitfield.h>
 
 export module simple_enum;
 
@@ -44,6 +45,8 @@ using simple_enum::consteval_enum_index;
 using simple_enum::enum_index;
 using simple_enum::enum_index_error;
 using simple_enum::enum_index_t;
+using simple_enum::enum_size_t;
+using simple_enum::enum_size_v;
 
 using simple_enum::enum_cast;
 using simple_enum::enum_cast_error;
@@ -68,4 +71,6 @@ using simple_enum::enum_view;
 using simple_enum::begin;
 using simple_enum::end;
 using simple_enum::enum_names;
+
+using simple_enum::enum_bitfield_t;
   }  // namespace simple_enum
