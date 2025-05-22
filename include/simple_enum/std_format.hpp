@@ -6,6 +6,7 @@
 #include <simple_enum/simple_enum.hpp>
 #include <type_traits>
 #include <format>
+#include <ranges>
 
 template<simple_enum::enum_concept enumeration>
 struct std::formatter<enumeration>
@@ -19,7 +20,7 @@ struct std::formatter<enumeration>
   template<typename format_context>
   auto format(enumeration const & e, format_context & ctx) const -> decltype(ctx.out())
     {
-    return std::format_to(ctx.out(), "{}", simple_enum::enum_name(e));
+    return std::ranges::copy(simple_enum::enum_name(e), ctx.out()).out;
     }
   };
 
