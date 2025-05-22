@@ -82,6 +82,8 @@ struct enum_bitfield_t
 
   constexpr enum_bitfield_t() noexcept = default;
 
+  explicit constexpr enum_bitfield_t(std::same_as<storage_t> auto bits) noexcept : bits_{bits} {}
+
   template<std::same_as<enum_type_t>... Args>
   constexpr explicit enum_bitfield_t(Args &&... args) noexcept
     {
@@ -99,19 +101,50 @@ struct enum_bitfield_t
     return detail::bit_proxy_t{self, value};
     }
 
-  template<std::same_as<enum_type_t> Arg, std::same_as<enum_type_t>... Args>
-  constexpr void set_values(Arg && arg, Args &&... args) noexcept
+  template<std::same_as<enum_type_t>... Args>
+  constexpr void set_values(enum_type_t const & arg, Args &&... args) noexcept
     {
     detail::bit_proxy_t{*this, arg} = true;
     set_values(std::forward<Args>(args)...);
     }
 
-  template<std::same_as<enum_type_t> Arg>
-  constexpr void set_values(Arg && arg) noexcept
+  constexpr void set_values(enum_type_t const & arg) noexcept { detail::bit_proxy_t{*this, arg} = true; }
+
+  [[nodiscard]]
+  constexpr auto operator==(enum_bitfield_t const &) const noexcept -> bool
+    = default;
+
+  [[nodiscard]]
+  constexpr auto operator|(enum_bitfield_t const values) const noexcept -> enum_bitfield_t
     {
-    detail::bit_proxy_t{*this, arg} = true;
+    return enum_bitfield_t{storage_t(bits_ | values.bits_)};
+    }
+
+  [[nodiscard]]
+  constexpr auto operator&(enum_bitfield_t const values) const noexcept -> enum_bitfield_t
+    {
+    return enum_bitfield_t{storage_t(bits_ & values.bits_)};
+    }
+
+  constexpr auto operator|=(enum_bitfield_t const values) noexcept -> enum_bitfield_t &
+    {
+    bits_ |= values.bits_;
+    return *this;
+    }
+
+  constexpr auto operator&=(enum_bitfield_t const values) noexcept -> enum_bitfield_t &
+    {
+    bits_ &= values.bits_;
+    return *this;
     }
   };
+
+template<enum_concept enum_type_t>
+enum_bitfield_t(enum_type_t const & arg) -> enum_bitfield_t<enum_type_t>;
+
+template<enum_concept enum_type_t, typename... Args>
+enum_bitfield_t(enum_type_t const & arg, Args &&... args) -> enum_bitfield_t<enum_type_t>;
+
   }  // namespace simple_enum::inline v0_9
 
 #include "detail/static_call_operator_epilog.h"
