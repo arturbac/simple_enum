@@ -7,7 +7,7 @@ storage type depends on value of enum_size_v<> for enum selecting minimal suitab
 
 Include the `simple_enum/enum_bitfield.h` in your project to use `enum_bitfield_t`
 
-## `enum_index` Interface
+## `enum_bitfield_t` Interface
 
 
 ```cpp
