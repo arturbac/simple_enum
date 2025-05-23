@@ -17,7 +17,7 @@ enum struct color_t { red, green, blue, yellow, first = red, last = yellow };
 enum struct permission_t { read = 4, write = 8, execute = 16, first = read, last = execute };
 
 // Enum that should use uint16_t (9 values)
-enum struct medium_enum_t { v0, v1, v2, v3, v4, v5, v6, v7, v8, first = v0, last = v8 };
+enum struct medium_enum_t { v0 = 5, v1, v2, v3, v4, v5, v6, v7, v8, first = v0, last = v8 };
 
 // Enum that should use uint64_t (40 values)
 enum struct large_enum_t {
@@ -167,6 +167,61 @@ int main()
       static_assert(enum_bitfield_t{v36, v21} != enum_bitfield_t{v21});
       static_assert(enum_bitfield_t{v16, v31} == enum_bitfield_t{v16, v31});
       }
+    };
+
+    "operator ~"_test = []
+    {
+      {
+      using enum color_t;
+      expect((~enum_bitfield_t{red}) != enum_bitfield_t{red});
+      expect((~enum_bitfield_t{red, green}) == enum_bitfield_t{blue, yellow});
+      expect((~enum_bitfield_t{green}) == enum_bitfield_t{red, blue, yellow});
+      static_assert((~enum_bitfield_t{red, green}) == enum_bitfield_t{blue, yellow});
+      static_assert((~enum_bitfield_t{green}) == enum_bitfield_t{red, blue, yellow});
+      }
+      {
+      using enum medium_enum_t;
+      expect((~enum_bitfield_t{v1, v2, v5, v6, v7}) == enum_bitfield_t{v0, v3, v4, v8});
+      static_assert((~enum_bitfield_t{v1, v2, v5, v6, v7}) == enum_bitfield_t{v0, v3, v4, v8});
+      }
+    };
+
+    "operator ^"_test = []
+    {
+      using enum medium_enum_t;
+      expect((enum_bitfield_t{v1, v2, v5, v6, v7} ^ enum_bitfield_t{v2, v5, v6}) == enum_bitfield_t{v1, v7});
+      expect((enum_bitfield_t{v1, v2} ^ enum_bitfield_t{v5, v6}) == enum_bitfield_t{v1, v2, v5, v6});
+
+      static_assert((enum_bitfield_t{v1, v2, v5, v6, v7} ^ enum_bitfield_t{v2, v5, v6}) == enum_bitfield_t{v1, v7});
+      static_assert((enum_bitfield_t{v1, v2} ^ enum_bitfield_t{v5, v6}) == enum_bitfield_t{v1, v2, v5, v6});
+    };
+
+    "operator ^="_test = []
+    {
+      using enum medium_enum_t;
+      enum_bitfield_t a{v1, v2, v5, v6, v7};
+      a ^= enum_bitfield_t{v2, v5, v6};
+      expect(a == enum_bitfield_t{v1, v7});
+
+      enum_bitfield_t b{v1, v2};
+      b ^= enum_bitfield_t{v5, v6};
+      expect(b == enum_bitfield_t{v1, v2, v5, v6});
+
+      auto constexpr fn_a = []()
+      {
+        enum_bitfield_t x{v1, v2, v5, v6, v7};
+        x ^= enum_bitfield_t{v2, v5, v6};
+        return x;
+      };
+      static_assert(fn_a() == enum_bitfield_t{v1, v7});
+
+      auto constexpr fn_b = []()
+      {
+        enum_bitfield_t x{v1, v2};
+        x ^= enum_bitfield_t{v5, v6};
+        return x;
+      };
+      static_assert(fn_b() == enum_bitfield_t{v1, v2, v5, v6});
     };
 
     "operator |"_test = []
