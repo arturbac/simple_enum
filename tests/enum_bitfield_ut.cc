@@ -118,20 +118,20 @@ int main()
     "bitfield_multi_construct"_test = []
     {
       {
-      enum_bitfield_t<color_t> colors{color_t::red};
+      enum_bitfield_t colors{color_t::red};
       expect(not colors[color_t::green]);
       expect(not colors[color_t::yellow]);
       expect(colors[color_t::red]);
       }
       {
-      enum_bitfield_t<color_t> colors{color_t::red, color_t::green};
+      enum_bitfield_t colors{color_t::red, color_t::green};
       expect(colors[color_t::green]);
       expect(not colors[color_t::yellow]);
       expect(colors[color_t::red]);
       }
       {
       using enum large_enum_t;
-      enum_bitfield_t<large_enum_t> large_bf{v35, v31, v12, v17, v1};
+      enum_bitfield_t large_bf{v35, v31, v12, v17, v1};
       expect(not large_bf[v34]);
       expect(large_bf[v35]);
       expect(not large_bf[v36]);
@@ -147,6 +147,100 @@ int main()
       expect(large_bf[v1]);
       expect(not large_bf[v2]);
       }
+    };
+
+    "operator=="_test = []
+    {
+      {
+      using enum color_t;
+      expect(enum_bitfield_t{red} != enum_bitfield_t{green});
+      expect(enum_bitfield_t{yellow} == enum_bitfield_t{yellow});
+      expect(enum_bitfield_t{yellow, red} == enum_bitfield_t{yellow, red});
+      static_assert(enum_bitfield_t{red} != enum_bitfield_t{green});
+      static_assert(enum_bitfield_t{yellow} == enum_bitfield_t{yellow});
+      static_assert(enum_bitfield_t{yellow, red} == enum_bitfield_t{yellow, red});
+      }
+      {
+      using enum large_enum_t;
+      expect(enum_bitfield_t{v36, v21} != enum_bitfield_t{v21});
+      expect(enum_bitfield_t{v16, v31} == enum_bitfield_t{v16, v31});
+      static_assert(enum_bitfield_t{v36, v21} != enum_bitfield_t{v21});
+      static_assert(enum_bitfield_t{v16, v31} == enum_bitfield_t{v16, v31});
+      }
+    };
+
+    "operator |"_test = []
+    {
+      using enum large_enum_t;
+      expect((enum_bitfield_t{v36} | enum_bitfield_t{v21}) == enum_bitfield_t{v21, v36});
+      expect((enum_bitfield_t{v16, v21} | enum_bitfield_t{v31, v5}) == enum_bitfield_t{v21, v16, v5, v31});
+      static_assert((enum_bitfield_t{v36} | enum_bitfield_t{v21}) == enum_bitfield_t{v21, v36});
+      static_assert((enum_bitfield_t{v16, v21} | enum_bitfield_t{v31, v5}) == enum_bitfield_t{v21, v16, v5, v31});
+    };
+
+    "operator |="_test = []
+    {
+      using enum large_enum_t;
+      enum_bitfield_t a{v36};
+      a |= enum_bitfield_t{v21};
+      expect(a == enum_bitfield_t{v21, v36});
+
+      enum_bitfield_t b{v16, v21};
+      b |= enum_bitfield_t{v31, v5};
+      expect(b == enum_bitfield_t{v21, v16, v5, v31});
+
+      auto constexpr fn_a = []()
+      {
+        enum_bitfield_t x{v36};
+        x |= enum_bitfield_t{v21};
+        return x;
+      };
+      static_assert(fn_a() == enum_bitfield_t{v21, v36});
+
+      auto constexpr fn_b = []()
+      {
+        enum_bitfield_t x{v16, v21};
+        x |= enum_bitfield_t{v31, v5};
+        return x;
+      };
+      static_assert(fn_b() == enum_bitfield_t{v21, v16, v5, v31});
+    };
+
+    "operator &"_test = []
+    {
+      using enum large_enum_t;
+      expect((enum_bitfield_t{v36} & enum_bitfield_t{v21}) == enum_bitfield_t<large_enum_t>{});
+      expect((enum_bitfield_t{v16, v21, v34, v1} & enum_bitfield_t{v16, v21, v5}) == enum_bitfield_t{v21, v16});
+      static_assert((enum_bitfield_t{v36} & enum_bitfield_t{v21}) == enum_bitfield_t<large_enum_t>{});
+      static_assert((enum_bitfield_t{v16, v21, v34, v1} & enum_bitfield_t{v16, v21, v5}) == enum_bitfield_t{v21, v16});
+    };
+
+    "operator &"_test = []
+    {
+      using enum large_enum_t;
+      enum_bitfield_t a{v36};
+      a &= enum_bitfield_t{v21};
+      expect(a == enum_bitfield_t<large_enum_t>{});
+
+      enum_bitfield_t b{v16, v21, v34, v1};
+      b &= enum_bitfield_t{v16, v21, v5};
+      expect(b == enum_bitfield_t{v21, v16});
+
+      auto constexpr fn_a = []()
+      {
+        enum_bitfield_t x{v36};
+        x &= enum_bitfield_t{v21};
+        return x;
+      };
+      static_assert(fn_a() == enum_bitfield_t<large_enum_t>{});
+
+      auto constexpr fn_b = []()
+      {
+        enum_bitfield_t x{v16, v21, v34, v1};
+        x &= enum_bitfield_t{v16, v21, v5};
+        return x;
+      };
+      static_assert(fn_b() == enum_bitfield_t{v21, v16});
     };
   };
   }
