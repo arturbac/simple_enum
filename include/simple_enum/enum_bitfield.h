@@ -70,6 +70,21 @@ namespace detail
       }
     };
 
+  /// \brief compile time bitmsk calculating
+  template<std::unsigned_integral T, std::size_t N>
+  struct bitmask_t
+    {
+    static T constexpr value = bitmask_t<T, (N - 1u)>::value | T(T(1u) << (N - 1));
+    };
+
+  template<std::unsigned_integral T>
+  struct bitmask_t<T, 0u>
+    {
+    static T constexpr value = T(0u);
+    };
+
+  template<std::unsigned_integral T, std::size_t N>
+  inline constexpr T bitmask_v = bitmask_t<T, N>::value;
   }  // namespace detail
 
 /// @brief A template struct providing a bitfield with enum indexing.
@@ -77,8 +92,11 @@ template<enum_concept enum_type_t>
 struct enum_bitfield_t
   {
   using storage_t = detail::select_storage_for_enum_t<enum_type_t>;
+  static constexpr storage_t bits_mask{detail::bitmask_v<storage_t, enum_size_v<enum_type_t>>};
 
   storage_t bits_{0};
+
+  explicit operator storage_t() const noexcept { return bits_; }
 
   constexpr enum_bitfield_t() noexcept = default;
 
@@ -115,6 +133,12 @@ struct enum_bitfield_t
     = default;
 
   [[nodiscard]]
+  constexpr auto operator~() const noexcept -> enum_bitfield_t
+    {
+    return enum_bitfield_t{storage_t((~bits_) & bits_mask)};
+    }
+
+  [[nodiscard]]
   constexpr auto operator|(enum_bitfield_t const values) const noexcept -> enum_bitfield_t
     {
     return enum_bitfield_t{storage_t(bits_ | values.bits_)};
@@ -126,6 +150,12 @@ struct enum_bitfield_t
     return enum_bitfield_t{storage_t(bits_ & values.bits_)};
     }
 
+  [[nodiscard]]
+  constexpr auto operator^(enum_bitfield_t const values) const noexcept -> enum_bitfield_t
+    {
+    return enum_bitfield_t{storage_t((bits_ ^ values.bits_) & bits_mask)};
+    }
+
   constexpr auto operator|=(enum_bitfield_t const values) noexcept -> enum_bitfield_t &
     {
     bits_ |= values.bits_;
@@ -135,6 +165,12 @@ struct enum_bitfield_t
   constexpr auto operator&=(enum_bitfield_t const values) noexcept -> enum_bitfield_t &
     {
     bits_ &= values.bits_;
+    return *this;
+    }
+
+  constexpr auto operator^=(enum_bitfield_t const values) noexcept -> enum_bitfield_t &
+    {
+    bits_ = (bits_ ^ values.bits_) & bits_mask;
     return *this;
     }
   };

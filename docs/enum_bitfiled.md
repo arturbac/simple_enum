@@ -48,7 +48,7 @@ enum_bitfield_t support class template argument deducation when using arguments
 ```
 
 ```cpp
-  // operators |, &, |= &=
+  // operators |, &, |=, &=, ~, ^, ^=
   static_assert((enum_bitfield_t{v16, v21} | enum_bitfield_t{v31, v5}) 
                                         == enum_bitfield_t{v21, v16, v5, v31});
   static_assert((enum_bitfield_t{v16, v21, v34, v1} & enum_bitfield_t{v16, v21, v5})
@@ -61,5 +61,9 @@ enum_bitfield_t support class template argument deducation when using arguments
   enum_bitfield_t b{v16, v21};
   b |= enum_bitfield_t{v31, v5};
   expect(b == enum_bitfield_t{v21, v16, v5, v31});
+  
+  expect((enum_bitfield_t{v1, v2, v5, v6, v7} ^ enum_bitfield_t{v2, v5, v6}) == enum_bitfield_t{v1, v7});
+  
+  static_assert((~enum_bitfield_t{v1, v2, v5, v6, v7}) == enum_bitfield_t{v0, v3, v4, v8});
 ```
 
