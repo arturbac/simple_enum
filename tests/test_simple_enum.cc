@@ -6,6 +6,36 @@
 #endif
 #include "simple_enum_tests.hpp"
 
+#ifndef SIMPLE_ENUM_CXX_MODULE
+namespace se
+  {
+// OPT IN TESTING CODE
+enum struct verify_ennum_
+  {
+  v1
+  };
+
+constexpr size_t find_enumeration_offset()
+  {
+  auto const func{std::string_view{f<verify_ennum_::v1>()}};
+#if defined(_MSC_VER) and not defined(__clang__)
+  size_t pos = func.find('<');
+  if(pos == std::string_view::npos)
+    throw;
+  return pos;
+#else
+  size_t pos = func.find("enumeration =");
+  if(pos == std::string_view::npos)
+    throw;
+  return pos + 12 + 1;
+#endif
+  }
+
+auto constexpr verify_offset() -> bool { return find_enumeration_offset() == initial_offset; }
+
+static_assert(verify_offset());
+  }  // namespace se
+#endif
 // TODO chck impact of clang-18 attribute
 // enum E { Apple, Orange, Pear };
 // struct S {

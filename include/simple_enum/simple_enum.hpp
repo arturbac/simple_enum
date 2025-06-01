@@ -120,33 +120,6 @@ inline constexpr char end_of_enumeration_name = '>';
 #error "supply information to author about Your compiler"
 #endif
 
-#ifdef SIMPLE_ENUM_OPT_IN_STATIC_ASSERTS
-// OPT IN TESTING CODE
-enum struct verify_ennum_
-  {
-  v1
-  };
-
-constexpr size_t find_enumeration_offset()
-  {
-  auto const func{std::string_view{f<verify_ennum_::v1>()}};
-#if defined(_MSC_VER) and not defined(__clang__)
-  size_t pos = func.find('<');
-  if(pos == std::string_view::npos)
-    throw;
-  return pos;
-#else
-  size_t pos = func.find("enumeration =");
-  if(pos == std::string_view::npos)
-    throw;
-  return pos + 12 + 1;
-#endif
-  }
-
-auto constexpr verify_offset() -> bool { return find_enumeration_offset() == initial_offset; }
-
-static_assert(verify_offset());
-#endif
   }  // namespace se
 
 namespace simple_enum::inline v0_9
@@ -173,19 +146,6 @@ namespace detail
     meta_name enum_name;
     meta_name enumeration_name;
     };
-
-  constexpr char const * find_sentinel(char const * str)
-    {
-#ifdef __clang__
-#pragma clang unsafe_buffer_usage begin
-#endif
-    while(*str != ':' && *str != ')')
-      ++str;
-#ifdef __clang__
-#pragma clang unsafe_buffer_usage end
-#endif
-    return str;
-    }
 
   template<char end_of_enum = ']'>
   constexpr void parse_enumeration_name(char const * str, meta_name & result) noexcept
