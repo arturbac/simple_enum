@@ -130,7 +130,7 @@ enum struct verify_ennum_
 constexpr size_t find_enumeration_offset()
   {
   auto const func{std::string_view{f<verify_ennum_::v1>()}};
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) and not defined(__clang__)
   size_t pos = func.find('<');
   if(pos == std::string_view::npos)
     throw;
@@ -156,7 +156,8 @@ namespace detail
   struct meta_name
     {
     char const * data;
-    size_t size;
+    uint32_t size;
+    bool is_valid;
 
     constexpr operator std::string_view() const noexcept { return std::string_view{data, size}; }
 
@@ -252,7 +253,8 @@ namespace detail
 #endif
     // Calculate the size and set the result
     result.data = prev_colon;
-    result.size = size_t(current_colon - prev_colon);
+    result.size = uint32_t(current_colon - prev_colon);
+    result.is_valid = true;
     }
 
   template<concepts::strong_enum enumeration>
@@ -278,7 +280,10 @@ namespace detail
 #endif
     char const * const func{se::f<enumeration>()};
     char const * end_of_name{func + se::initial_offset};
+    res.is_valid = *(end_of_name + 1) != '(';
+
     char const * last_colon{end_of_name};
+
 #ifdef _MSC_VER
     size_t was_undefined{};
 #endif
@@ -297,7 +302,8 @@ namespace detail
 #endif
 
     res.data = last_colon + 1;
-    res.size = size_t(end_of_name - res.data);
+    res.size = uint32_t(end_of_name - res.data);
+
 #ifdef __clang__
 #pragma clang unsafe_buffer_usage end
 #endif
@@ -315,15 +321,18 @@ namespace detail
 #pragma clang unsafe_buffer_usage begin
 #endif
     char const * const func{se::f<enumeration>()};
+    res.is_valid = *(func + se::initial_offset + 1) != '(';
     char const * end_of_name{func + enum_beg};
     char const * enumeration_name{end_of_name};
-    while(*end_of_name != se::end_of_enumeration_name)
-      ++end_of_name;  // for other enumerations we only need to find end of string
+    if(res.is_valid)
+      while(*end_of_name != se::end_of_enumeration_name)
+        ++end_of_name;  // for other enumerations we only need to find end of string
+
 #ifdef __clang__
 #pragma clang unsafe_buffer_usage end
 #endif
     res.data = enumeration_name;
-    res.size = size_t(end_of_name - res.data);
+    res.size = uint32_t(end_of_name - res.data);
     }
 
   template<typename enum_type, std::integral auto first, std::size_t size, typename name_array, std::size_t... indices>
@@ -335,7 +344,7 @@ namespace detail
     }
 
   template<enum_concept enum_type, std::integral auto first_index, std::integral auto last_index>
-  consteval auto prepare_enum_meta_info() noexcept -> std::array<detail::meta_name, last_index - first_index + 1>
+  constexpr auto prepare_enum_meta_info() noexcept -> std::array<detail::meta_name, last_index - first_index + 1>
     {
     constexpr std::size_t size_{last_index - first_index + 1};
     std::array<detail::meta_name, size_> meta;

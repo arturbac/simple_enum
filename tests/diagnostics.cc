@@ -79,7 +79,7 @@ enum struct strong_typed : uint8_t
   {
   v1 = 1,
   v2,
-  v3,
+  v3 = 4,
   first = v1,
   last = v3
   };
@@ -87,7 +87,7 @@ enum struct strong_untyped
   {
   v1 = 1,
   v2,
-  v3,
+  v3 = 4,
   first = v1,
   last = v3
   };
@@ -140,9 +140,13 @@ int main()
   {
   using std::cout, std::endl;
   print_compiler_info();
+  std::cout << "\t" << se::f<strong_typed::v1>() << std::endl;
+  std::cout << "\t" << se::f<strong_typed(3)>() << std::endl;
   std::cout << "\t" << se::f<strong_typed{}>() << std::endl;
   std::cout << "\t" << se::f<strong_untyped{}>() << std::endl;
+  std::cout << "\t" << se::f<strong_untyped::v1>() << std::endl;
   std::cout << "\t" << se::f<weak_untyped_e{}>() << std::endl;
+  std::cout << "\t" << se::f<weak_untyped_e::v1>() << std::endl;
   std::cout << "\t" << se::f<test::strong_typed_2_e{}>() << std::endl;
   std::cout << "\t" << se::f<test::subnamespace::example_3_e{}>() << std::endl;
   std::cout << "\t" << se::f<test::subnamespace::detail::example_4_e{}>() << std::endl;

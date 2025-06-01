@@ -5,6 +5,7 @@
 #define SIMPLE_ENNUM_ENABLE_PEN_TEST
 #endif
 #include "simple_enum_tests.hpp"
+#include <simple_enum/enum_bitfield.h>
 
 // TODO chck impact of clang-18 attribute
 // enum E { Apple, Orange, Pear };
@@ -29,6 +30,7 @@ consteval auto adl_enum_bounds(enum_bounded) { return simple_enum::adl_info{enum
 #ifndef SIMPLE_ENUM_CXX_MODULE
 static_assert(simple_enum::detail::enum_meta_info_t<enum_bounded>::first() == enum_bounded::v1);
 static_assert(simple_enum::detail::enum_meta_info_t<enum_bounded>::last() == enum_bounded::v3);
+
 #endif
 
 static_assert(simple_enum::limits::min<enum_bounded>() == enum_bounded::v1);
@@ -258,19 +260,42 @@ enum struct one_elem_untyped
   };
 enum struct sparse_untyped
   {
-  v1 = 1,
-  v3 = 3,
+  v1 = 1,  // ix 0
+  // 2 ix 1
+  v3 = 3,  // ix 2
   first = v1,
   last = v3
   };
+#ifndef SIMPLE_ENUM_CXX_MODULE
+static_assert(simple_enum::detail::enum_meta_info_t<sparse_untyped>::first() == sparse_untyped::v1);
+static_assert(simple_enum::detail::enum_meta_info_t<sparse_untyped>::last() == sparse_untyped::v3);
+static_assert(simple_enum::detail::enum_meta_info_t<sparse_untyped>::meta_data[0].is_valid);
+static_assert(not simple_enum::detail::enum_meta_info_t<sparse_untyped>::meta_data[1].is_valid);
+static_assert(simple_enum::detail::enum_meta_info_t<sparse_untyped>::meta_data[2].is_valid);
+#endif
 enum struct sparse_offseted_untyped
   {
-  unknown = -1,
-  v1 = 1,
-  v3 = 3,
+  unknown = -1,  // ix 0
+  // 0 ix 1
+  v1 = 1,  // ix 2
+  // 2 ix 3
+  v3 = 3,           // ix 4
   first = unknown,  // simulate counting below the range
   last = v3
   };
+
+#ifndef SIMPLE_ENUM_CXX_MODULE
+static_assert(
+  simple_enum::detail::enum_meta_info_t<sparse_offseted_untyped>::first() == sparse_offseted_untyped::unknown
+);
+static_assert(simple_enum::detail::enum_meta_info_t<sparse_offseted_untyped>::last() == sparse_offseted_untyped::v3);
+static_assert(simple_enum::detail::enum_meta_info_t<sparse_offseted_untyped>::meta_data[0].is_valid);
+static_assert(not simple_enum::detail::enum_meta_info_t<sparse_offseted_untyped>::meta_data[1].is_valid);
+static_assert(simple_enum::detail::enum_meta_info_t<sparse_offseted_untyped>::meta_data[2].is_valid);
+static_assert(not simple_enum::detail::enum_meta_info_t<sparse_offseted_untyped>::meta_data[3].is_valid);
+static_assert(simple_enum::detail::enum_meta_info_t<sparse_offseted_untyped>::meta_data[4].is_valid);
+#endif
+
 #ifndef SIMPLE_ENUM_CXX_MODULE
 using detail::cont_pass;
 using detail::first_pass;
