@@ -2,13 +2,23 @@
 
 ## Overview
 
-The `enum_bitfield_t` is a size adaptive bitfiled strage with using enumeration as an indexing type for bitfields
-storage type depends on value of enum_size_v<> for enum selecting minimal suitable unisgned intergral
-
+The `enum_bitfield_t` is a size adaptive bitfiled storage with using enumeration as an indexing type for bitfields.
 Include the `simple_enum/enum_bitfield.h` in your project to use `enum_bitfield_t`
 
-## `enum_bitfield_t` Interface
+Storage type depends on value of enum_size_v<> for enum selecting minimal suitable unisgned intergral.
+First lowest bit of bitfield is mapped into first valid enumeration value.
+Bitfields support sparse enumerations in the way that some bits that are not mapped by then enumeration are always set to 0.
 
+In below enumeration 
+- read is mapped into bit 0
+- write is mapped into bit 3
+- execute is mapped into bit 4
+
+```cpp
+enum struct permission_t { read = -1, write = 2, execute = 3, first = read, last = execute };
+```
+
+## `enum_bitfield_t` Interface
 
 ```cpp
 
@@ -47,8 +57,13 @@ enum_bitfield_t support class template argument deducation when using arguments
 }
 ```
 
+ operators |, &, |=, &=, ~, ^, ^=
+ examples from tests using different enumerations
+ 
 ```cpp
-  // operators |, &, |=, &=, ~, ^, ^=
+  {
+  enum struct large_enum_t { v0, v1, v2, v3 ...  v39};
+  
   static_assert((enum_bitfield_t{v16, v21} | enum_bitfield_t{v31, v5}) 
                                         == enum_bitfield_t{v21, v16, v5, v31});
   static_assert((enum_bitfield_t{v16, v21, v34, v1} & enum_bitfield_t{v16, v21, v5})
@@ -61,9 +76,13 @@ enum_bitfield_t support class template argument deducation when using arguments
   enum_bitfield_t b{v16, v21};
   b |= enum_bitfield_t{v31, v5};
   expect(b == enum_bitfield_t{v21, v16, v5, v31});
-  
+  }
+  // ~ operator handles the case of sparse enumeration and is not setting dead bit of v2
+  {
+  enum struct medium_enum_t { v0 = 5, v1, /*v2,*/ v3 =8, v4, v5, v6, v7, v8, first = v0, last = v8 };
   expect((enum_bitfield_t{v1, v2, v5, v6, v7} ^ enum_bitfield_t{v2, v5, v6}) == enum_bitfield_t{v1, v7});
   
   static_assert((~enum_bitfield_t{v1, v2, v5, v6, v7}) == enum_bitfield_t{v0, v3, v4, v8});
+  }
 ```
 
