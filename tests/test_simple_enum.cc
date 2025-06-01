@@ -5,7 +5,6 @@
 #define SIMPLE_ENNUM_ENABLE_PEN_TEST
 #endif
 #include "simple_enum_tests.hpp"
-#include <simple_enum/enum_bitfield.h>
 
 // TODO chck impact of clang-18 attribute
 // enum E { Apple, Orange, Pear };
