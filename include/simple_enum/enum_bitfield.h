@@ -4,8 +4,8 @@
 #pragma once
 
 #include <simple_enum/enum_index.hpp>
-#include "detail/static_call_operator_prolog.h"
 #include <optional>
+#include "detail/static_call_operator_prolog.h"
 
 namespace simple_enum::inline v0_9
   {
