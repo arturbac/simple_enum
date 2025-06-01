@@ -48,6 +48,13 @@ using simple_enum::enum_index_t;
 using simple_enum::enum_size_t;
 using simple_enum::enum_size_v;
 
+using simple_enum::emum_index_to_enumeration;
+using simple_enum::emum_index_to_enumeration_t;
+using simple_enum::is_valid_enumeration_index_t;
+using simple_enum::is_valid_enumeration_index_v;
+using simple_enum::is_valid_enumeration_value_t;
+using simple_enum::is_valid_enumeration_value_v;
+
 using simple_enum::enum_cast;
 using simple_enum::enum_cast_error;
 using simple_enum::enum_cast_t;
@@ -72,5 +79,15 @@ using simple_enum::begin;
 using simple_enum::end;
 using simple_enum::enum_names;
 
+namespace detail
+  {
+  using simple_enum::detail::bit_proxy_t;
+  using simple_enum::detail::bitmask_t;
+  using simple_enum::detail::enum_bitfield_iterator_t;
+  using simple_enum::detail::enum_bitfield_traits_t;
+  using simple_enum::detail::enum_mask_v;
+  }  // namespace detail
+
+using simple_enum::enum_bitfield_full_e;
 using simple_enum::enum_bitfield_t;
   }  // namespace simple_enum

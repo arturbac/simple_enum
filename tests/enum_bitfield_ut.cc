@@ -5,7 +5,9 @@
 #include <simple_enum/enum_bitfield.h>
 #endif
 #include "simple_enum_tests.hpp"
+#include <vector>
 
+using simple_enum::detail::enum_mask_v;
 using simple_enum::enum_bitfield_t;
 using simple_enum::enum_size_v;
 
@@ -22,15 +24,23 @@ enum struct medium_enum_t { v0 = 5, v1, v2, v3, v4, v5, v6, v7, v8, first = v0, 
 // Enum that should use uint64_t (40 values)
 enum struct large_enum_t {
     v0, v1, v2, v3, v4, v5, v6, v7, v8, v9,
-    v10, v11, v12, v13, v14, v15, v16, v17, v18, v19,
+    v10, v11, v12, /*v13,*/ v14=14, v15, v16, v17, v18, v19,
     v20, v21, v22, v23, v24, v25, v26, v27, v28, v29,
-    v30, v31, v32, v33, v34, v35, v36, v37, v38, v39,
+    v30, v31, v32, /*v33,*/ v34 = 34, v35, v36, v37, v38, v39,
     first = v0, last = v39
 };
+
+static_assert( enum_mask_v<color_t> == 0b1111);
+static_assert( enum_mask_v<permission_t> == 0b1000000010001);
+static_assert( enum_mask_v<large_enum_t> == 0b11111101'11111111'11111111'11011111'11111111
+);
 // clang-format on
 
 int main()
   {
+  auto obj{enum_mask_v<permission_t>};
+  std::cout << "-->[" << std::format("{:b}", obj) << std::endl;
+
   "enum_bitfield"_test = []
   {
     "bitfield_logic"_test = []
@@ -146,6 +156,13 @@ int main()
 
       expect(large_bf[v1]);
       expect(not large_bf[v2]);
+
+      enum_bitfield_t neg{~large_bf};
+      enum_bitfield_t exp_neg{v0,  v2,  v3,  v4,  v5,  v6,  v7,  v8,  v9,  v10, v11, v14, v15, v16, v18, v19, v20,
+                              v21, v22, v23, v24, v25, v26, v27, v28, v29, v30, v32, v34, v36, v37, v38, v39};
+      expect(neg == exp_neg);
+      enum_bitfield_t neg2{~neg};
+      expect(large_bf == neg2);
       }
     };
 
@@ -296,6 +313,45 @@ int main()
         return x;
       };
       static_assert(fn_b() == enum_bitfield_t{v21, v16});
+    };
+
+    "range"_test = []
+    {
+      using enum large_enum_t;
+        {
+        enum_bitfield_t a{v36};
+        auto it{a.begin()};
+        expect(*it == v36);
+        ++it;
+        expect(a.end() == it);
+        expect(it == a.end());
+        }
+        {
+        enum_bitfield_t<large_enum_t> a{};
+        auto it{a.begin()};
+        expect(a.end() == it);
+        expect(it == a.end());
+        }
+        {
+        enum_bitfield_t a{v12, v23, v38, v39};
+        auto it{a.begin()};
+        expect(eq(*it, v12));
+        ++it;
+        expect(eq(*it, v23));
+        ++it;
+        expect(eq(*it, v38));
+        ++it;
+        expect(eq(*it, v39));
+        ++it;
+        expect(a.end() == it);
+        expect(it == a.end());
+        }
+        {
+        enum_bitfield_t a{v12, v23, v38, v39};
+        std::vector<large_enum_t> res;
+        std::ranges::copy(a, std::back_inserter(res));
+        expect(std::ranges::equal(res, std::array{v12, v23, v38, v39}));
+        }
     };
   };
   }

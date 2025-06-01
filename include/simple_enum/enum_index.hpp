@@ -79,6 +79,28 @@ consteval auto consteval_enum_index() -> std::size_t
   return enum_index(value).or_else([](auto &&) { throw; });
   }
 
+/// @brief enumeration value for 0 - based index
+template<enum_concept enum_type>
+struct emum_index_to_enumeration_t
+  {
+  [[nodiscard]]
+  static_call_operator constexpr auto operator()(std::size_t index) static_call_operator_const noexcept
+    -> cxx23::expected<enum_type, enum_index_error>
+    {
+    using enum_meta_info = detail::enum_meta_info_t<enum_type>;
+    auto const requested_value{enum_meta_info::first_index() + std::underlying_type_t<enum_type>(index)};
+
+    if(requested_value <= enum_meta_info::last_index()) [[likely]]
+      return static_cast<enum_type>(requested_value);
+    else
+      return cxx23::unexpected{enum_index_error::out_of_range};
+    }
+  };
+
+/// @brief enumeration value for 0 - based index
+template<enum_concept enum_type>
+inline constexpr emum_index_to_enumeration_t<enum_type> emum_index_to_enumeration;
+
 /// @brief Provides compile time information of length of enumeration (including holes).
 template<enum_concept enum_type>
 struct enum_size_t
@@ -90,6 +112,51 @@ struct enum_size_t
 template<enum_concept enum_type>
 inline constexpr std::size_t enum_size_v = enum_size_t<enum_type>::value;
 
+namespace detail
+  {
+  [[nodiscard]]
+  constexpr bool isdigit(char src) noexcept
+    {
+    unsigned c{static_cast<unsigned>(src)};
+    return c >= 48u && c <= 57u;
+    }
+  }  // namespace detail
+
+template<enum_concept enum_type>
+struct is_valid_enumeration_index_t
+  {
+  static_call_operator constexpr auto operator()(size_t index) static_call_operator_const noexcept -> bool
+    {
+    using enum_meta_info = detail::enum_meta_info_t<enum_type>;
+
+    if(index < enum_meta_info::size())
+      {
+      detail::meta_name const & res{enum_meta_info::meta_data[index]};
+      return res.is_valid;
+      }
+    else
+      return false;
+    }
+  };
+
+template<enum_concept enum_type>
+inline constexpr is_valid_enumeration_index_t<enum_type> is_valid_enumeration_index_v;
+
+struct is_valid_enumeration_value_t
+  {
+  template<enum_concept enum_type>
+  static_call_operator constexpr auto operator()(enum_type value) static_call_operator_const noexcept -> bool
+    {
+    using enum_meta_info = detail::enum_meta_info_t<enum_type>;
+    auto const requested_value{simple_enum::detail::to_underlying(value)};
+    if(requested_value >= enum_meta_info::first_index())
+      return is_valid_enumeration_index_t<enum_type>{}(size_t(requested_value - enum_meta_info::first_index()));
+    else
+      return false;
+    }
+  };
+
+inline constexpr is_valid_enumeration_value_t is_valid_enumeration_value_v;
   }  // namespace simple_enum::inline v0_9
 
 #include "detail/static_call_operator_epilog.h"
