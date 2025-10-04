@@ -46,7 +46,9 @@ int main()
     "bitfield_logic"_test = []
     {
       enum_bitfield_t<color_t> colors;
+      expect(colors.empty());
       colors[color_t::green] = true;
+      expect(not colors.empty());
       expect(colors[color_t::green]);
       expect(not colors[color_t::red]);
       expect(not colors[color_t::yellow]);
@@ -59,6 +61,7 @@ int main()
 
       colors[color_t::green] = false;
       expect(not colors[color_t::green]);
+      expect(not colors.empty());
 
       enum_bitfield_t<color_t> const copy{colors};
       // copy[color_t::green] = true; parent should be const
@@ -74,6 +77,9 @@ int main()
       colors[color_t::red] = true;
       expect(not colors[color_t::green]);
       expect(not colors[color_t::yellow]);
+      expect(not colors.at(color_t::yellow));
+      colors.at(color_t::yellow) = true;
+      expect(colors.at(color_t::yellow) == true);
       expect(colors[color_t::red]);
     };
 
