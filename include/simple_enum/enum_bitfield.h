@@ -189,6 +189,8 @@ struct enum_bitfield_t
   static constexpr storage_t bits_mask{traits_type::bits_mask};
   using iterator = detail::enum_bitfield_iterator_t<enumeration>;
 
+  static consteval auto full_mask() -> enum_bitfield_t { return enum_bitfield_t{bits_mask}; }
+
   struct sentinel_t
     {
     constexpr auto operator==(iterator const & it) const noexcept { return not it.current_.has_value(); }
@@ -211,9 +213,23 @@ struct enum_bitfield_t
     set_values(std::forward<Args>(args)...);
     }
 
-  constexpr auto begin() const noexcept -> iterator { return iterator{bits_}; }
+  [[nodiscard]]
+  constexpr auto empty() const noexcept -> bool
+    {
+    return bits_ == 0;
+    }
 
-  constexpr auto end() const noexcept -> sentinel_t { return sentinel_t{}; }
+  [[nodiscard]]
+  constexpr auto begin() const noexcept -> iterator
+    {
+    return iterator{bits_};
+    }
+
+  [[nodiscard]]
+  constexpr auto end() const noexcept -> sentinel_t
+    {
+    return sentinel_t{};
+    }
 
   /**
    * @brief Accesses a bit corresponding to an index of enumeration value.
@@ -222,6 +238,13 @@ struct enum_bitfield_t
   template<typename Self>
   [[nodiscard]]
   constexpr auto operator[](this Self && self, enumeration const value) noexcept
+    {
+    return detail::bit_proxy_t{self, value};
+    }
+
+  template<typename Self>
+  [[nodiscard]]
+  constexpr auto at(this Self && self, enumeration const value) noexcept
     {
     return detail::bit_proxy_t{self, value};
     }

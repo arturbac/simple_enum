@@ -124,7 +124,7 @@ int main()
       //
       expect(eq(
         schema,
-        R"({"type":["object"],"properties":{"enum_field":{"$ref":"#/$defs/test_enum_e"}},"additionalProperties":false,"$defs":{"test_enum_e":{"type":["string"],"oneOf":[{"title":"foo","const":"foo"},{"title":"bar","const":"bar"},{"title":"baz","const":"baz"}]}}})"sv
+        R"({"type":["object"],"properties":{"enum_field":{"$ref":"#/$defs/test_enum_e"}},"additionalProperties":false,"$defs":{"test_enum_e":{"type":["string"],"oneOf":[{"title":"foo","const":"foo"},{"title":"bar","const":"bar"},{"title":"baz","const":"baz"}]}},"title":"test_data_t"})"sv
       ));
       }
   };
