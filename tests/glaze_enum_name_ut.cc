@@ -44,6 +44,21 @@ struct test_data_t
   test_enum_e enum_field;
   };
 
+// expected glz::write_json_schema<test_data_t>() output depends on glaze version
+// glaze 7.3.3 emits "type" as string instead of array, since 7.4.0 enum schema is inlined instead of $defs
+// glaze/version.hpp is not available in glaze 5.x
+inline constexpr auto test_data_schema = []() -> std::string_view
+{
+#if __has_include(<glaze/version.hpp>)
+  if constexpr(glz::version >= glz::version_t{7, 4, 0})
+    return R"({"type":"object","properties":{"enum_field":{"type":"string","oneOf":[{"title":"foo","const":"foo"},{"title":"bar","const":"bar"},{"title":"baz","const":"baz"}]}},"additionalProperties":false,"title":"test_data_t"})";
+  else if constexpr(glz::version >= glz::version_t{7, 3, 3})
+    return R"({"type":"object","properties":{"enum_field":{"$ref":"#/$defs/test_enum_e"}},"additionalProperties":false,"$defs":{"test_enum_e":{"type":"string","oneOf":[{"title":"foo","const":"foo"},{"title":"bar","const":"bar"},{"title":"baz","const":"baz"}]}},"title":"test_data_t"})";
+  else
+#endif
+    return R"({"type":["object"],"properties":{"enum_field":{"$ref":"#/$defs/test_enum_e"}},"additionalProperties":false,"$defs":{"test_enum_e":{"type":["string"],"oneOf":[{"title":"foo","const":"foo"},{"title":"bar","const":"bar"},{"title":"baz","const":"baz"}]}},"title":"test_data_t"})";
+}();
+
 inline constexpr glz::opts pretty{.format = glz::JSON, .null_terminated = true, .prettify = true};
 enum class Color : int8_t
   {
@@ -122,10 +137,7 @@ int main()
       std::string schema{std::move(schemares.value())};
       // expect(false) << schema;
       //
-      expect(eq(
-        schema,
-        R"({"type":["object"],"properties":{"enum_field":{"$ref":"#/$defs/test_enum_e"}},"additionalProperties":false,"$defs":{"test_enum_e":{"type":["string"],"oneOf":[{"title":"foo","const":"foo"},{"title":"bar","const":"bar"},{"title":"baz","const":"baz"}]}},"title":"test_data_t"})"sv
-      ));
+      expect(eq(schema, test_data_schema));
       }
   };
   "json rpc call test"_test = []
