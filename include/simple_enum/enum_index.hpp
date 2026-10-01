@@ -76,7 +76,9 @@ inline constexpr enum_index_t enum_index;
 template<enum_concept auto value>
 consteval auto consteval_enum_index() -> std::size_t
   {
-  return enum_index(value).or_else([](auto &&) { throw; });
+  constexpr auto index{enum_index(value)};
+  static_assert(index.has_value(), "enumeration value is out of range");
+  return *index;
   }
 
 /// @brief enumeration value for 0 - based index

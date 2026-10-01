@@ -112,6 +112,30 @@ int main()
       expect(sizeof(large_bitfield_t) == sizeof(uint64_t));
     };
 
+    "storage_construct_masks_holes"_test = []
+    {
+      using enum medium_enum_t;
+      using medium_bitfield_t = enum_bitfield_t<medium_enum_t>;
+      // index 2 is a hole, indexes above 8 are past last
+      medium_bitfield_t const all{uint16_t(0xffffu)};
+      expect(all == medium_bitfield_t::full_mask());
+      expect(std::ranges::distance(all.begin(), all.end()) == 8);
+      medium_bitfield_t const hole_only{uint16_t(1u << 2u)};
+      expect(hole_only.empty());
+      expect(hole_only == medium_bitfield_t{});
+      expect(hole_only.begin() == hole_only.end());
+    };
+
+    "iterator_arrow"_test = []
+    {
+      using enum medium_enum_t;
+      enum_bitfield_t a{v3, v8};
+      auto it{a.begin()};
+      expect(*it.operator->() == v3);
+      ++it;
+      expect(*it.operator->() == v8);
+    };
+
     "large_bitfield_logic"_test = []
     {
       enum_bitfield_t<large_enum_t> large_bf;

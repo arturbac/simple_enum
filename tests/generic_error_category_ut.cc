@@ -53,6 +53,7 @@ suite string_literal_tests = []
   };
 };
   }  // namespace
+
 // Assuming the error category template and other necessary code is defined above
 
 // Example enum for demonstration purposes
@@ -155,6 +156,27 @@ static_assert(std::is_error_code_enum<test_adl_decl_error_code>::value);
 static_assert(!simple_enum::detail::error_category_name_specialized<test_adl_decl_error_code>);
 #endif
   }  // namespace test_adl_decl_error_code
+
+namespace test_adl_decl_error_code_false
+  {
+enum class test_adl_decl_error_code_false
+  {
+  success = 0,
+  unknown
+  };
+
+consteval auto adl_enum_bounds(test_adl_decl_error_code_false)
+  {
+  using enum test_adl_decl_error_code_false;
+  return simple_enum::adl_info{success, unknown};
+  }
+
+// declared but returning false must not enable error code enum
+consteval auto adl_decl_error_code(test_adl_decl_error_code_false) -> bool { return false; }
+
+static_assert(!simple_enum::concepts::declared_error_code<test_adl_decl_error_code_false>);
+static_assert(!std::is_error_code_enum<test_adl_decl_error_code_false>::value);
+  }  // namespace test_adl_decl_error_code_false
 
 namespace test_non_adl_decl_error_code
   {

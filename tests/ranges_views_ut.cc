@@ -76,6 +76,21 @@ static_assert(ranges::range<simple_enum::enum_view<my_enum>>, "enum_view must sa
 
 static_assert(ranges::range<simple_enum::enum_view<weak::weak_typed_e>>);
 
+// iterator declares random_access_iterator_tag, requires it + n, n + it, it - n and it[n]
+static_assert(std::random_access_iterator<ranges::iterator_t<simple_enum::enum_view<my_enum>>>);
+static_assert(ranges::random_access_range<simple_enum::enum_view<my_enum>>);
+static_assert(ranges::sized_range<simple_enum::enum_view<my_enum>>);
+
+static consteval auto random_access_check() -> bool
+  {
+  simple_enum::enum_view<my_enum> view;
+  auto const it{view.begin()};
+  return it[1] == my_enum::b && *(it + 2) == my_enum::c && *(2 + it) == my_enum::c && *(view.end() - 1) == my_enum::c
+         && view[2] == my_enum::c && view.size() == 3u;
+  }
+
+static_assert(random_access_check());
+
 namespace simple_enum
   {
 static void view_test()
