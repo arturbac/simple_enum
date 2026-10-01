@@ -6,7 +6,7 @@
 #include <concepts>
 #include <type_traits>
 
-#define SIMPLE_ENUM_NAME_VERSION "0.9.4"
+#define SIMPLE_ENUM_NAME_VERSION "0.9.5"
 
 namespace simple_enum::inline v0_9
   {
@@ -110,9 +110,7 @@ namespace detail
   {
   template<typename Enum>
   constexpr auto to_underlying(Enum e) noexcept -> std::underlying_type_t<Enum>
-    {
-    return static_cast<std::underlying_type_t<Enum>>(e);
-    }
+    { return static_cast<std::underlying_type_t<Enum>>(e); }
 
   template<typename enumeration>
   concept has_valid_adl_enum_bounds = requires(enumeration e) {

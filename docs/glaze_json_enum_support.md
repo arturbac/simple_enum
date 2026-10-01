@@ -2,6 +2,10 @@
 
 This document provides an overview and examples for integrating and using the extended support for handling enumerations by their names in JSON serialization and deserialization processes, leveraging the [`glaze`](https://github.com/stephenberry/glaze) library in combination with `simple_enum`.
 
+## Supported Glaze Versions
+
+`simple_enum` glaze integration is tested with glaze **5.0 - 8.4**.
+
 ## Including Headers
 
 To start with, include the necessary headers to get access to the functionalities provided by both `simple_enum` and `glaze` libraries:
