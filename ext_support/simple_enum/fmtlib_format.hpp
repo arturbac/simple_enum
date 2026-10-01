@@ -18,20 +18,29 @@ import simple_enum;
 #endif
 
 #include <type_traits>
+#include <string_view>
 
 namespace fmt
   {
 
+// Formatter is provided only for bounded enumerations, so it does not hijack enumerations already formattable by
+// fmt like std::byte. Format spec is the same as for string_view (fill, align, width, precision). Values without a
+// name are formatted as their underlying integer value.
 template<typename T>
-  requires simple_enum::enum_concept<T>
-struct formatter<T>
+  requires simple_enum::bounded_enum<T>
+struct formatter<T> : formatter<string_view>
   {
-  constexpr auto parse(format_parse_context & ctx) -> decltype(ctx.begin()) { return ctx.begin(); }
-
   template<typename format_context>
   auto format(T const & e, format_context & ctx) const -> decltype(ctx.out())
     {
-    return fmt::format_to(ctx.out(), "{}", simple_enum::enum_name(e));
+    std::string_view const name{simple_enum::enum_name(e)};
+    if(!name.empty())
+      return formatter<string_view>::format(string_view{name.data(), name.size()}, ctx);
+
+    using underlying_type = std::underlying_type_t<T>;
+    using value_type = std::conditional_t<std::is_signed_v<underlying_type>, long long, unsigned long long>;
+    format_int const value{static_cast<value_type>(e)};
+    return formatter<string_view>::format(string_view{value.data(), value.size()}, ctx);
     }
   };
 
