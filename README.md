@@ -10,7 +10,7 @@
 - **Enum to String and Back**: Supports conversion from enum to `std::string_view` and vice versa with minimal compile-time overhead.
 - **Enumeration Indexing**: Offers `enum_index`, allowing for index retrieval of enum values based on compile-time metadata.
 - **Safe bitfield indexed with enumerations**: allows safe bitfield bits manipulation with enumeration indexing[documentation](https://arturbac.github.io/simple_enum/enum_bitfiled.html)
-- **Glaze Integration**: Offers integration with [glaze json and glaze json rpc](https://arturbac.github.io/simple_enum/glaze_json_enum_support.html) latest supported glaze version is 5.x
+- **Glaze Integration**: Offers integration with [glaze json and glaze json rpc](https://arturbac.github.io/simple_enum/glaze_json_enum_support.html), tested with glaze 5.0 - 8.4
 - **Generic std::error_code** Integration:  refer to [documentation](https://arturbac.github.io/simple_enum/generic_error_category.html)
 - **std::format support** for enumerations : refer to [documentation](https://arturbac.github.io/simple_enum/std_format.html)
 - **fmt::format support** for enumerations : refer to [documentation](https://arturbac.github.io/simple_enum/fmt_format.html)
