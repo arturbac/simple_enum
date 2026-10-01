@@ -88,10 +88,9 @@ struct emum_index_to_enumeration_t
     -> cxx23::expected<enum_type, enum_index_error>
     {
     using enum_meta_info = detail::enum_meta_info_t<enum_type>;
-    auto const requested_value{enum_meta_info::first_index() + std::underlying_type_t<enum_type>(index)};
-
-    if(requested_value <= enum_meta_info::last_index()) [[likely]]
-      return static_cast<enum_type>(requested_value);
+    // check before narrowing to underlying type, which would wrap large index into range
+    if(index < enum_meta_info::size()) [[likely]]
+      return static_cast<enum_type>(enum_meta_info::first_index() + std::underlying_type_t<enum_type>(index));
     else
       return cxx23::unexpected{enum_index_error::out_of_range};
     }

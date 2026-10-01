@@ -19,7 +19,7 @@ enum weak_untyped_3_e
   v2,
   v3
   };
-  }
+  }  // namespace subnamespace
 
 template<>
 struct simple_enum::info<subnamespace::weak_untyped_3_e>
@@ -27,6 +27,7 @@ struct simple_enum::info<subnamespace::weak_untyped_3_e>
   static constexpr auto first = subnamespace::weak_untyped_3_e::v1;
   static constexpr auto last = subnamespace::weak_untyped_3_e::v3;
   };
+
 // Example enumeration for demonstration
 enum class my_enum
   {
@@ -232,6 +233,18 @@ static void ranges_transform_test()
       ranges::copy(view, back_inserter(results));
       expect(ranges::equal(results, expected));
       }
+  };
+
+  "reverse"_test = []
+  {
+    // reverse_iterator dereferences temporary copy of iterator, reference must not point into it
+    using subnamespace::weak_untyped_3_e;
+    auto view = enum_view<weak_untyped_3_e>{} | views::reverse | views::transform(enum_name);
+    static constexpr array expected{"v3"sv, "v2"sv, "v1"sv};
+    expect(ranges::equal(view, expected));
+    static_assert(
+      std::same_as<std::iter_reference_t<ranges::iterator_t<enum_view<weak_untyped_3_e>>>, weak_untyped_3_e>
+    );
   };
   }
   }  // namespace simple_enum

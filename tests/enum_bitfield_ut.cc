@@ -12,6 +12,9 @@ using simple_enum::enum_bitfield_t;
 using simple_enum::enum_size_v;
 
 // clang-format off
+// used only in range-for test
+enum struct range_for_e { v0, v1, v2, first = v0, last = v2 };
+
 // Enum that should use uint8_t
 enum struct color_t { red, green, blue, yellow, first = red, last = yellow };
 
@@ -358,6 +361,32 @@ int main()
         std::ranges::copy(a, std::back_inserter(res));
         expect(std::ranges::equal(res, std::array{v12, v23, v38, v39}));
         }
+        {
+        // range-for uses rewritten != on sentinel, requires operator== returning bool
+        // dedicated enum, any earlier == use would deduce auto return type and hide the error
+        using enum range_for_e;
+        enum_bitfield_t a{v0, v2};
+        std::vector<range_for_e> res;
+        for(range_for_e v: a)
+          res.push_back(v);
+        expect(std::ranges::equal(res, std::array{v0, v2}));
+        }
+    };
+    "lvalue_args"_test = []
+    {
+      color_t const green{color_t::green};
+      color_t yellow{color_t::yellow};
+      enum_bitfield_t<color_t> colors{green, yellow};
+      expect(colors[color_t::green]);
+      expect(colors[color_t::yellow]);
+      expect(not colors[color_t::red]);
+
+      enum_bitfield_t<color_t> other;
+      color_t red{color_t::red};
+      other.set_values(red, green);
+      expect(other[color_t::red]);
+      expect(other[color_t::green]);
+      expect(not other[color_t::yellow]);
     };
   };
   }

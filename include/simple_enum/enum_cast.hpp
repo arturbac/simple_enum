@@ -102,7 +102,10 @@ namespace detail
       sorted_indices_type::indices.begin(), sorted_indices_type::indices.end(), target, comp
     );
 
-    if(it != sorted_indices_type::indices.end() && enum_meta_info::meta_data[*it].as_view() == target)
+    if(
+      it != sorted_indices_type::indices.end() && enum_meta_info::meta_data[*it].is_valid
+      && enum_meta_info::meta_data[*it].as_view() == target
+    )
       return it;
     else
       return sorted_indices_type::indices.end();

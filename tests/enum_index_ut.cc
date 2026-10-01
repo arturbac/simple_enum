@@ -5,6 +5,7 @@
 #include <simple_enum/enum_index.hpp>
 #endif
 #include "simple_enum_tests.hpp"
+#include <cstdint>
 
 using simple_enum::emum_index_to_enumeration;
 using simple_enum::enum_index;
@@ -22,6 +23,7 @@ enum struct E1 : uint8_t
   first = _1,
   last = _5
   };
+
 enum struct E2 : uint8_t
   {
   _1 = 10,
@@ -55,6 +57,31 @@ static_assert(emum_index_to_enumeration<E3>(0).value() == E3::_1);
 static_assert(emum_index_to_enumeration<E3>(2).value() == E3::_3);
 static_assert(emum_index_to_enumeration<E3>(5).value() == E3::_6);
 static_assert(emum_index_to_enumeration<E3>(15).error() == enum_index_error::out_of_range);
+
+// index must not be narrowed to underlying type before range check
+enum struct int8_e : std::int8_t
+  {
+  v0,
+  v1,
+  v2,
+  first = v0,
+  last = v2
+  };
+
+enum struct uint8_e : std::uint8_t
+  {
+  v0,
+  v1,
+  v2,
+  first = v0,
+  last = v2
+  };
+
+static_assert(emum_index_to_enumeration<int8_e>(2).value() == int8_e::v2);
+static_assert(emum_index_to_enumeration<int8_e>(3).error() == enum_index_error::out_of_range);
+static_assert(emum_index_to_enumeration<int8_e>(200).error() == enum_index_error::out_of_range);
+static_assert(emum_index_to_enumeration<uint8_e>(256).error() == enum_index_error::out_of_range);
+static_assert(emum_index_to_enumeration<uint8_e>(257).error() == enum_index_error::out_of_range);
 
 static_assert(is_valid_enumeration_index_v<E3>(0));
 static_assert(is_valid_enumeration_index_v<E3>(1));

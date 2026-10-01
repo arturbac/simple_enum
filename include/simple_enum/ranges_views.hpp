@@ -17,7 +17,8 @@ public:
   using value_type = enumeration;
   using difference_type = std::ptrdiff_t;
   using pointer = enumeration const *;
-  using reference = enumeration const &;
+  // by value, iterator owns the value so returning reference would dangle in std::reverse_iterator
+  using reference = enumeration;
 
 private:
   enumeration current_{};
@@ -70,31 +71,21 @@ public:
     }
 
   constexpr auto operator-(enum_view_iterator const & other) const noexcept -> difference_type
-    {
-    return simple_enum::detail::to_underlying(current_) - simple_enum::detail::to_underlying(other.current_);
-    }
+    { return simple_enum::detail::to_underlying(current_) - simple_enum::detail::to_underlying(other.current_); }
 
   constexpr auto operator[](difference_type n) const noexcept -> reference { return *(*this + n); }
 
   constexpr auto operator<(enum_view_iterator const & other) const noexcept -> bool
-    {
-    return simple_enum::detail::to_underlying(current_) < simple_enum::detail::to_underlying(other.current_);
-    }
+    { return simple_enum::detail::to_underlying(current_) < simple_enum::detail::to_underlying(other.current_); }
 
   constexpr auto operator>(enum_view_iterator const & other) const noexcept -> bool
-    {
-    return simple_enum::detail::to_underlying(current_) > simple_enum::detail::to_underlying(other.current_);
-    }
+    { return simple_enum::detail::to_underlying(current_) > simple_enum::detail::to_underlying(other.current_); }
 
   constexpr auto operator<=(enum_view_iterator const & other) const noexcept -> bool
-    {
-    return simple_enum::detail::to_underlying(current_) <= simple_enum::detail::to_underlying(other.current_);
-    }
+    { return simple_enum::detail::to_underlying(current_) <= simple_enum::detail::to_underlying(other.current_); }
 
   constexpr auto operator>=(enum_view_iterator const & other) const noexcept -> bool
-    {
-    return simple_enum::detail::to_underlying(current_) >= simple_enum::detail::to_underlying(other.current_);
-    }
+    { return simple_enum::detail::to_underlying(current_) >= simple_enum::detail::to_underlying(other.current_); }
 
   constexpr auto operator==(enum_view_iterator const & other) const noexcept -> bool = default;
   };
@@ -128,9 +119,7 @@ public:
   constexpr auto begin() const noexcept -> iterator { return iterator(first_); }
 
   constexpr auto end() const noexcept -> iterator
-    {
-    return iterator(static_cast<enumeration>(simple_enum::detail::to_underlying(last_) + 1));
-    }
+    { return iterator(static_cast<enumeration>(simple_enum::detail::to_underlying(last_) + 1)); }
   };
 
 template<typename enumeration>
@@ -185,15 +174,11 @@ inline constexpr auto enum_names = []() { return enum_view<enumeration>{} | std:
 
 template<typename enumeration>
 constexpr auto begin(enum_view<enumeration> const & v) -> typename enum_view<enumeration>::iterator
-  {
-  return v.begin();
-  }
+  { return v.begin(); }
 
 template<typename enumeration>
 constexpr auto end(enum_view<enumeration> const & v) -> typename enum_view<enumeration>::iterator
-  {
-  return v.end();
-  }
+  { return v.end(); }
 
   }  // namespace simple_enum::inline v0_9
 
