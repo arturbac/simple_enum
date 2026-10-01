@@ -24,7 +24,8 @@ namespace detail
     requires(T enum_value) 
       {
       { adl_decl_error_code(enum_value) } -> std::same_as<bool>;
-      adl_decl_error_code(enum_value) == true;
+      // nested requirement, simple requirement would only check that expression is valid
+      requires std::bool_constant<adl_decl_error_code(T{})>::value;
       };
   // clang-format on
   }  // namespace detail
@@ -69,9 +70,7 @@ public:
   std::string message(int ev) const override;
 
   static constexpr auto enumeration(std::integral auto ev) noexcept -> enumeration_type
-    {
-    return static_cast<enumeration_type>(ev);
-    }
+    { return static_cast<enumeration_type>(ev); }
 
   /// Provides access to the singleton instance of the error category.
   static auto instance() -> generic_error_category const &;
@@ -89,9 +88,7 @@ public:
  */
 template<concepts::error_enum ErrorEnum>
 inline auto make_error_code(ErrorEnum e) -> std::error_code
-  {
-  return {static_cast<int>(e), generic_error_category<ErrorEnum>::instance()};
-  }
+  { return {static_cast<int>(e), generic_error_category<ErrorEnum>::instance()}; }
 
 using cxx23::bad_expected_access;
 using cxx23::expected;
@@ -108,9 +105,7 @@ using unexpected_ec = unexpected<std::error_code>;
 
 template<concepts::error_enum ErrorEnum>
 inline auto make_unexpected_ec(ErrorEnum e) -> unexpected_ec
-  {
-  return unexpected_ec{make_error_code(e)};
-  }
+  { return unexpected_ec{make_error_code(e)}; }
 
   }  // namespace simple_enum::inline v0_9
 

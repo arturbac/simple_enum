@@ -58,6 +58,9 @@ static_assert(emum_index_to_enumeration<E3>(2).value() == E3::_3);
 static_assert(emum_index_to_enumeration<E3>(5).value() == E3::_6);
 static_assert(emum_index_to_enumeration<E3>(15).error() == enum_index_error::out_of_range);
 
+static_assert(simple_enum::consteval_enum_index<E3::_1>() == 0);
+static_assert(simple_enum::consteval_enum_index<E3::_6>() == 5);
+
 // index must not be narrowed to underlying type before range check
 enum struct int8_e : std::int8_t
   {

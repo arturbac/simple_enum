@@ -146,7 +146,7 @@ namespace detail
 
     constexpr auto operator*() const noexcept -> reference { return *current_; }
 
-    constexpr auto operator->() const noexcept -> pointer { return current_->value(); }
+    constexpr auto operator->() const noexcept -> pointer { return &*current_; }
 
     constexpr auto operator++() noexcept -> enum_bitfield_iterator_t &
       {
@@ -202,7 +202,8 @@ struct enum_bitfield_t
 
   constexpr enum_bitfield_t() noexcept = default;
 
-  explicit constexpr enum_bitfield_t(std::same_as<storage_t> auto bits) noexcept : bits_{bits} {}
+  // bits for holes and indexes past the last enumeration are dropped
+  explicit constexpr enum_bitfield_t(std::same_as<storage_t> auto bits) noexcept : bits_{storage_t(bits & bits_mask)} {}
 
   // constructs will full bits enabled
   explicit constexpr enum_bitfield_t(enum_bitfield_full_e) noexcept : bits_{bits_mask} {}

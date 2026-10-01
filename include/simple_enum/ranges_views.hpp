@@ -70,6 +70,18 @@ public:
     return *this;
     }
 
+  [[nodiscard]]
+  friend constexpr auto operator+(enum_view_iterator it, difference_type n) noexcept -> enum_view_iterator
+    { return it += n; }
+
+  [[nodiscard]]
+  friend constexpr auto operator+(difference_type n, enum_view_iterator it) noexcept -> enum_view_iterator
+    { return it += n; }
+
+  [[nodiscard]]
+  friend constexpr auto operator-(enum_view_iterator it, difference_type n) noexcept -> enum_view_iterator
+    { return it -= n; }
+
   constexpr auto operator-(enum_view_iterator const & other) const noexcept -> difference_type
     { return simple_enum::detail::to_underlying(current_) - simple_enum::detail::to_underlying(other.current_); }
 
