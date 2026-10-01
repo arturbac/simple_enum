@@ -193,7 +193,7 @@ struct enum_bitfield_t
 
   struct sentinel_t
     {
-    constexpr auto operator==(iterator const & it) const noexcept { return not it.current_.has_value(); }
+    constexpr auto operator==(iterator const & it) const noexcept -> bool { return not it.current_.has_value(); }
     };
 
   storage_t bits_{0};
@@ -207,29 +207,22 @@ struct enum_bitfield_t
   // constructs will full bits enabled
   explicit constexpr enum_bitfield_t(enum_bitfield_full_e) noexcept : bits_{bits_mask} {}
 
-  template<std::same_as<enumeration>... Args>
+  template<typename... Args>
+    requires(std::same_as<std::remove_cvref_t<Args>, enumeration> && ...)
   constexpr explicit enum_bitfield_t(Args &&... args) noexcept
-    {
-    set_values(std::forward<Args>(args)...);
-    }
+    { set_values(std::forward<Args>(args)...); }
 
   [[nodiscard]]
   constexpr auto empty() const noexcept -> bool
-    {
-    return bits_ == 0;
-    }
+    { return bits_ == 0; }
 
   [[nodiscard]]
   constexpr auto begin() const noexcept -> iterator
-    {
-    return iterator{bits_};
-    }
+    { return iterator{bits_}; }
 
   [[nodiscard]]
   constexpr auto end() const noexcept -> sentinel_t
-    {
-    return sentinel_t{};
-    }
+    { return sentinel_t{}; }
 
   /**
    * @brief Accesses a bit corresponding to an index of enumeration value.
@@ -238,18 +231,15 @@ struct enum_bitfield_t
   template<typename Self>
   [[nodiscard]]
   constexpr auto operator[](this Self && self, enumeration const value) noexcept
-    {
-    return detail::bit_proxy_t{self, value};
-    }
+    { return detail::bit_proxy_t{self, value}; }
 
   template<typename Self>
   [[nodiscard]]
   constexpr auto at(this Self && self, enumeration const value) noexcept
-    {
-    return detail::bit_proxy_t{self, value};
-    }
+    { return detail::bit_proxy_t{self, value}; }
 
-  template<std::same_as<enumeration>... Args>
+  template<typename... Args>
+    requires(std::same_as<std::remove_cvref_t<Args>, enumeration> && ...)
   constexpr void set_values(enumeration const & arg, Args &&... args) noexcept
     {
     detail::bit_proxy_t{*this, arg} = true;
@@ -259,32 +249,23 @@ struct enum_bitfield_t
   constexpr void set_values(enumeration const & arg) noexcept { detail::bit_proxy_t{*this, arg} = true; }
 
   [[nodiscard]]
-  constexpr auto operator==(enum_bitfield_t const &) const noexcept -> bool
-    = default;
+  constexpr auto operator==(enum_bitfield_t const &) const noexcept -> bool = default;
 
   [[nodiscard]]
   constexpr auto operator~() const noexcept -> enum_bitfield_t
-    {
-    return enum_bitfield_t{storage_t((~bits_) & bits_mask)};
-    }
+    { return enum_bitfield_t{storage_t((~bits_) & bits_mask)}; }
 
   [[nodiscard]]
   constexpr auto operator|(enum_bitfield_t const values) const noexcept -> enum_bitfield_t
-    {
-    return enum_bitfield_t{storage_t(bits_ | values.bits_)};
-    }
+    { return enum_bitfield_t{storage_t(bits_ | values.bits_)}; }
 
   [[nodiscard]]
   constexpr auto operator&(enum_bitfield_t const values) const noexcept -> enum_bitfield_t
-    {
-    return enum_bitfield_t{storage_t(bits_ & values.bits_)};
-    }
+    { return enum_bitfield_t{storage_t(bits_ & values.bits_)}; }
 
   [[nodiscard]]
   constexpr auto operator^(enum_bitfield_t const values) const noexcept -> enum_bitfield_t
-    {
-    return enum_bitfield_t{storage_t((bits_ ^ values.bits_) & bits_mask)};
-    }
+    { return enum_bitfield_t{storage_t((bits_ ^ values.bits_) & bits_mask)}; }
 
   constexpr auto operator|=(enum_bitfield_t const values) noexcept -> enum_bitfield_t &
     {

@@ -262,7 +262,8 @@ namespace detail
 #endif
 
     res.data = last_colon + 1;
-    res.size = uint32_t(end_of_name - res.data);
+    // invalid value is printed as casted number, same as in cont_pass it has no name
+    res.size = res.is_valid ? uint32_t(end_of_name - res.data) : 0u;
 
 #ifdef __clang__
 #pragma clang unsafe_buffer_usage end

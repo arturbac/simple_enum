@@ -5,7 +5,19 @@
 #include <simple_enum/enum_cast.hpp>
 #endif
 #include "simple_enum_tests.hpp"
+#include <cstdint>
 #include <utility>
+
+// hole at first position of the range
+enum struct hole_first_e : std::uint8_t
+  {
+  v1 = 1,
+  v2,
+  v4 = 4
+  };
+
+consteval auto adl_enum_bounds(hole_first_e)
+  { return simple_enum::adl_info{static_cast<hole_first_e>(0), hole_first_e::v4}; }
 
 namespace simple_enum
   {
@@ -126,6 +138,17 @@ static void enum_cast_test()
       expect(fatal(!t1.has_value()));
       expect(t1.error() == invalid_cast);
       }
+  };
+
+  "holes"_test = []
+  {
+    expect(enum_name(static_cast<hole_first_e>(0)).empty());
+    expect(enum_name(static_cast<hole_first_e>(3)).empty());
+    expect(eq(enum_name(hole_first_e::v1), "v1"sv));
+    expect(not enum_cast<hole_first_e>("0").has_value());
+    expect(not enum_cast<hole_first_e>("3").has_value());
+    expect(not enum_cast<hole_first_e>("").has_value());
+    expect(enum_cast<hole_first_e>("v4").value() == hole_first_e::v4);
   };
   }
   }  // namespace simple_enum
