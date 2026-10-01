@@ -11,7 +11,7 @@ cpmaddpackage(
   GITHUB_REPOSITORY
   arturbac/ut-ext
   GIT_TAG
-  v2.0.1_7)
+  v2.0.1_8)
 find_package(ut-ext REQUIRED)
 
 # ----------------------------------------------------------------
@@ -83,7 +83,9 @@ cpmaddpackage(
   GITHUB_REPOSITORY
   fmtlib/fmt
   GIT_TAG
-  11.1.2)
+  12.2.0
+  OPTIONS
+  "FMT_MODULE OFF")
 
 # find_package(fmt REQUIRED)
 add_ut_test(fmtlib_format_ut.cc)
