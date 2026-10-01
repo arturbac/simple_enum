@@ -6,127 +6,108 @@ on:
     paths-ignore:
       - 'README.md'
       - 'docs/**'
-      
+
   pull_request:
     paths-ignore:
       - 'README.md'
       - 'docs/**'
 
-jobs:
-  build-and-test-gcc:
-    runs-on: ubuntu-24.04
-    steps:
-    - uses: actions/checkout@v3
-    - name: Install dependencies
-      run: |
-        sudo apt-get update && sudo apt-get install -y cmake ninja-build gcc-14 g++-14
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 140
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 140
-        sudo update-alternatives --set gcc /usr/bin/gcc-14
-        sudo update-alternatives --set g++ /usr/bin/g++-14
-        
-        g++ --version
-    - name: ci-gcc
-      run: cmake --workflow --preset="ci-gcc"
-      
-    - name: ci-gcc-c++26
-      run: cmake --workflow --preset="ci-gcc-c++26"
-      
-  build-and-test-clang-20:
-    runs-on: ubuntu-24.04
-    steps:
-    - uses: actions/checkout@v3
-    - name: Add LLVM Repository
-      run: |
-        wget https://apt.llvm.org/llvm.sh
-        chmod +x llvm.sh
-        sudo ./llvm.sh 20
-        
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y cmake g++-14 ninja-build clang-20 libfmt-dev libc++-20-dev libc++abi-20-dev clang-tools-20
-        
-        sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-20 200
-        sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-20 200
-        sudo update-alternatives --install /usr/bin/clang-scan-deps clang-scan-deps /usr/bin/clang-scan-deps-20 200
-         
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 140
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 140
-         
-        sudo update-alternatives --set clang /usr/bin/clang-20
-        sudo update-alternatives --set clang++ /usr/bin/clang++-20
-        sudo update-alternatives --set clang-scan-deps /usr/bin/clang-scan-deps-20
-         
-        sudo update-alternatives --set gcc /usr/bin/gcc-14
-        sudo update-alternatives --set g++ /usr/bin/g++-14
-        
-        clang++ --version
-        g++ --version
-        
-    - name: ci-clang-libstdc++
-      run: cmake --workflow --preset="ci-clang-libstdc++"
-      
-    - name: ci-module-clang-libstdc++
-      run: cmake --workflow --preset="ci-module-clang-libstdc++"
-      
-    - name: ci-clang-libc++
-      run: cmake --workflow --preset="ci-clang-libc++"
-      
-    - name: ci-module-clang-libc++
-      run: cmake --workflow --preset="ci-module-clang-libc++"
-      
-    - name: ci-clang-libstdc++-c++26
-      run: cmake --workflow --preset="ci-clang-libstdc++-c++26"
-      
-    - name: ci-clang-libc++-c++26
-      run: cmake --workflow --preset="ci-clang-libc++-c++26"
-      
-  build-and-test-clang-19:
-    runs-on: ubuntu-24.04
-    steps:
-    - uses: actions/checkout@v3
-    - name: Add LLVM Repository
-      run: |
-        wget https://apt.llvm.org/llvm.sh
-        chmod +x llvm.sh
-        sudo ./llvm.sh 19
-        
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y cmake g++-14 ninja-build clang-19 libfmt-dev libc++-19-dev libc++abi-19-dev clang-tools-19
-        
-        sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-19 190
-        sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-19 190
-        sudo update-alternatives --install /usr/bin/clang-scan-deps clang-scan-deps /usr/bin/clang-scan-deps-19 190
-         
-        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 140
-        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 140
-         
-        sudo update-alternatives --set clang /usr/bin/clang-19
-        sudo update-alternatives --set clang++ /usr/bin/clang++-19
-        sudo update-alternatives --set clang-scan-deps /usr/bin/clang-scan-deps-19
-         
-        sudo update-alternatives --set gcc /usr/bin/gcc-14
-        sudo update-alternatives --set g++ /usr/bin/g++-14
-        
-        clang++ --version
-        g++ --version
-        
-    - name: ci-clang-libstdc++
-      run: cmake --workflow --preset="ci-clang-libstdc++"
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
-    - name: ci-clang-libc++
-      run: cmake --workflow --preset="ci-clang-libc++"
-      
-    - name: ci-module-clang-libc++
-      run: cmake --workflow --preset="ci-module-clang-libc++"
+jobs:
+  linux:
+    name: ${{ matrix.compiler }}-${{ matrix.version }} ${{ matrix.preset }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [ clang ]
+        version: [ 19, 20, 23 ]
+        preset:
+          - ci-clang-libstdc++
+          - ci-module-clang-libstdc++
+          - ci-clang-libc++
+          - ci-module-clang-libc++
+          - ci-clang-libstdc++-c++26
+          - ci-clang-libc++-c++26
+        exclude:
+          - { version: 19, preset: ci-module-clang-libstdc++ }
+          - { version: 19, preset: ci-clang-libstdc++-c++26 }
+          - { version: 19, preset: ci-clang-libc++-c++26 }
+        include:
+          - { compiler: gcc, version: 14, preset: ci-gcc }
+          - { compiler: gcc, version: 14, preset: ci-gcc-c++26 }
+    env:
+      CMAKE_CXX_COMPILER_LAUNCHER: ccache
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: lukka/get-cmake@latest
+
+    - name: Install clang ${{ matrix.version }}
+      if: matrix.compiler == 'clang'
+      run: |
+        V=${{ matrix.version }}
+        wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | sudo tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc > /dev/null
+        echo "deb http://apt.llvm.org/noble/ llvm-toolchain-noble-$V main" | sudo tee /etc/apt/sources.list.d/llvm.list
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq --no-install-recommends clang-$V libc++-$V-dev libc++abi-$V-dev clang-tools-$V
+        echo "/usr/lib/llvm-$V/bin" >> $GITHUB_PATH
+
+    - name: Select gcc ${{ matrix.version }}
+      if: matrix.compiler == 'gcc'
+      run: |
+        mkdir -p $HOME/.local/gcc-bin
+        ln -s /usr/bin/gcc-${{ matrix.version }} $HOME/.local/gcc-bin/gcc
+        ln -s /usr/bin/g++-${{ matrix.version }} $HOME/.local/gcc-bin/g++
+        echo "$HOME/.local/gcc-bin" >> $GITHUB_PATH
+
+    - name: Compiler version
+      run: ${{ matrix.compiler == 'clang' && 'clang++' || 'g++' }} --version
+
+    # glaze is tracked from main, so the dependency cache is refreshed daily
+    - name: Cache key date
+      id: date
+      run: echo "date=$(date -u +%Y%m%d)" >> $GITHUB_OUTPUT
+
+    - name: Cache CPM sources
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/CPM
+        key: cpm-linux-${{ hashFiles('CMakeLists.txt', 'tests/CMakeLists.txt', 'cmake/get_cpm.cmake') }}-${{ steps.date.outputs.date }}
+
+    - name: Set CPM cache dir
+      run: echo "CPM_SOURCE_CACHE=$HOME/.cache/CPM" >> $GITHUB_ENV
+
+    - uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ${{ matrix.compiler }}-${{ matrix.version }}-${{ matrix.preset }}
+        max-size: 200M
+
+    - name: ${{ matrix.preset }}
+      run: cmake --workflow --preset="${{ matrix.preset }}"
 
   build-and-test-msvc:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
+
+    - name: Cache key date
+      id: date
+      shell: bash
+      run: echo "date=$(date -u +%Y%m%d)" >> $GITHUB_OUTPUT
+
+    - name: Cache CPM sources
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/CPM
+        key: cpm-windows-${{ hashFiles('CMakeLists.txt', 'tests/CMakeLists.txt', 'cmake/get_cpm.cmake') }}-${{ steps.date.outputs.date }}
+
+    - name: Set CPM cache dir
+      run: echo "CPM_SOURCE_CACHE=$HOME\.cache\CPM" >> $env:GITHUB_ENV
+
     - name: Configure MSVC
       run: cmake -B ${{github.workspace}}/build/msvc -DCMAKE_BUILD_TYPE=Release
     - name: Build MSVC
@@ -134,4 +115,3 @@ jobs:
     - name: Test MSVC
       working-directory: ${{github.workspace}}/build/msvc
       run: ctest -C Debug
-
