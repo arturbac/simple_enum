@@ -129,6 +129,10 @@ Minimum standard required by `simple_enum` is c++20, but it is tested and adopte
   
   // Or just use with unbounded enums as long upper bound doesn't exceeds default_unbounded_upper_range
   ut::expect(simple_enum::enum_name(any_unbounded_enum::value) == "value");
+  // Unscoped enum without fixed underlying type has value range of the smallest bit-field holding its enumerators,
+  // for enum weak_e { a, b, c }; it is [0, 3]. Since clang 20 such enum requires bounds (first/last, adl_enum_bounds
+  // or info specialization) or fixed underlying type (enum weak_e : int { a, b, c };) when
+  // default_unbounded_upper_range is outside of its value range, otherwise static_assert fails.
   // default_unbounded_upper_range can be declared by users before inclusion of simple_enum.hpp
   namespace simple_enum
   {

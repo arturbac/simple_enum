@@ -124,12 +124,44 @@ enum weak_global_untyped_e
   };
 
 consteval auto adl_enum_bounds(weak_global_untyped_e)
-  {
-  return simple_enum::adl_info{weak_global_untyped_e::v1, weak_global_untyped_e::v3};
-  }
+  { return simple_enum::adl_info{weak_global_untyped_e::v1, weak_global_untyped_e::v3}; }
 
 static_assert(simple_enum::limits::min<weak_global_untyped_e>() == weak_global_untyped_e::v1);
 static_assert(simple_enum::limits::max<weak_global_untyped_e>() == weak_global_untyped_e::v3);
+
+// unbounded enumeration without fixed underlying type, value range [0, 15] includes default_unbounded_upper_range
+enum weak_global_untyped_wide_e
+  {
+  w0,
+  w9 = 9,
+  w12 = 12
+  };
+
+static_assert(simple_enum::enum_name(weak_global_untyped_wide_e::w9) == "w9");
+
+#if defined(__clang__) && __clang_major__ >= 20 && !defined(SIMPLE_ENUM_CXX_MODULE)
+// value range [0, 3] excludes default_unbounded_upper_range, such enumeration requires bounds
+enum weak_global_untyped_narrow_e
+  {
+  n0,
+  n1,
+  n2
+  };
+
+enum weak_global_typed_narrow_e : uint8_t
+  {
+  t0,
+  t1,
+  t2
+  };
+
+static_assert(!simple_enum::detail::
+                constexpr_castable_to_enum<weak_global_untyped_narrow_e, simple_enum::default_unbounded_upper_range>);
+static_assert(simple_enum::detail::
+                constexpr_castable_to_enum<weak_global_untyped_wide_e, simple_enum::default_unbounded_upper_range>);
+static_assert(simple_enum::detail::
+                constexpr_castable_to_enum<weak_global_typed_narrow_e, simple_enum::default_unbounded_upper_range>);
+#endif
 
 // check for external declarations
 enum struct global_untyped_externaly_e
@@ -153,6 +185,7 @@ namespace simple_enum
   {
 
 namespace ut = boost::ut;
+
 enum struct strong_typed : int8_t
   {
   v1 = -121,
@@ -202,9 +235,7 @@ namespace test
     };
 
   consteval auto adl_enum_bounds(strong_untyped_2_e)
-    {
-    return simple_enum::adl_info{strong_untyped_2_e::v1, strong_untyped_2_e::v3};
-    }
+    { return simple_enum::adl_info{strong_untyped_2_e::v1, strong_untyped_2_e::v3}; }
 
   static_assert(simple_enum::limits::min<strong_untyped_2_e>() == strong_untyped_2_e::v1);
   static_assert(simple_enum::limits::max<strong_untyped_2_e>() == strong_untyped_2_e::v3);
@@ -241,7 +272,7 @@ namespace test
           first = v1,
           last = v3
           };
-        }
+        }  // namespace
       }  // namespace detail
 
     inline namespace v2_0
@@ -287,6 +318,7 @@ enum struct one_elem_untyped
   first = v1,
   last = v1
   };
+
 enum struct sparse_untyped
   {
   v1 = 1,  // ix 0
@@ -503,10 +535,12 @@ enum class ScopedEnum
   SE_Value1,
   SE_Value2
   };
+
 // Testing an enumeration with no values as a corner case
 enum struct EmptyEnum
   {
   };
+
 // anonymous namespace
 enum class MultiValuedEnum
   {

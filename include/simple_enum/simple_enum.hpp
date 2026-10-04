@@ -5,6 +5,7 @@
 #include <simple_enum/core.hpp>
 
 #include <utility>
+#include <type_traits>
 #include <cstdint>
 #include <string_view>
 #if defined(__cpp_lib_source_location)
@@ -23,11 +24,38 @@ namespace detail
     bool upper_bound;
     };
 
+#if defined(__clang__) && __clang_major__ >= 20
+  // since clang 20 a constant cast outside of the value range of an enumeration without fixed underlying type is a
+  // hard error (-Wenum-constexpr-conversion can not be disabled), in SFINAE context it is a substitution failure
+  template<typename enumeration, auto value>
+  concept constexpr_castable_to_enum
+    = requires { typename std::integral_constant<enumeration, static_cast<enumeration>(value)>; };
+#endif
+
+  template<typename enumeration>
+  consteval auto default_unbounded_last() noexcept -> enumeration
+    {
+#if defined(__clang__) && __clang_major__ >= 20
+    if constexpr(!constexpr_castable_to_enum<enumeration, default_unbounded_upper_range>)
+      {
+      static_assert(
+        constexpr_castable_to_enum<enumeration, default_unbounded_upper_range>,
+        "simple_enum: default_unbounded_upper_range is outside of the value range of enumeration without fixed "
+        "underlying type, declare bounds (first/last enumerators, adl_enum_bounds or simple_enum::info "
+        "specialization) or a fixed underlying type for the enumeration"
+      );
+      return enumeration{};
+      }
+    else
+#endif
+      return static_cast<enumeration>(default_unbounded_upper_range);
+    }
+
   template<typename enumeration, meta_info_bounds_traits bi = meta_info_bounds_traits{}>
   struct meta_info : std::false_type
     {
     static constexpr enumeration first = static_cast<enumeration>(0);
-    static constexpr enumeration last = static_cast<enumeration>(default_unbounded_upper_range);
+    static constexpr enumeration last = default_unbounded_last<enumeration>();
     };
 
   template<typename enumeration>
@@ -42,7 +70,7 @@ namespace detail
   struct meta_info<enumeration, meta_info_bounds_traits{.lower_bound = true, .upper_bound = false}>
     {
     static constexpr enumeration first = enumeration::first;
-    static constexpr enumeration last = static_cast<enumeration>(default_unbounded_upper_range);
+    static constexpr enumeration last = default_unbounded_last<enumeration>();
     };
 
   template<typename enumeration>
